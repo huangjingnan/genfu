@@ -111,7 +111,7 @@ public class ChartOrderitemController extends ValidationAwareSupport implements
 //								par, ChartOrderItem.class, parameters);
 			} else {
 			
-				List<Object> chartChartOrderItems = genfuCommonService.searchNativeQuery("select dish_id,order_item_name,sum(amount) sum_amount,sum(price*amount)sum_total from order_items group by dish_id,order_item_name", null,0,10);
+				List<Object> chartChartOrderItems = genfuCommonService.searchNativeQuery("select dish_id,order_item_name,sum(amount) sum_amount,sum(price*amount) sum_total from order_items group by dish_id,order_item_name", null,0,10);
 				
 				System.out.println(chartChartOrderItems.size());
 				/*

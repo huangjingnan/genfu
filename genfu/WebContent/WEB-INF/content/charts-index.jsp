@@ -63,8 +63,8 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 
-	var d8 = [[2, 5],[4, 8],[6, 2],[7, 5],[9,1],[10, 4],[12, 5],[13, 6],[14, 4]];
-	var d9 = [[2, 4],[2.5, 5],[4.5, 8],[6.5, 2],[7.5, 5],[9.5,1],[10.5, 4],[12.5, 5],[13.5, 6],[14.5, 4],[15, 3]];	
+	var d8 = [[2, 2], [4, 3], [6, 5], [7, 8], [10, 6], [12, 4], [13, 2], [14, 5]];
+	var d9 = [[2, 2], [4, 3], [6, 5], [7, 8], [10, 6], [12, 4], [13, 2], [14, 5]];
 	var plot1 = $.plotAnimator($("#chart1"), [{data : d8, bars: { show: true, fill: true}},{data : d9, lines: {lineWidth:5}, animator: {start:$("#start").val(), steps:$("#steps").val(), duration:$("#duration").val(), direction: $("#dir").val()}}]);
 	
 	$("#bnt1").attr("disabled", "disabled");
