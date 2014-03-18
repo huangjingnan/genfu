@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<tree>
+	<tree text="Load &quot;tree1.xml&quot;" src="/genfu/js/xloadtree/tree1.xml" />
+	<tree text="Loaded Item 1" action="http://webfx.eae.net" />
+	<tree text="Loaded Item 2">
+		<tree text="Loaded Item 2.1" action="javascript:testA()" />
+	</tree>
+	<tree text="Loaded Item 3 (with target)" action="/genfu/navigation-node" target="ContentViewFrame" />
+	<tree text="department" action="/genfu/department" target="ContentViewFrame" />
+	<tree text="Load &quot;tree1.xml&quot;" src="/genfu/js/xloadtree/tree1.xml" />
+</tree>

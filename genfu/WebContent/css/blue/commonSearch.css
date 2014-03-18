@@ -1,0 +1,41 @@
+.outerSearchDIV {
+	text-align: left;
+	height: 100%;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.searchDIV {
+	background-color: #e6EEEE;
+	font-family: arial;
+	font-size: 12pt;
+	width: 100%;
+	text-align: left;
+	height: 100%;
+	padding-bottom: 3px;
+	padding-top: 3px;
+	padding-left: 3px;
+	padding-right: 0px;
+	margin-right: 10px;
+}
+
+.searchHref {
+	text-align: right;
+	margin-right: 10px;
+}
+table #search_div {
+	font-family:arial;
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	font-size: 8pt;
+	width: 100%;
+	text-align: left;
+}
+table tr .search_tr, table tr td .search_td {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+}

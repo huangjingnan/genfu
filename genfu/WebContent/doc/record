@@ -1,0 +1,1673 @@
+
+---***dish-image begin***---
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+
+<%@taglib prefix="s" uri="/struts-tags"%>
+
+<html>
+<head>
+<!-- Force latest IE rendering engine or ChromeFrame if installed -->
+<!--[if IE]>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<![endif]-->
+<meta>
+<title>dish-image</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bars, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads and client-side image resizing. Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style type="text/css">
+@import url(${ctx}/js/bootstrap-3.1.1-dist/css/bootstrap.min.css);
+@import url(${ctx}/js/jQuery-File-Upload-master/css/style.css);
+@import	url(${ctx}/js/Gallery-master/css/blueimp-gallery.min.css);
+@import	url(${ctx}/js/jQuery-File-Upload-master/css/jquery.fileupload.css);
+@import	url(${ctx}/js/jQuery-File-Upload-master/css/jquery.fileupload-ui.css);
+</style>
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-noscript.css"></noscript>
+<noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
+<script>
+	
+</script>
+</head>
+
+<body>
+	<s:actionmessage />
+
+<div class="container">
+    <s:form id="fileupload" action="%{#ctx}/dish-image" method="post" enctype="multipart/form-data">
+        <div class="row fileupload-buttonbar">
+            <div class="col-lg-7">
+                <span class="btn btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="upload" multiple>
+                </span>
+                <button type="submit" class="btn btn-primary start">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start upload</span>
+                </button>
+                <button type="reset" class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel upload</span>
+                </button>
+                <button type="button" class="btn btn-danger delete">
+                    <i class="glyphicon glyphicon-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" class="toggle">
+                <!-- The global file processing state -->
+                <span class="fileupload-process"></span>
+            </div>
+            <div class="col-lg-5 fileupload-progress fade">
+                <!-- The global progress bar -->
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                </div>
+                <!-- The extended global progress information -->
+                <div class="progress-extended">&nbsp;</div>
+            </div>
+        </div>
+        <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+    </s:form>
+    <br>
+</div>
+<!-- The blueimp Gallery widget -->
+<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+</div>
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td>
+            <span class="preview"></span>
+        </td>
+        <td>
+            <p class="name">{%=file.name%}</p>
+            <strong class="error text-danger"></strong>
+        </td>
+        <td>
+            <p class="size">Processing...</p>
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+        </td>
+        <td>
+            {% if (!i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start" disabled>
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}
+            {% if (!i) { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+        </td>
+        <td>
+            <p class="name">
+                {% if (file.url) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                {% } else { %}
+                    <span>{%=file.name%}</span>
+                {% } %}
+            </p>
+            {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+            {% } %}
+        </td>
+        <td>
+            <span class="size">{%=o.formatFileSize(file.size)%}</span>
+        </td>
+        <td>
+            {% if (file.deleteUrl) { %}
+                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                    <i class="glyphicon glyphicon-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <input type="checkbox" name="delete" value="1" class="toggle">
+            {% } else { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+            {% } %}
+        </td>
+    </tr>
+{% } %}
+</script>
+<%-- <script src="${ctx}/js/jquery.jqGrid-4.6.0/js/jquery-1.11.0.min.js"></script>
+<script src="${ctx}/js/jquery/jquery-2.0.3.js"></script> --%>
+<script src="${ctx}/js/jQuery-File-Upload-master/js/vendor/jquery.ui.widget.js"></script>
+<script src="${ctx}/js/JavaScript-Templates-master/js/tmpl.min.js"></script>
+<script src="${ctx}/js/JavaScript-Load-Image-master/js/load-image.min.js"></script>
+<script src="${ctx}/js/JavaScript-Canvas-to-Blob-master/js/canvas-to-blob.min.js"></script>
+<script src="${ctx}/js/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+<script src="${ctx}/js/Gallery-master/js/jquery.blueimp-gallery.min.js"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.iframe-transport.js"></script>
+<!-- The basic File Upload plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload.js"></script>
+<!-- The File Upload processing plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-process.js"></script>
+<!-- The File Upload image preview & resize plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-image.js"></script>
+<!-- The File Upload audio preview plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-audio.js"></script>
+<!-- The File Upload video preview plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-video.js"></script>
+<!-- The File Upload validation plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-validate.js"></script>
+<!-- The File Upload user interface plugin -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/jquery.fileupload-ui.js"></script>
+<!-- The main application script -->
+<script src="${ctx}/js/jQuery-File-Upload-master/js/main.js"></script>
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
+<!--[if (gte IE 8)&(lt IE 10)]>
+<script src="${ctx}/js/jQuery-File-Upload-master/js/cors/jquery.xdr-transport.js"></script>
+<![endif]-->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-41071247-1', 'blueimp.github.io');
+ga('send', 'pageview');
+</script>
+</body>
+</html>
+
+---***dish-image end***---
+
+
+sudo apt-key adv --recv-keys --keyserver keys.gnupg.net 
+
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+
+tgdg.list
+
+debian
+
+update-alternatives --config java
+
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.7.0/bin/java 1
+
+mkdir -p /usr/lib/jvm
+mv /home/xuzhenfu/app_genfu/jdk1.7.0_51 /usr/lib/jvm/jdk1.7.0
+export JAVA_HOME=/usr/lib/jvm/jdk1.7.0
+export PATH=$PATH:/usr/lib/jvm/jdk1.7.0/bin
+
+/usr/lib/jvm/jdk1.7.0/lib
+
+dpkg-reconfigure tzdata
+
+./asadmin enable-secure-admin
+
+mvn install -Dmaven.test.skip=true
+
+
+
+@Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Country {
+...
+}
+
+1. native2ascii.exe的介绍:
+
+    native2ascii是sun java sdk提供的一个转码工具, 用来将别的文本类文件（比如 *.txt, *.ini, *.properties, *.java 等等）编码转为Unicode编码。
+
+ 
+
+2. 如何获取 native2ascii.exe?
+
+    安装了jdk后，假如你是在windows上安装，那么在jdk的安装目录下，会有一个bin目录, 该目录下就有我们所需要的native2ascii.exe 工具。
+
+ 
+
+3. native2ascii.exe使用方法:
+
+    命令的语法格式：
+
+    native2ascii -[options] [inputfile [outputfile]]
+
+　 说明：
+
+　　-[options]：表示命令开关，有两个选项可供选择
+
+　　-reverse：将Unicode编码转为本地或者指定编码，不指定编码情况下，将转为本地编码。
+
+　　-encoding encoding_name：转换为指定编码，encoding_name为编码名称。
+
+　　 [inputfile [outputfile]]
+
+　　 inputfile：表示输入文件全名。
+
+　　 outputfile：输出文件名。如果缺少此参数，将输出到控制台。
+
+ 
+
+通过cmd命令进入DOS命令窗口进行如下操作：   
+
+ 
+
+通过native2ascii命令转码成功后，如下图：
+
+
+
+ 
+
+备注：native2ascii.exe是一个应用比较简单的转码工具，并且转码是可逆的。
+
+试试如下命令：
+
+native2ascii -reverse  new.txt   yan.txt
+
+结果：
+
+
+
+ 
+
+ 
+
+ 
+
+native2ascii -encoding gbk  old.txt   new.txt
+
+
+function rebuild_tree($parent, $left) {   
+
+    // the right value of this node is the left value + 1   
+
+    $right = $left+1;   
+
+   
+
+    // get all children of this node   
+
+    $result = mysql_query('SELECT title FROM tree '.   
+
+                           'WHERE parent="'.$parent.'";');   
+
+    while ($row = mysql_fetch_array($result)) {   
+
+        // recursive execution of this function for each   
+
+        // child of this node   
+
+        // $right is the current right value, which is   
+
+        // incremented by the rebuild_tree function   
+
+        $right = rebuild_tree($row['title'], $right);   
+
+    }   
+
+   
+
+    // we've got the left value, and now that we've processed   
+
+    // the children of this node we also know the right value   
+
+    mysql_query('UPDATE tree SET lft='.$left.', rgt='.   
+
+                 $right.' WHERE title="'.$parent.'";');   
+
+   
+
+    // return the right value of this node + 1   
+
+    return $right+1;   
+
+}   
+
+
+public String getMACAddress (String ip) ( 
+String str = ""; 
+String macAddress = ""; 
+try ( 
+Process p = Runtime.getRuntime (). Exec ( "nbtstat-A" + ip); 
+InputStreamReader ir = new InputStreamReader (p.getInputStream ()); 
+LineNumberReader input = new LineNumberReader (ir); 
+for (int i = 1; i <100; i + +) ( 
+str = input.readLine (); 
+if (str! = null) ( 
+if (str.indexOf ( "MAC Address")> 1) ( 
+macAddress = str.substring (str.indexOf ( "MAC Address") + 14, str.length ()); 
+break; 
+) 
+) 
+) 
+) Catch (IOException e) ( 
+e.printStackTrace (System.out); 
+) 
+return macAddress; 
+) 
+
+http://www.w3schools.com/tags/att_form_accept_charset.asp
+
+http://www.cs.tut.fi/~jkorpela/forms/file.html#end
+Character encoding problems
+
+The file is submitted as such, without code conversions. A plain text file is submitted without information about character encoding, so the recipient needs to guess the encoding or infer it somehow.
+
+For example, suppose that you have a UTF-8 encoded form and that it is used to submit a plain text file. If the user wrote the file using Notepad, it will (by default) be in windows-1252 encoding, and its content is sent as such, declared just as text/plain (no charset attribute), even though contents of normal fields are UTF-8 encoded. The server-side form handler has no direct way of knowing what the encoding is, so how can it meaningfully process the data?
+
+In general, the browser cannot tell the encoding, so it can neither declare it nor code-convert the data. The reason is that commonly used file systems lack indication of the character encoding of a plain text file; it just needs to be known.
+
+Thus, if your form is meant for submitting plain text files, your best option is probably to ask users to save their text files in UTF-8 encoding with BOM (Byte Order Mark). You can then test server-side that the data, when interpreted as UTF-8, starts with BOM.
+
+2014-01-01 
+
+http://www.cs.tut.fi/~jkorpela/forms/file.html
+
+2013-12-29
+-Dfile.encoding=UTF-8
+
+order-index.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!doctype html>
+
+<%@ taglib prefix="s" uri="/struts-tags"%>
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>dishes</title>
+<!-- Include one of jTable styles. -->
+<link href="${ctx}/js/jtable.2.3.1/themes/jqueryui/jtable_jqueryui.css" rel="stylesheet" type="text/css" />
+<link href="${ctx}/js/jquery-ui-1.10.3/development-bundle/themes/flick/jquery-ui.css" rel="stylesheet" type="text/css" />
+<style>
+        #QuickImageLinks
+        {
+            text-align: center;
+        }
+        
+        #QuickImageLinks img
+        {
+            border: none;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .child-opener-image
+        {
+            cursor: pointer;
+        }
+
+        
+        .child-opener-image-column
+        {
+            text-align: center;
+        }
+        
+        .jtable-dialog-form
+        {
+            min-width: 220px;
+        }
+        
+        .jtable-dialog-form input[type="text"]
+        {
+            min-width: 200px;
+        }
+</style>
+<!-- Include jTable script file. -->
+
+<script src="${ctx}/js/jquery-ui-1.10.3/jquery-1.9.1.js" type="text/javascript"></script>
+<script src="${ctx}/js/jquery-ui-1.10.3/ui/jquery-ui.js" type="text/javascript"></script>
+<script src="${ctx}/js/jtable.2.3.1/jquery.jtable.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#OrderTableContainer').jtable({
+            title: 'Order List',
+            paging: true, //Enable paging
+            sorting: true, //Enable sorting
+            columnResizable: false, //Disable column resizing
+            columnSelectable: false, //Disable column selecting
+            defaultSorting: 'id ASC',
+            openChildAsAccordion: true,
+            actions: {
+                listAction: '${ctx}/order.json?style=jTable',
+                deleteAction: '/Demo/DeleteStudent',
+                updateAction: '/Demo/UpdateStudent',
+                createAction: '${ctx}/order'
+            },
+            toolbar: {
+                items: [{
+                    tooltip: 'Click here to export this table to excel',
+                    icon: '/Content/images/Misc/excel.png',
+                    text: 'Export to Excel',
+                    click: function () {
+                        alert('This item is just a demonstration for new toolbar feature. You can add your custom toolbar items here. Then, for example, you can download excel file from server when user clicks this item. See toolbar in API reference documentation for usage.');
+                    }
+                }]
+            },
+            fields: {
+                id: {
+                    key: true,
+                    create: false,
+                    edit: false,
+                    list: false
+                },
+                orderName: {
+                    title: 'orderName',
+                    width: '20%',
+                    inputClass: 'validate[required]'
+                },
+                amount: {
+                    title: 'Age',
+                    width: '10%'
+                },
+                email: {
+                    title: 'Email address',
+                    width: '20%',
+                    inputClass: 'validate[required,custom[email]]'
+                },
+                phoneNumber: {
+                    title: 'phoneNumber',
+                    inputClass: 'validate[required]'
+                },
+                shipToFirstName: {
+                    title: 'shipToFirstName',
+                    width: '11%',
+                    options: { 'M': 'Male', 'F': 'Female' }
+                },
+                shipToLastName: {
+                    title: 'shipToLastName',
+                    width: '10%'
+                },
+                createdAt: {
+                    title: 'createdAt',
+                    width: '15%',
+                    type: 'date',
+                    displayFormat: 'yy-mm-dd',
+                    inputClass: 'validate[required,custom[date]]'
+                },
+                updatedAt: {
+                    title: 'updatedAt',
+                    width: '15%',
+                    type: 'date',
+                    displayFormat: 'yy-mm-dd',
+                    inputClass: 'validate[required,custom[date]]'
+                },
+                status: {
+                    title: 'Education',
+                    type: 'radiobutton',
+                    options: { '1': 'Primary school', '2': 'High school', '3': 'University' },
+                    inputClass: 'validate[required]'
+                },
+                errorMessage: {
+                    title: 'About this person',
+                    type: 'textarea',
+                    list: false
+                },
+                status: {
+                    title: 'Status',
+                    width: '12%',
+                    type: 'checkbox',
+                    values: { 'false': 'Passive', 'true': 'Active' },
+                    defaultValue: 'true'
+                }
+            }
+        });
+        //Load person list from server
+        $('#OrderTableContainer').jtable('load');
+
+        //Select current theme on combobox
+        //$('#ThemeCombobox').val('metro/blue/jtable.css');
+
+        //Change theme when chaned combobox
+        /* $('#ThemeCombobox').change(function () {
+            location.href = '/?jTableStyle=' + $('#ThemeCombobox').val();
+        }); */
+    });
+
+</script>
+<s:head />
+</head>
+<body>
+
+<div id="OrderTableContainer">
+</div>
+	
+</body>
+
+</html>
+
+2013-12-26
+		this.getStringForGroup = function(group) {
+			var s = "(", index;
+			if (group.groups !== undefined) {
+				for (index = 0; index < group.groups.length; index++) {
+					if (s.length > 1) {
+						s += " " + group.groupOp + " ";
+					}
+					try {
+						s += this.getStringForGroup(group.groups[index]);
+					} catch (eg) {alert(eg);}
+				}
+			}
+
+			if (group.rules !== undefined) {
+				try{
+					for (index = 0; index < group.rules.length; index++) {
+						if (s.length > 1) {
+							s += " " + group.groupOp + " ";
+						}
+						s += this.getStringForRule(group.rules[index]);
+					}
+				} catch (e) {alert(e);}
+			}
+
+			s += ")";
+
+			if (s === "()") {
+				return ""; // ignore groups that don't have rules
+			}
+			return s;
+		};
+		this.getStringForRule = function(rule) {
+			var opUF = "",opC="", i, cm, ret, val,
+			numtypes = ['int', 'integer', 'float', 'number', 'currency']; // jqGrid
+			for (i = 0; i < this.p.ops.length; i++) {
+				if (this.p.ops[i].oper === rule.op) {
+					opUF = this.p.operands.hasOwnProperty(rule.op) ? this.p.operands[rule.op] : "";
+					opC = this.p.ops[i].oper;
+					break;
+				}
+			}
+			for (i=0; i<this.p.columns.length; i++) {
+				if(this.p.columns[i].name === rule.field) {
+					cm = this.p.columns[i];
+					break;
+				}
+			}
+			if (cm === undefined) { return ""; }
+			val = rule.data;
+			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
+			if(opC === 'ew' || opC === 'en') { val = "%"+val; }
+			if(opC === 'cn' || opC === 'nc') { val = "%"+val+"%"; }
+			if(opC === 'in' || opC === 'ni') { val = " ("+val+")"; }
+			if(p.errorcheck) { checkData(rule.data, cm); }
+			if($.inArray(cm.searchtype, numtypes) !== -1 || opC === 'nn' || opC === 'nu') { ret = rule.field + " " + opUF + " " + val; }
+			else { ret = rule.field + " " + opUF + " \"" + val + "\""; }
+			return ret;
+		};
+
+
+		//[{"groupOp":"AND","rules":[{"field":"dishName","op":"ne","data":"1"},{"field":"publishedAt","op":"eq","data":"3"},{"field":"createdAt","op":"eq","data":"2"},{"field":"publishedId","op":"eq","data":"3"}]}]
+		//[{"groupOp":"OR","rules":[{"field":"dishName","op":"ne","data":"1"},{"field":"publishedAt","op":"eq","data":"3"},{"field":"createdAt","op":"eq","data":"2"},{"field":"publishedId","op":"eq","data":"3"}],"groups":[{"groupOp":"AND","rules":[{"field":"dishFlag","op":"eq","data":"5"},{"field":"price","op":"eq","data":"6"}],"groups":[]}]}]
+		//((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt = "3" OR createdAt = "2" OR publishedId = "3")
+		
+
+http://www.trirand.com/jqgridwiki/doku.php?id=wiki:custom_formatter
+
+
+Hi,
+
+I have used custom function for validating my date text. 
+
+
+
+ colModel: [ {name: 'startDate',index: 'startDate',width: 50,align: 'center',sortable:false,edittype:'text',editrules:{custom:true,custom_func: checkDate}],
+
+
+
+function checkDate(value,valueRef)
+
+{
+
+if(value=="")
+
+{alert(invalidDateValue);
+
+return [false,''+invalidDateValue+'']; 
+
+} 
+
+}
+
+On Enter press this validation message being displayed for short span of time and request is sent to server although I am returning false.
+
+But this is not working in Mozilla 23.0.
+
+the same code is working fine in IE//Chrome.
+2013-12-18
+
+create table TAGGINGS (TAGGING_ID bigint not null generated by default as identity, CREATED_AT timestamp, TAG_ID bigint, TAGGABLE_ID bigint, TAGGABLE_TYPE varchar(255), primary key (TAGGING_ID), unique (TAG_ID, TAGGABLE_ID, TAGGABLE_TYPE));
+alter table TAGGINGS add constraint FK18ABA5ED2A9A2D foreign key (TAGGABLE_ID) references DISHES;
+alter table TAGGINGS add constraint FK18ABA5EEB47DC5A foreign key (TAG_ID) references TAGS;
+
+//NullIfEmpty:true,
+insert into DISHES(dish_id , blurb , cover_Image , created_at , dish_flag ,  dish_name , isbn , price , published_at , published_id , updated_at )
+  SELECT 11,blurb , cover_Image , created_at , dish_flag ,  dish_name , isbn , price , published_at , published_id , updated_at FROM DISHES where dish_id=1
+
+<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.h2.Driver" />
+		<property name="url" value="jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;MVCC=TRUE" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+
+	<bean id="mySessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="myDataSource" />
+		<!-- <property name="mappingResources"> <list> <value>product.hbm.xml</value> 
+			</list> </property> -->
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.H2Dialect
+			</value>
+		</property>
+	</bean>
+
+	<bean id="myTxManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="mySessionFactory" />
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="productServiceMethods"
+			expression="execution(* product.ProductService.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="productServiceMethods" />
+	</aop:config>
+
+	<tx:advice id="txAdvice" transaction-manager="myTxManager">
+		<tx:attributes>
+			<tx:method name="increasePrice*" propagation="REQUIRED" />
+			<tx:method name="someOtherBusinessMethod" propagation="REQUIRES_NEW" />
+			<tx:method name="*" propagation="SUPPORTS" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- <bean id="myProductService" class="product.SimpleProductService"> <property 
+		name="productDao" ref="myProductDao" /> </bean> -->
+
+
+网页错误详细信息
+
+用户代理: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/6.0; .NET4.0E; .NET4.0C; .NET CLR 3.5.30729; .NET CLR 2.0.50727; .NET CLR 3.0.30729; Tablet PC 2.0; MALCJS)
+时间戳: Fri, 30 Aug 2013 05:45:30 UTC
+
+
+消息: 属性“viewModelGenfu”的值为 null、未定义或不是 Function 对象
+行: 297
+字符: 1
+代码: 0
+URI: http://localhost:8080/genfu/role-info
+
+
+
+
+http://www-cs-students.stanford.edu/~tjw/jsbn/
+
+
+a、调用无参的构造函数:
+
+    Class newoneClass = Class.forName(类全名); newoneClass.newInstance();
+
+
+
+javascript:openInFrame('/genfu/navigation-node')
+
+javascript:openInFrame('/genfu/user-info')
+
+4 javascript:openInFrame('/genfu/department') 
+
+
+javascript:openInFrame('/genfu/role-info')
+
+
+Controller...setServletRequest...totalRecords nullController...setServletResponse...weblogic.servlet.internal.ServletResponseImpl@3ce2ad5[
+HTTP/1.1 200 OK
+X-Powered-By: Servlet/3.0 JSP/2.2
+]
+Controller...setSession...
+Controller...prepare...
+Controller...getModel...
+Controller...getModel...null
+Controller...getModel...
+Controller...getModel...null
+Controller...index...
+Controller...getModel...
+Controller...getModel...null
+Controller...getModel...
+Controller...getModel...null
+DEBUG   13694   [freemark] (): "template/ajax/head.ftl"["zh_CN",UTF-8,parsed]  using cached since zip:C:/Oracle/Middleware/user_projects/domains/test2/servers/AdminServer/tmp/_WL_user/WebContent/si7yjy/war/WEB-INF/lib/struts2-dojo-plugin-2.3.8.jar!/template/ajax/head.ftl didn't change.
+DEBUG   13694   [freemark] (): Key "debug" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "baseRelativePath" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "locale" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "extraLocales" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "compressed" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "baseRelativePath" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "debug" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): "template/ajax/head.ftl"["zh_CN",UTF-8,parsed]  cached copy not yet stale; using cached.
+DEBUG   13694   [freemark] (): Key "debug" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "baseRelativePath" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "locale" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "extraLocales" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "compressed" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "baseRelativePath" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): Key "debug" was not found on instance of java.util.LinkedHashMap. Introspection information for the class is: {getClass=public final native java.lang.Class java.lang.Object.getClass(), clone=public java.lang.Object java.util.HashMap.clone(), put=public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object), get=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), remove=public java.lang.Object java.util.HashMap.remove(java.lang.Object), equals=public boolean java.util.AbstractMap.equals(java.lang.Object), entrySet=public java.util.Set java.util.HashMap.entrySet(), hashCode=public int java.util.AbstractMap.hashCode(), class=java.beans.PropertyDescriptor@68bee40b, keySet=public java.util.Set java.util.HashMap.keySet(), size=public int java.util.HashMap.size(), clear=public void java.util.LinkedHashMap.clear(), isEmpty=public boolean java.util.HashMap.isEmpty(), containsKey=public boolean java.util.HashMap.containsKey(java.lang.Object), values=public java.util.Collection java.util.HashMap.values(), java.lang.Object@39893da=freemarker.ext.beans.MethodMap@391cac9, empty=java.beans.PropertyDescriptor@12141a1f, containsValue=public boolean java.util.LinkedHashMap.containsValue(java.lang.Object), java.lang.Object@39893db={public void java.util.LinkedHashMap.clear()=[Ljava.lang.Class;@391c919, public int java.util.HashMap.size()=[Ljava.lang.Class;@391c9ac, public int java.util.AbstractMap.hashCode()=[Ljava.lang.Class;@391ca4b, public final native java.lang.Class java.lang.Object.getClass()=[Ljava.lang.Class;@391c901, public java.util.Set java.util.HashMap.keySet()=[Ljava.lang.Class;@391c9c4, public java.util.Set java.util.HashMap.entrySet()=[Ljava.lang.Class;@391c929, public boolean java.util.LinkedHashMap.containsValue(java.lang.Object)=[Ljava.lang.Class;@391c99b, public java.lang.Object java.util.HashMap.remove(java.lang.Object)=[Ljava.lang.Class;@391c93a, public java.lang.Object java.util.HashMap.put(java.lang.Object,java.lang.Object)=[Ljava.lang.Class;@391c94c, public java.lang.Object java.util.HashMap.clone()=[Ljava.lang.Class;@391ca0a, public boolean java.util.AbstractMap.equals(java.lang.Object)=[Ljava.lang.Class;@391c9d5, public java.lang.String java.util.AbstractMap.toString()=[Ljava.lang.Class;@391c96f, public void java.util.HashMap.putAll(java.util.Map)=[Ljava.lang.Class;@391c95e, public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object)=[Ljava.lang.Class;@391c9e7, public boolean java.util.HashMap.containsKey(java.lang.Object)=[Ljava.lang.Class;@391c8f0, public java.util.Collection java.util.HashMap.values()=[Ljava.lang.Class;@391ca22, public boolean java.util.HashMap.isEmpty()=[Ljava.lang.Class;@391ca32}, toString=public java.lang.String java.util.AbstractMap.toString(), java.lang.Object@39893d9=public java.lang.Object java.util.LinkedHashMap.get(java.lang.Object), putAll=public void java.util.HashMap.putAll(java.util.Map)}
+DEBUG   13694   [freemark] (): "template/xhtml/head.ftl"["zh_CN",UTF-8,parsed]  using cached since zip:C:/Oracle/Middleware/user_projects/domains/test2/servers/AdminServer/tmp/_WL_user/WebContent/si7yjy/war/WEB-INF/lib/struts2-core-2.3.8.jar!/template/xhtml/head.ftl didn't change.
+DEBUG   13694   [freemark] (): "template/simple/head.ftl"["zh_CN",UTF-8,parsed]  using cached since zip:C:/Oracle/Middleware/user_projects/domains/test2/servers/AdminServer/tmp/_WL_user/WebContent/si7yjy/war/WEB-INF/lib/struts2-core-2.3.8.jar!/template/simple/head.ftl didn't change.
+department-index
+DEBUG   13694   [freemark] (): "template/xhtml/actionmessage.ftl"["zh_CN",UTF-8,parsed]  no source found.
+2013-5-25 9:11:22 com.opensymphony.xwork2.util.logging.commons.CommonsLogger info
+信息: Executed action [/department!index!xhtml!200] took 55 ms (execution: 0 ms, result: 55 ms)
+DEBUG   13694   [freemark] (): "template/simple/actionmessage.ftl"["zh_CN",UTF-8,parsed]  using cached since zip:C:/Oracle/Middleware/user_projects/domains/test2/servers/AdminServer/tmp/_WL_user/WebContent/si7yjy/war/WEB-INF/lib/struts2-core-2.3.8.jar!/template/simple/actionmessage.ftl didn't change.
+Controller...setServletRequest...totalRecords nullHibernate: 
+    select
+        department0_.DEPARTMENT_ID as DEPARTMENT1_17_,
+        department0_.DEPARTMENT_NAME as DEPARTMENT2_17_,
+        department0_.UP_ID as UP3_17_,
+        department0_.UPDATE_DATE as UPDATE4_17_ 
+    from
+        DEPARTMENTS department0_ 
+    where
+        1=1
+Controller...setServletResponse...weblogic.servlet.internal.ServletResponseImpl@3ce0da2[
+HTTP/1.1 200 OK
+X-Powered-By: Servlet/3.0 JSP/2.2
+]
+Controller...setSession...
+Controller...prepare...
+Controller...getModel...
+Controller...getModel...null
+Controller...getModel...
+Controller...getModel...null
+Controller...index...
+Hibernate: 
+    select
+        department0_.DEPARTMENT_ID as DEPARTMENT1_17_,
+        department0_.DEPARTMENT_NAME as DEPARTMENT2_17_,
+        department0_.UP_ID as UP3_17_,
+        department0_.UPDATE_DATE as UPDATE4_17_ 
+    from
+        DEPARTMENTS department0_ 
+    where
+        1=1 limit ?
+2013-5-25 9:11:22 com.genfu.reform.jpa.GenfuCommonDAOImpl searchList
+信息: searchList...3
+Controller...getModel...
+Controller...getModel...null
+Controller...getModel...
+Controller...getModel...null
+Controller...getModel...
+Controller...getModel...null
+2013-5-25 9:11:22 com.opensymphony.xwork2.util.logging.commons.CommonsLogger info
+信息: Executed action [/department!index!xhtml!200] took 6 ms (execution: 3 ms, result: 3 ms)
+
+
+[20:05:27.276] 使用的 getAttributeNode() 已废弃。请使用 getAttribute() 替代。 @ http://localhost:8080/struts/dojo/struts_dojo.js:4762
+
+window.opener 的用法 
+
+window.opener 返回的是创建当前窗口的那个父窗口的引用，比如点击了a.htm上的一个链接而打开了b.htm， 然后我们打算在b.htm上输入一个值然后赋予a.htm上的一个id为“name”的textbox中，就可以写为： 
+
+
+window.opener.document.getElementById("name").value = "输入的数据";
+
+对于javascript中的window.opener没有很好的理解。 
+为什么框架中不能使用，弹出窗口的父窗口不能在框架里面的某个页面呢？那怎样通过弹出窗口操作框架 中的父窗口呢？ 
+
+opener.parent.frames['frameName'].document.all.input1.value
+
+即opener这个对象为前一个窗口，可以使用window.opener.document...调用document的相关方法， 例如下面的例子，插入一些table行到前一个窗口： 
+
+function taletoTb(itemStr) {   
+        newRow = opener.document.all.itemTb.insertRow(opener.document.all.itemTb.rows.length);   
+        rowCnt = opener.document.all.itemTb.rows.length;   
+        newCell = newRow.insertCell();   
+        newCell.insertAdjacentHTML('BeforeEnd','<div align="center">'+itemCode+'</div>');   
+        newCell = newRow.insertCell();   
+        newCell.insertAdjacentHTML('BeforeEnd','<div align="center">'+itemName+'</div>');   
+        newCell = newRow.insertCell();   
+        newCell.insertAdjacentHTML('BeforeEnd','<div align="center"> <img src="../../../images/delete2.gif" width="12" height="12" onClick="userRightDel(this);"> <input type="hidden" name="itembox" value='+itemCode+'></div>');   
+     } 
+缩略显示confirm用法和例子
+一般用于弹出对话框（确定／否） 
+确定：就执行其嵌套的内容；否：则反之 
+
+
+<script language="javascript">   
+//验证时间格式  YYYY-MM-DD/YYYY,MM,DD   
+function isDate(date){   
+    var regu = "^[0-9]{4}-([0-1]?)[0-9]{1}-([0-3]?)[0-9]{1}$";   
+    var re   = new RegExp(regu);   
+    if (date.search(re) != -1)   
+        return true;   
+    else  
+        return false;   
+}    
+function sureButton(){   
+   if(!confirm('真的要删除吗？删除后将无法恢复！')){   
+       return;   
+   }   
+   //验证时间格式  YYYY-MM-DD   
+  
+       var startDate=document.getElementById("startDate").value;   
+       var endDate=document.getElementById("endDate").value;    
+       if(!isDate(startDate)){   
+                   
+             alert(startDate+"请输入正确的开始日期格式!如:(YYYY-MM-DD)2008-01-01");   
+             return document.getElementById("startDate").focus();   
+       }   
+       if(!isDate(endDate)){   
+             alert("请输入正确的结束日期格式!如:(YYYY-MM-DD)2008-01-01");   
+             return document.getElementById("endDate").focus();   
+       }   
+         if(startDate==""){   
+    alert("请输入开始日期");   
+    return document.getElementById("startDate").focus();   
+   }   
+   if(endDate==""){   
+    alert("请输入结束日期");   
+    return document.getElementById("endDate").focus();   
+   }    
+   startDate=startDate.replace(new RegExp('-', 'g'),'/');   
+   alert(startDate);   
+   endDate=endDate.replace(new RegExp('-', 'g'),'/');   
+   var startTime=new Date(startDate).getTime();   
+   alert(new Date(startDate).getTime());   
+   var endTime=new Date(endDate).getTime();   
+   if((endTime-startTime)<0){   
+    alert("结束日期必须大于开始日期");   
+        return document.getElementById("endDate").focus();   
+   }      
+      
+      
+}   
+</script>  
+
+
+<html>    
+<head>   
+<meta http-equiv="Content-Language" content="zh-cn">   
+<meta name="generator" content="Bluefish 1.0.7">   
+<meta name="ProgId" content="FrontPage.Editor.Document">   
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">   
+<title></title>   
+<style type="text/css">   
+  table{color: #000000; font-family: 宋体; font-size: 12px; height:12 }   
+  t1{color:#008000;align:center}   
+</style>   
+</head>   
+  
+<body topmargin="0" leftmargin="0">   
+  
+<div align="left">   
+   <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse"         bordercolor="#111111" width="461" height="8" id="AutoNumber1"         background="images/kabg.gif">   
+    
+    <tr>   
+      <td  colspan="3">   
+      <table cellpadding="0" cellspacing="0" style="border-collapse: collapse"         bordercolor="#111111" width="100%" height="17">   
+          <tr>   
+       <td width="19%" height="25" align="center" style="border:1px solid #000080;">            <font color="#008000">开始日期</font></td>   
+       <td width="31%" style="border:1px solid #000080;">    
+              <input name="startDate" type="text" id="startDate" size="15"></td>   
+       <td width="22%" align="center" style="border:1px solid #000080;"> 	<font color="#008000">结束日期</font></td>   
+       <td width="28%" style="border:1px solid #000080;">    
+              <input name="endDate" type="text" id="endDate" size="15"></td>   
+       </tr>   
+       </table>   
+       </td>   
+    </tr>   
+  
+    <tr>   
+      <td height="28" align="center" style="border:1px solid #000080; " colspan="3">   
+      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse"  	bordercolor="#111111" width="100%" id="AutoNumber3" height="17">   
+        <tr>   
+          <td width="14%" align="center" height="25">   
+      <font color="#008000">当前状态</font></td>   
+          <td width="18%" align="center" height="25">   
+      <select size="1" name="display">   
+      <option value="0">无效</option>   
+      <option value="1">等待</option>   
+      <option value="2" selected>显示中</option>   
+      </select></td>   
+          <td width="15%" align="center" height="25" style="border-left: 1px solid #000080;  	border-right-width: 1; border-top-width: 1; border-bottom-width: 1">   
+          <font color="#008000">Logo行宽</font></td>   
+          <td width="10%" align="center" height="25">   
+      <select size="1" name="colValue">   
+      <option>1</option>   
+      <option>2</option>   
+      <option>3</option>   
+      <option>4</option>   
+      <option>5</option>   
+      <option>6</option>   
+      </select></td>   
+       <td width="12%" align="center" style="border-left: 1px solid #000080;          border-right-width: 1; border-top-width: 1; border-bottom-width: 1">         <font color="#008000">显示顺序</font></td>   
+       <td width="5%" >    
+              <input name="displayOrder" type="text" id="displayOrder" size="3" value="1">   
+     </td>   
+          <td width="43%" align="center" height="25" style="border-left-style: solid;  	border-left-width: 1; border-right-width: 1; border-top-width: 1;  	border-bottom-width: 1"><input onclick="cancelButton()" type="reset" value="关闭"  	name="B2"  	style="border-style: outset; border-width: 1; color:#0000FF">    
+      <input onclick="sureButton()" type="submit" value="确定" name="B1"  	style="border-style: outset; border-width: 1; color:#0000FF"></td>   
+        </tr>   
+      </table>   
+      </td>   
+    </tr>   
+    <tr>   
+      <td height="20" colspan="3" align="center" style="border:1px solid #000080; ">   
+      <marquee behavior="slide" style="color: #808080">::日期格式为年-月-日,直接填入图片和点击路径 	全名时应仔细查对是否正确::</marquee></td>   
+    </tr>   
+  </table>   
+</div>   
+  
+</body>   
+  
+</html>
+
+可以批量删除表格记录行，通过checkbox选择删除的行；可以批量增加记录行，通过输入框指定行数。 
+
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=shift-js">
+    <title>The page of append rows to Table</title>
+
+
+ <script language="JavaScript">
+  // 新增行
+  function addRow(){
+   var textNum = document.getElementById("rownum");
+   // 得到新增行记录的行数
+   var index = textNum.value;
+   if(!checknum(index)){
+    alert("You can only input number in the TEXT!");
+    textNum.focus(); 
+    textNum.select();
+   }
+   for(var i = 0; i < index; i++){
+    // 得到表格对象
+    var tableObj = document.getElementById("mainTb");
+    // 得到tbody对象
+    var tableBodyObj = document.getElementById("mainBody");
+    var newRowObj = document.createElement("tr");
+    var newCheckBox = document.createElement("td");
+    var newtext1 = document.createElement("td");
+    var newtext2 = document.createElement("td");
+    var newtext3 = document.createElement("td");
+    newCheckBox.innerHTML = '<center><input type="Checkbox" name="checkbox"  	onclick = "checkBoxSel()"></center>';
+    newtext1.innerHTML = '<input type="text" name="newCarName" size="9">';
+    newtext2.innerHTML = '<input type="text" name="newCarName" size="9">';
+    newtext3.innerHTML = '<input type="text" name="newCarName" size="9">';
+    // 新增的tr节点下增加td节点
+    newRowObj.appendChild(newCheckBox);  
+    newRowObj.appendChild(newtext1); 
+    newRowObj.appendChild(newtext2); 
+    newRowObj.appendChild(newtext3); 
+    // tbody节点下增加tr节点
+    tableBodyObj.appendChild(newRowObj);
+   }
+  }
+  // 新增行数选择框检查输入必须是数字
+  function checknum(strVal){
+   if (strVal.length != 0){
+    var r = strVal.match(new RegExp(/^[0-9]+$/));
+      if (r == null){
+     return false;
+      }else{
+       return true;
+    }
+   }
+   return true;
+  }
+  // 批量删除指定的行
+  function deleteRow(){
+   var Tblen;
+   // 得到所有 checkbox 对象
+   var checkbox = document.getElementsByName("checkbox");
+   //var checkboxlen = document.all.checkbox.length;
+   // 得到所有提交的checkbox个数
+   var checkboxlen = checkbox.length;
+   var ischecked;
+   // 得到删除按钮对象
+   var delbutton = document.getElementById("delete");
+   for (var i=0; i < checkboxlen; i++){
+    // 得到表格行数
+      Tblen = this.mainTb.rows.length;
+      // 最终保留一行记录
+      if (Tblen == 1) 
+      {
+          document.getElementsByName("checkbox")[0].checked = false;
+          alert("A line have to be saved in the ID of mainTb!");
+          // 删除按钮不可用
+          delbutton.disabled = true;
+          return false;
+      }
+      ischecked = checkbox[i].checked;
+      // 如果当前的checkbox选中：删除当前节点，由于删除节点后，下面的节点上移，游标（记录行指针） 	也应该上移
+      if (ischecked)
+      {
+          // document.all("mainTb").deleteRow(i);
+          document.getElementById("mainTb").deleteRow(i);
+          // 游标（记录行指针）上移
+          i--;
+      }
+      // 重新统计checkbox个数
+      checkboxlen = checkbox.length;
+   }
+   // 删除操作后按钮状态是不可用
+   delbutton.disabled = true;
+  }
+  // checkbox按钮单击事件处理函数：是否至少选中一行记录，是可以删除操作；如果没有选择，删除按钮不可用
+  function checkBoxSel(){
+   // 得到删除按钮对象
+   var delbutton = document.getElementById("delete");
+   if(checkselect()){
+    delbutton.disabled = false;
+   }else{
+    delbutton.disabled = true;
+    }
+  }
+  
+  function checkselect(){
+    // 得到所有 checkbox 对象
+      var checkbox = document.getElementsByName("checkbox");
+      // 得到所有提交的checkbox个数
+      var chklength = checkbox.length;
+      var flag = false;
+      for(var i = 0; i < chklength; i++)
+      {
+          if(checkbox[i].checked == true)
+          {
+              flag = true;
+              break;
+          }
+      }
+      if(flag == true)
+      {
+          return true;
+      } else {
+          return false;
+      }
+  }
+  // 页面加载body内容时执行
+    function loadpage(){
+   var delbutton = document.getElementById("delete");
+   var rownum = document.getElementById("rownum");
+   // 初始“删除”按钮不可用
+   delbutton.disabled = true;
+   // 初始行数输入框内容为空
+   rownum.value = "";   
+    }
+ </script>
+
+动态添加、删除行，分别通过insertRow，deleteRow方法实现，显示行号，通过rowIndex属性获得，基本 可以动态实现相关功能。 
+
+
+<Script Language="Javascript">
+var cGetRow=-99999;
+var lineNo = 1;
+function _(id) {
+ return document.getElementById(id);
+}
+// The index of the row to be deleted. 
+// This index starts from 0 and is relative to the logical order (not document order) 
+// of all the rows contained inside the table. 
+// If the index is -1 the last row in the table is deleted. 
+function AddRow(){
+ //添加一行
+ var newTr = _("tab1").insertRow();
+ //添加两列
+ var newTd0 = newTr.insertCell();
+ var newTd1 = newTr.insertCell();
+ //设置列内容和属性
+ newTd0.innerHTML = '<input type=checkbox id="box' + lineNo + '" onClick="GetRow()">'; 
+ // 测试动态改变innerHTML中的checkbox的id
+ alert(_("box" + lineNo).id);
+ newTd1.innerText= '新增加行' + lineNo;
+ lineNo++;
+}
+
+function DelRow(iIndex){
+ //删除一行
+ if(iIndex==-99999){
+  alert("系统提示：没有选中行号!");
+ }else{
+  iIndex = cGetRow;
+  _("tab1").deleteRow(iIndex);
+ } 
+}
+
+function GetRow(){
+ //获得行索引
+ //两个parentElement分别是TD和TR哟，rowIndex是TR的属性
+ //this.parentElement.parentElement.rowIndex
+ cGetRow=window.event.srcElement.parentElement.parentElement.rowIndex; 
+}
+
+function ShowRow(){
+ //显示行号
+ alert(cGetRow);
+ //alert(document.getElementsByTagName("tr").length);
+}
+
+</script>
+
+
+<table id="tab1" border=1>
+ <tr id="tr1">
+  <td width=6%><input type=checkbox id="box1" onClick="GetRow()"></td>
+  <td id="a">第一行</td>
+ </tr>
+ <tr id="tr2">
+  <td width=6%><input type=checkbox id="box2" onClick="GetRow()"></td>
+  <td id="b">第二行</td>
+ </tr>
+ <tr id="tr3">
+  <td width=6%><input type=checkbox id="box3" onClick="GetRow()"></td>
+  <td id="c">第三行</td>
+ </tr>
+</table>
+<table id="tab1" border=1>
+ <tr id="tr1">
+  <td width=6%><input type=checkbox id="box1" onClick="GetRow()"></td>
+  <td id="a">统计</td>
+ </tr>
+</table>
+<input type="submit" name="Submit" value="AddRow" onclick="javascript:AddRow();">
+<input type="submit" name="Submit" value="DelRow" onclick="javascript:DelRow(cGetRow);">
+<input type="submit" name="Submit" value="ShowRow" onclick="javascript:ShowRow();"> 
+
+Javascript代码
+
+function openwindow(url,name,iWidth,iHeight)
+{
+var url; //转向网页的地址;
+var name; //网页名称，可为空;
+var iWidth; //弹出窗口的宽度;
+var iHeight; //弹出窗口的高度;
+var iTop = (window.screen.availHeight-30-iHeight)/2; //获得窗口的垂直位置;
+var iLeft = (window.screen.availWidth-10-iWidth)/2; //获得窗口的水平位置;
+window.open(url,name,'height='+iHeight+',,innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no');
+}
+
+使用时调用这个函数即可。如：
+
+<a href="javascript:void(0);" onclick="javascript:openwindow('a.html','',400,200);">转到a</a>
+
+缺点：与原窗口的大小，位置无关。
+
+
+
+信息: Controller...LoginController...
+信息: Controller...setServletRequest...
+信息: Controller...setServletResponse...
+信息: Controller...setSession...
+信息: Controller...getModel...
+信息: Controller...getUserInfo...
+信息: Controller...setUserInfo...
+信息: Controller...getUserInfo...
+信息: Controller...getModel...
+信息: Controller...validate...
+信息: Controller...create...
+信息: Controller...getModel...
+信息: Controller...getModel...
+
+
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\OracleOraDb11g_home1TNSListener
+
+create table user_info (
+        user_id bigint not null,
+        upper_user_ID bigint,
+        user_name varchar(255),
+        user_code varchar(255),
+        user_password varchar(255),
+        user_CREATE_DATE timestamp,
+        user_DESCRIPTION varchar(255),
+        user_EFF_DATE timestamp,
+        user_EXP_DATE timestamp,
+        user_FLAG varchar(255),
+        user_OTHERS varchar(255),
+        user_UPDATE_DATE timestamp,
+        district_id bigint,
+        department_id bigint,
+        primary key (user_ID)
+    )
+
+    
+    火狐浏览器支持window.event
+    
+    <script type="text/javascript">
+        if(isFirefox=navigator.userAgent.indexOf("Firefox")>0) 
+        {        
+            var _E = function(){
+                var c=_E.caller; 
+                while(c.caller)c=c.caller; 
+                return c.arguments[0]
+            };        
+            __defineGetter__("event", _E); 
+        }
+    </script>
+
+附送点其他有用的JS
+ 
+浏览器类型判断
+
+<script language="JavaScript">  
+    <!--  
+function getOs()  
+{  
+    var OsObject = "";  
+   if(navigator.userAgent.indexOf("MSIE")>0) {  
+        return "MSIE";  
+   }  
+   if(isFirefox=navigator.userAgent.indexOf("Firefox")>0){  
+        return "Firefox";  
+   }  
+   if(isSafari=navigator.userAgent.indexOf("Safari")>0) {  
+        return "Safari";  
+   }   
+   if(isCamino=navigator.userAgent.indexOf("Camino")>0){  
+        return "Camino";  
+   }  
+   if(isMozilla=navigator.userAgent.indexOf("Gecko/")>0){  
+        return "Gecko";  
+   }  
+    
+}  
+ alert("您的浏览器类型为:"+getOs());  
+    -->  
+</script> 
+
+关闭是不可能的，那就搞点折中方案。。跳转到about:blank嘛
+    <script type="text/javascript">
+        function CloseWebPage() {
+            if (navigator.userAgent.indexOf("MSIE") > 0) {
+                if (navigator.userAgent.indexOf("MSIE 6.0") > 0) {
+                    window.opener = null; window.close();
+                }
+                else {
+                    window.open('', '_top'); window.top.close();
+                }
+            }
+            else if (navigator.userAgent.indexOf("Firefox") > 0) {
+                window.location.href = 'about:blank ';
+                //window.history.go(-2);
+            }
+            else {
+                window.opener = null; 
+                window.open('', '_self', '');
+                window.close();
+            }
+        }
+    </script>
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app id="starter" version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>Struts 2 Rest Example</display-name>
+
+
+  <!-- Filters -->
+  <!-- START SNIPPET: filter -->
+    <filter>
+        <filter-name>action2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+    <!-- END SNIPPET: filter -->
+
+    <filter-mapping>
+        <filter-name>action2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Welcome file lists -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>
+
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/*
+ * $Id: struts-plugin.xml 722219 2008-12-01 20:41:26Z musachy $
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+-->
+
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <!--  Overwrite Convention -->
+    <constant name="struts.convention.action.suffix" value="Controller"/>
+    <constant name="struts.convention.action.mapAllMatches" value="true"/>
+    <constant name="struts.convention.default.parent.package" value="rest-default"/>
+
+    <constant name="struts.convention.package.locators" value="example"/>
+</struts>
+
+
+package org.apache.struts2.rest.example;
+
+import java.util.Collection;
+
+import org.apache.struts2.dispatcher.ServletActionRedirectResult;
+import org.apache.struts2.rest.DefaultHttpHeaders;
+import org.apache.struts2.rest.HttpHeaders;
+import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Namespaces;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+
+import com.opensymphony.xwork2.ModelDriven;
+import com.opensymphony.xwork2.Validateable;
+import com.opensymphony.xwork2.ValidationAwareSupport;
+
+@Results({
+    @Result(name="success", type="redirectAction", params = {"actionName" , "orders"})
+})
+public class OrdersController extends ValidationAwareSupport implements ModelDriven<Object>, Validateable{
+    
+    private Order model = new Order();
+    private String id;
+    private Collection<Order> list;
+    private OrdersService ordersService = new OrdersService();
+
+    // GET /orders/1
+    public HttpHeaders show() {
+        return new DefaultHttpHeaders("show");
+    }
+
+    // GET /orders
+    public HttpHeaders index() {
+        list = ordersService.getAll();
+        return new DefaultHttpHeaders("index")
+            .disableCaching();
+    }
+    
+    // GET /orders/1/edit
+    public String edit() {
+        return "edit";
+    }
+
+    // GET /orders/new
+    public String editNew() {
+        model = new Order();
+        return "editNew";
+    }
+
+    // GET /orders/1/deleteConfirm
+    public String deleteConfirm() {
+        return "deleteConfirm";
+    }
+
+    // DELETE /orders/1
+    public String destroy() {
+        ordersService.remove(id);
+        addActionMessage("Order removed successfully");
+        return "success";
+    }
+
+    // POST /orders
+    public HttpHeaders create() {
+        ordersService.save(model);
+        addActionMessage("New order created successfully");
+        return new DefaultHttpHeaders("success")
+            .setLocationId(model.getId());
+    }
+
+    // PUT /orders/1
+    public String update() {
+        ordersService.save(model);
+        addActionMessage("Order updated successfully");
+        return "success";
+    }
+
+    public void validate() {
+        if (model.getClientName() == null || model.getClientName().length() ==0) {
+            addFieldError("clientName", "The client name is empty");
+        }
+    }
+
+    public void setId(String id) {
+        if (id != null) {
+            this.model = ordersService.get(id);
+        }
+        this.id = id;
+    }
+    
+    public Object getModel() {
+        return (list != null ? list : model);
+    }
+
+}
+
+
+[2012/9/20 21:24:09] JavaScript - http://localhost:8080/my_item/struts/utils.js
+
+链接的脚本未载入
+
+
+asadmin> start-database
+以网络服务器模式在主机0.0.0.0和端口 1527 上启动数据库。
+--------- Derby 网络服务器信息 --------
+版本： CSS10080/10.8.1.2 - (1095077)  构建： 1095077  DRDA 产品标识： CSS10080
+-- listing properties --
+derby.drda.traceDirectory=C:\glassfish3\glassfish\databases
+derby.drda.maxThreads=0
+derby.drda.sslMode=off
+derby.drda.keepAlive=true
+derby.drda.minThreads=0
+derby.drda.portNumber=1527
+derby.drda.logConnections=false
+derby.drda.timeSlice=0
+derby.drda.startNetworkServer=false
+derby.drda.host=0.0.0.0
+derby.drda.traceAll=false
+------------------ Java 信息 ------------------
+Java 版本：        1.6.0_33
+Java 供应商：      Sun Microsystems Inc.
+Java 主目录：      C:\glassfish3\jdk\jre
+Java 类路径：      C:\glassfish3\glassfish\modules\admin-cli-l10n.jar;C:\glassfish3\glassfish\modules\admin-cli.jar;C:\glassfish3\glassfish\modules\common-util-l10n.jar;C:\glassfish3\glassfish\modules\c
+s\glassfish-registration.jar;C:\glassfish3\glassfish\modules\glassfish.jar;C:\glassfish3\javadb\lib\derby.jar;C:\glassfish3\javadb\lib\derbytools.jar;C:\glassfish3\javadb\lib\derbynet.jar;C:\glassfish3\
+OS 名：            Windows 7
+OS 体系结构：      x86
+OS 版本：          6.1
+Java 用户名：      xuzhenfu
+Java 用户主目录：C:\Users\xuzhenfu
+Java 用户目录：    C:\glassfish3\glassfish\bin
+java.specification.name: Java Platform API Specification
+java.specification.version: 1.6
+java.runtime.version: 1.6.0_33-b05
+--------- Derby 信息 --------
+JRE - JDBC: Java SE 6 - JDBC 4.0
+[C:\glassfish3\javadb\lib\derby.jar] 10.8.1.2 - (1095077)
+[C:\glassfish3\javadb\lib\derbytools.jar] 10.8.1.2 - (1095077)
+[C:\glassfish3\javadb\lib\derbynet.jar] 10.8.1.2 - (1095077)
+[C:\glassfish3\javadb\lib\derbyclient.jar] 10.8.1.2 - (1095077)
+------------------------------------------------------
+----------------- 语言环境信息 -----------------
+当前语言环境：  [中文/中国 [zh_CN]]
+找到支持的语言环境：[cs]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[de_DE]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[es]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[fr]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[hu]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[it]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[ja_JP]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[ko_KR]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[pl]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[pt_BR]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[ru]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[zh_CN]
+         版本：10.8.1.2 - (1095077)
+找到支持的语言环境：[zh_TW]
+         版本：10.8.1.2 - (1095077)
+------------------------------------------------------
+
+正在后台启动数据库。
+已将日志重定向至C:\glassfish3\glassfish\databases\derby.log。
+
+asadmin> create-domain --adminport 4848 domain1
+请输入管理员用户名 [按 Enter 键将接受默认值 "admin"/无口令]>
+使用Admin的端口 4848。
+使用HTTP Instance的默认端口 8080。
+使用JMS的默认端口 7676。
+使用IIOP的默认端口 3700。
+使用HTTP_SSL的默认端口 8181。
+使用IIOP_SSL的默认端口 3820。
+使用IIOP_MUTUALAUTH的默认端口 3920。
+使用JMX_ADMIN的默认端口 8686。
+使用OSGI_SHELL的默认端口 6666。
+使用JAVA_DEBUGGER的默认端口 9009。
+无法找到使用在 [C:\glassfish3\glassfish\lib\templates\locales\zh_CN\index.html] 中指定的区域设置 [zh_CN] 的文件。使用默认的 (en_US) index.html。
+自签名 X.509 服务器证书的唯一判别名为:
+[CN=xuzhenfu-THINK,OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US]
+自签名 X.509 服务器证书的唯一判别名为:
+[CN=xuzhenfu-THINK-instance,OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US]
+找不到域初始化程序, 将绕开定制步骤
+已创建域domain1。
+域domain1管理员端口为4848。
+域domain1允许管理员以用户 "admin" (无口令) 身份登录。
+已成功执行命令create-domain。
+asadmin>
+
+
+C:\PROGRAM FILES\PC CONNECTIVITY SOLUTION\;C:\TIMESTEN\TT1121~1\BIN;C:\TIMESTEN\TT1121~1\TTORACLE_HOME\INSTANTCLIENT_11_1;C:\APP\XUZHENFU\PRODUCT\11.2.0\DBHOME_1\BIN;C:\PROGRAM FILES\COMMON FILES\MICROSOFT SHARED\WINDOWS LIVE;%SYSTEMROOT%\SYSTEM32;%SYSTEMROOT%;%SYSTEMROOT%\SYSTEM32\WBEM;%SYSTEMROOT%\SYSTEM32\WINDOWSPOWERSHELL\V1.0\;C:\PROGRAM FILES\BROADCOM\WHL\;C:\PROGRAM FILES\INTEL\SERVICES\IPT\;C:\PROGRAM FILES\COMMON FILES\LENOVO;C:\PROGRAM FILES\COMMON FILES\ULEAD SYSTEMS\MPEG;C:\PROGRAM FILES\WINDOWS LIVE\SHARED;C:\SWTOOLS\READYAPPS;C:\PROGRAM FILES\SUBVERSION\BIN;C:\CYGWIN\BIN;C:\MINGW\BIN;%JAVA_HOME%\BIN;C:\QTSDK\DESKTOP\QT\4.7.3\MINGW\BIN;C:\QTSDK\QTCREATOR\BIN;C:\PROGRAM FILES\ANDROID\ANDROID-SDK\TOOLS\;C:\PROGRAM FILES\ANDROID\ANDROID-SDK\PLATFORM-TOOLS\;C:\PROGRAM FILES\MYSQL\MYSQL SERVER 7.0\BIN;C:\PYTHON27;C:\PROGRAM FILES\TORTOISESVN\BIN;C:\BEA\TUXEDO11GR1_VS2010\BIN;C:\BEA\TUXEDO11GR1_VS2010\JRE\BIN\SERVER;C:\BEA\TUXEDO11GR1_VS2010\JRE\BIN;%MAVEN_HOME%\BIN;C:\PROGRAM FILES\INTEL\WIFI\BIN\;C:\PROGRAM FILES\COMMON FILES\INTEL\WIRELESSCOMMON\;C:\Program Files\ThinkPad\Bluetooth Software\
+
+C:\RailsInstaller\Git\cmd;C:\RailsInstaller\Ruby1.9.2\bin;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\
+
+C:\PROGRAM FILES\PC CONNECTIVITY SOLUTION\;
+C:\TIMESTEN\TT1121~1\BIN;
+C:\TIMESTEN\TT1121~1\TTORACLE_HOME\INSTANTCLIENT_11_1;
+C:\APP\XUZHENFU\PRODUCT\11.2.0\DBHOME_1\BIN;
+C:\PROGRAM FILES\COMMON FILES\MICROSOFT SHARED\WINDOWS LIVE;
+%SYSTEMROOT%\SYSTEM32;
+%SYSTEMROOT%;
+%SYSTEMROOT%\SYSTEM32\WBEM;
+%SYSTEMROOT%\SYSTEM32\WINDOWSPOWERSHELL\V1.0\;
+C:\PROGRAM FILES\BROADCOM\WHL\;
+C:\PROGRAM FILES\INTEL\SERVICES\IPT\;
+C:\PROGRAM FILES\COMMON FILES\LENOVO;
+C:\PROGRAM FILES\COMMON FILES\ULEAD SYSTEMS\MPEG;
+C:\PROGRAM FILES\WINDOWS LIVE\SHARED;
+C:\SWTOOLS\READYAPPS;
+C:\PROGRAM FILES\SUBVERSION\BIN;
+C:\CYGWIN\BIN;
+C:\MINGW\BIN;
+%JAVA_HOME%\BIN;
+C:\QTSDK\DESKTOP\QT\4.7.3\MINGW\BIN;
+C:\QTSDK\QTCREATOR\BIN;
+C:\PROGRAM FILES\MICROSOFT SQL SERVER\100\TOOLS\BINN\;
+C:\PROGRAM FILES\MICROSOFT SQL SERVER\100\DTS\BINN\;
+C:\PROGRAM FILES\MICROSOFT SQL SERVER\100\TOOLS\BINN\VSSHELL\COMMON7\IDE\;
+C:\PROGRAM FILES\ANDROID\ANDROID-SDK\TOOLS\;
+C:\PROGRAM FILES\ANDROID\ANDROID-SDK\PLATFORM-TOOLS\;
+C:\PROGRAM FILES\MYSQL\MYSQL SERVER 7.0\BIN;
+C:\PYTHON27;
+C:\PROGRAM FILES\TORTOISESVN\BIN;
+C:\BEA\TUXEDO11GR1_VS2010\BIN;
+C:\BEA\TUXEDO11GR1_VS2010\JRE\BIN\SERVER;
+C:\BEA\TUXEDO11GR1_VS2010\JRE\BIN;
+%MAVEN_HOME%\BIN;
+C:\PROGRAM FILES\INTEL\WIFI\BIN\;
+C:\PROGRAM FILES\COMMON FILES\INTEL\WIRELESSCOMMON\;
+C:\Program Files\ThinkPad\Bluetooth Software\
+
+
+http://localhost:8080/yxl_dev/event?statusCode=303&titleLike=1&dateBetween=null,20120810170410
+
+Controller...setServletRequest...
+Controller...setServletResponse...
+Controller...setSession...
+Controller...getModel...
+Controller...getModel...
+Controller...index...
+2012-8-8 20:56:10 com.yuxl.reform.jpa.EventDAOImpl findAll
+信息: findAll...
+Hibernate: 
+    select
+        event0_.id as id0_,
+        event0_.EVENT_DATE as EVENT2_0_,
+        event0_.title as title0_ 
+    from
+        EVENTS event0_
+Controller...getModel...
+Controller...getModel...
+Controller...getModel...
+
+--
+[22:24:41.692] 纯文本文件的字符编码未声明。如果该文件包含 US-ASCII 范围之外的字符，该文件将在某些浏览浏览器配置中呈现为乱码。该文件的字符编码需要在传输协议层声明，或者在文件中加入一个 BOM（字节顺序标记）。 @ http://localhost:8080/yxl_dev/
+
+[20:56:03.738] 样式表单 http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.all.css 未载入，因为它的MIME类型 "text/javascript" 不是 "text/css"。 @ http://localhost:8080/yxl_dev/event/new
+
+[2012/8/3 15:19:03] CSS - http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.datepicker.css
+
+
+[14:49:48.648] 样式表单 http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.theme.css 未载入，因为它的MIME类型 "application/javascript" 不是 "text/css"。 @ http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.all.css
+
+--
+[14:41:39.129] 样式表单 http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.theme.css 未载入，因为它的MIME类型 "application/javascript" 不是 "text/css"。 @ http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.all.css
+
+[17:07:26.441] 未知属性 'zoom'。  声明被丢弃。 @ http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/development-bundle/themes/base/jquery.ui.accordion.css:12
+
+[2012/8/1 17:18:39] JavaScript - http://localhost:8080/yxl_dev/js/jquery-ui-1.8.20.custom/js/custom.js

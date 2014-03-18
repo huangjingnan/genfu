@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+	<!-- <bean id="hibernatePersistenceProvider" class="com.foo.bar.configuration.HibernateExtendedPersistenceProvider"> 
+		<property name="postInsertEventListeners"> <list> <ref bean="hibernateAuditLogListener" 
+		/> </list> </property> <property name="preUpdateEventListeners"> <list> <ref 
+		bean="hibernateAuditLogListener" /> </list> </property> <property name="preDeleteEventListeners"> 
+		<list> <ref bean="hibernateAuditLogListener" /> </list> </property> </bean> -->
+
+
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	<!-- 该 BeanPostProcessor 将自动对标注 @Autowired 的 Bean 进行注入 -->
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+
+	<!-- <bean id="hibernateVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
+		<property name="database" value="H2" /> </bean> -->
+
+	<!-- <bean id="h2_dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="org.h2.Driver" /> <property name="url" 
+		value="jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;MVCC=TRUE" /> <property name="username" 
+		value="sa" /> <property name="password" value="" /> </bean> <bean id="h2_entityManagerFactory" 
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
+		<property name="persistenceUnitName" value="genfu" /> <property name="dataSource" 
+		ref="h2_dataSource" /> <property name="jpaDialect"> <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" 
+		/> </property> <property name="jpaVendorAdapter"> <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
+		<property name="showSql" value="true" /> <property name="generateDdl" value="true" 
+		/> <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" 
+		/> </bean> </property> </bean> -->
+
+	<bean id="pg_dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://192.168.56.101:5432/postgres" />
+		<property name="username" value="postgres" />
+		<property name="password" value="123456" />
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="genfu" />
+		<property name="dataSource" ref="pg_dataSource" />
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+		</property>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+				
+			</bean>
+		</property>
+	</bean>
+
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="dataSource" ref="pg_dataSource" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="genfuCommonDAO" scope="prototype"
+		class="com.genfu.reform.jpa.GenfuCommonDAOImpl" />
+	<bean id="genfuCommonTransaction" scope="prototype"
+		class="com.genfu.reform.jpa.GenfuCommonTransaction">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	<bean id="fabricationFilterSQL" scope="prototype"
+		class="com.genfu.reform.util.FabricationFilterSQLImpl" />
+	<bean id="authValidImpl" scope="prototype"
+		class="com.genfu.reform.util.AuthValidImpl">
+		<property name="genfuCommonDAO" ref="genfuCommonDAO" />
+		<property name="genfuCommonTransaction" ref="genfuCommonTransaction" />
+	</bean>
+	<bean id="genfuCommonService" scope="prototype"
+		class="com.genfu.reform.service.GenfuCommonServiceImpl">
+		<property name="genfuCommonDAO" ref="genfuCommonDAO" />
+		<property name="genfuCommonTransaction" ref="genfuCommonTransaction" />
+		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
+		<property name="authValidImpl" ref="authValidImpl" />
+	</bean>
+	<bean id="genfuCommonController" scope="prototype"
+		class="com.genfu.reform.controller.GenfuCommonController">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<bean id="eventDAO" class="com.genfu.reform.jpa.EventDAOImpl" />
+	<bean id="eventService" class="com.genfu.reform.service.EventServiceImpl">
+		<property name="eventDAO" ref="eventDAO" />
+	</bean>
+	<bean id="eventController" scope="prototype"
+		class="com.genfu.reform.controller.EventController">
+		<constructor-arg ref="eventService" />
+	</bean>
+
+	<!-- <bean id="navigationNodeDAO" class="com.genfu.reform.jpa.NavigationNodeDAOImpl" 
+		/> <bean id="navigationNodeService" class="com.genfu.reform.service.NavigationNodeServiceImpl"> 
+		<property name="navigationNodeDAO" ref="navigationNodeDAO" /> </bean> -->
+	<!-- <bean id="navigationNodeDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="navigationNodeTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="navigationNodeFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="navigationNodeService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="navigationNodeDAO" /> <property name="genfuCommonTransaction" 
+		ref="navigationNodeTransaction" /> <property name="fabricationFilterSQL" 
+		ref="navigationNodeFilterSQL" /> </bean> -->
+	<bean id="navigationNodeController" scope="prototype"
+		class="com.genfu.reform.controller.NavigationNodeController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="userInfoDAO" class="com.genfu.reform.jpa.UserInfoDAOImpl" 
+		/> <bean id="userInfoService" class="com.genfu.reform.service.UserInfoServiceImpl"> 
+		<property name="userInfoDAO" ref="userInfoDAO" /> </bean> <bean id="actorInfoDAO" 
+		class="com.genfu.reform.jpa.ActorInfoDAOImpl" /> <bean id="actorInfoService" 
+		class="com.genfu.reform.service.ActorInfoServiceImpl"> <property name="actorInfoDAO" 
+		ref="actorInfoDAO" /> </bean> -->
+
+	<!-- <bean id="userSessionLogDAO" class="com.genfu.reform.jpa.UserSessionLogDAOImpl" 
+		/> <bean id="userSessionLogService" class="com.genfu.reform.service.UserSessionLogServiceImpl"> 
+		<property name="userSessionLogDAO" ref="userSessionLogDAO" /> </bean> -->
+
+	<!-- <bean id="userInfoDAOImpl" class="com.genfu.reform.jpa.UserInfoDAOImpl" 
+		/> <bean id="loginService" class="com.genfu.reform.service.LoginServiceImpl"> 
+		<property name="userInfoDAO" ref="userInfoDAOImpl" /> </bean> -->
+	<bean id="loginController" scope="prototype"
+		class="com.genfu.reform.controller.LoginController">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="reLoginController" scope="prototype"
+		class="com.genfu.reform.controller.ReLoginController">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="loginDishesController" scope="prototype"
+		class="com.genfu.reform.controller.LoginDishesController">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="departmentDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="departmentTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="departmentFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="departmentService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="departmentDAO" /> <property name="genfuCommonTransaction" 
+		ref="departmentTransaction" /> <property name="fabricationFilterSQL" ref="departmentFilterSQL" 
+		/> </bean> -->
+	<bean id="departmentController" scope="prototype"
+		class="com.genfu.reform.controller.DepartmentController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="actorInfoDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="actorInfoTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="actorInfoFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="actorInfoService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="actorInfoDAO" /> <property name="genfuCommonTransaction" 
+		ref="actorInfoTransaction" /> <property name="fabricationFilterSQL" ref="actorInfoFilterSQL" 
+		/> </bean> -->
+	<bean id="actorInfoController" scope="prototype"
+		class="com.genfu.reform.controller.ActorInfoController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="naviViewsDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="naviViewsTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="naviViewsFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="naviViewsService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="naviViewsDAO" /> <property name="genfuCommonTransaction" 
+		ref="naviViewsTransaction" /> <property name="fabricationFilterSQL" ref="naviViewsFilterSQL" 
+		/> </bean> -->
+	<bean id="treeUtilService" scope="prototype"
+		class="com.genfu.reform.util.TreeUtilImpl" />
+	<bean id="naviViewsController" scope="prototype"
+		class="com.genfu.reform.controller.architecture.NaviViewsController"
+		autowire="no">
+		<constructor-arg ref="genfuCommonService" />
+		<constructor-arg ref="treeUtilService" />
+	</bean>
+
+	<!-- <bean id="roleInfoDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="roleInfoTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="roleInfoFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="roleInfoService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="roleInfoDAO" /> <property name="genfuCommonTransaction" 
+		ref="roleInfoTransaction" /> <property name="fabricationFilterSQL" ref="roleInfoFilterSQL" 
+		/> </bean> -->
+	<bean id="roleInfoController" scope="prototype"
+		class="com.genfu.reform.controller.RoleInfoController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="userInfoDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="userInfoTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="userInfoFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="userInfoService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="userInfoDAO" /> <property name="genfuCommonTransaction" 
+		ref="userInfoTransaction" /> <property name="fabricationFilterSQL" ref="userInfoFilterSQL" 
+		/> </bean> -->
+	<bean id="userInfoController" scope="prototype"
+		class="com.genfu.reform.controller.UserInfoController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="roleNaviDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="roleNaviTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="roleNaviFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="roleNaviService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="roleNaviDAO" /> <property name="genfuCommonTransaction" 
+		ref="roleNaviTransaction" /> <property name="fabricationFilterSQL" ref="roleNaviFilterSQL" 
+		/> </bean> -->
+	<bean id="roleNaviController" scope="prototype"
+		class="com.genfu.reform.controller.RoleNaviController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="navigationNodesDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="navigationNodesTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="navigationNodesFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="navigationNodesService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="navigationNodesDAO" /> <property name="genfuCommonTransaction" 
+		ref="navigationNodesTransaction" /> <property name="fabricationFilterSQL" 
+		ref="navigationNodesFilterSQL" /> </bean> -->
+	<bean id="navigationNodesController" scope="prototype"
+		class="com.genfu.reform.controller.NavigationNodesController"
+		autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="dishDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="dishTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="dishFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="dishService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="dishDAO" /> <property name="genfuCommonTransaction" 
+		ref="dishTransaction" /> <property name="fabricationFilterSQL" ref="dishFilterSQL" 
+		/> </bean> -->
+
+	<bean id="dishfabricationFilterSQL" scope="prototype"
+		class="com.genfu.reform.util.DishFilterSQLImpl" />
+	<bean id="dishService" scope="prototype"
+		class="com.genfu.reform.service.DishServiceImpl" autowire="no">
+		<property name="genfuCommonDAO" ref="genfuCommonDAO" />
+		<property name="genfuCommonTransaction" ref="genfuCommonTransaction" />
+		<property name="fabricationFilterSQL" ref="dishfabricationFilterSQL" />
+		<property name="authValidImpl" ref="authValidImpl" />
+	</bean>
+	<bean id="dishController" scope="prototype"
+		class="com.genfu.reform.controller.DishController">
+		<!-- <constructor-arg ref="dishService" index="0" /> -->
+	</bean>
+
+	<!-- <bean id="cartDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="cartTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="cartFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="cartService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="cartDAO" /> <property name="genfuCommonTransaction" 
+		ref="cartTransaction" /> <property name="fabricationFilterSQL" ref="cartFilterSQL" 
+		/> </bean> -->
+	<bean id="cartController" scope="prototype"
+		class="com.genfu.reform.controller.CartController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="catalogDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="catalogTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="catalogFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="catalogService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="catalogDAO" /> <property name="genfuCommonTransaction" 
+		ref="catalogTransaction" /> <property name="fabricationFilterSQL" ref="catalogFilterSQL" 
+		/> </bean> -->
+	<bean id="catalogController" scope="prototype"
+		class="com.genfu.reform.controller.CatalogController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="checkoutDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="checkoutTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="checkoutFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="checkoutService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="checkoutDAO" /> <property name="genfuCommonTransaction" 
+		ref="checkoutTransaction" /> <property name="fabricationFilterSQL" ref="checkoutFilterSQL" 
+		/> </bean> -->
+	<bean id="checkoutController" scope="prototype"
+		class="com.genfu.reform.controller.CheckoutController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="aboutDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="aboutTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="aboutFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="aboutService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="aboutDAO" /> <property name="genfuCommonTransaction" 
+		ref="aboutTransaction" /> <property name="fabricationFilterSQL" ref="aboutFilterSQL" 
+		/> </bean> -->
+	<bean id="aboutController" scope="prototype"
+		class="com.genfu.reform.controller.AboutController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="fileDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="fileTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="fileFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="fileService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="fileDAO" /> <property name="genfuCommonTransaction" 
+		ref="fileTransaction" /> <property name="fabricationFilterSQL" ref="fileFilterSQL" 
+		/> </bean> -->
+	<bean id="fileController" scope="prototype"
+		class="com.genfu.reform.controller.FileController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="roleInfosDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="roleInfosTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="roleInfosFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="roleInfosService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="roleInfosDAO" /> <property name="genfuCommonTransaction" 
+		ref="roleInfosTransaction" /> <property name="fabricationFilterSQL" ref="roleInfosFilterSQL" 
+		/> </bean> -->
+	<bean id="roleInfosController" scope="prototype"
+		class="com.genfu.reform.controller.RoleInfosController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="orderInfosDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="orderInfosTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="orderInfosFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="orderInfosService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="orderInfosDAO" /> <property name="genfuCommonTransaction" 
+		ref="orderInfosTransaction" /> <property name="fabricationFilterSQL" ref="orderInfosFilterSQL" 
+		/> </bean> -->
+	<bean id="orderController" scope="prototype"
+		class="com.genfu.reform.controller.OrderController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="orderItemInfosDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="orderItemInfosTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="orderItemInfosFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="orderItemInfosService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="orderItemInfosDAO" /> <property name="genfuCommonTransaction" 
+		ref="orderItemInfosTransaction" /> <property name="fabricationFilterSQL" 
+		ref="orderItemInfosFilterSQL" /> </bean> -->
+	<bean id="orderItemInfosController" scope="prototype"
+		class="com.genfu.reform.controller.OrderItemController" autowire="no">
+		<!-- <property name="genfuCommonService" ref="genfuCommonService" /> -->
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="tagDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" /> 
+		<bean id="tagTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="tagFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="tagService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="tagDAO" /> <property name="genfuCommonTransaction" 
+		ref="tagTransaction" /> <property name="fabricationFilterSQL" ref="tagFilterSQL" 
+		/> </bean> -->
+	<bean id="tagController" scope="prototype"
+		class="com.genfu.reform.controller.TagController">
+		<!-- <constructor-arg ref="genfuCommonService" /> -->
+	</bean>
+
+	<!-- <bean id="tagsDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="tagsTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="tagsFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="tagsService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="tagsDAO" /> <property name="genfuCommonTransaction" 
+		ref="tagsTransaction" /> <property name="fabricationFilterSQL" ref="tagsFilterSQL" 
+		/> </bean> -->
+	<bean id="tagsController" scope="prototype"
+		class="com.genfu.reform.controller.TagsController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="taggingDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="taggingTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="taggingFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="taggingService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="taggingDAO" /> <property name="genfuCommonTransaction" 
+		ref="taggingTransaction" /> <property name="fabricationFilterSQL" ref="taggingFilterSQL" 
+		/> </bean> -->
+	<bean id="taggingController" scope="prototype"
+		class="com.genfu.reform.controller.TaggingController">
+		<!-- <constructor-arg ref="genfuCommonService" /> -->
+	</bean>
+
+	<!-- <bean id="userRoleDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="userRoleTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="userRoleFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="userRoleService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="userRoleDAO" /> <property name="genfuCommonTransaction" 
+		ref="userRoleTransaction" /> <property name="fabricationFilterSQL" ref="userRoleFilterSQL" 
+		/> </bean> -->
+	<bean id="userRoleController" scope="prototype"
+		class="com.genfu.reform.controller.UserRoleController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+
+	<!-- <bean id="userNavisDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
+		/> <bean id="userNavisTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> </bean> 
+		<bean id="userNavisFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		/> <bean id="userNavisService" class="com.genfu.reform.service.GenfuCommonServiceImpl"> 
+		<property name="genfuCommonDAO" ref="userNavisDAO" /> <property name="genfuCommonTransaction" 
+		ref="userNavisTransaction" /> <property name="fabricationFilterSQL" ref="userNavisFilterSQL" 
+		/> </bean> -->
+	<bean id="userNavisController" scope="prototype"
+		class="com.genfu.reform.controller.UserNavisController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="orderDishController" scope="prototype"
+		class="com.genfu.reform.controller.OrderDishController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="cartSettingController" scope="prototype"
+		class="com.genfu.reform.controller.CartSettingController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="myOrderController" scope="prototype"
+		class="com.genfu.reform.controller.MyOrderController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean id="dishCommentController" scope="prototype"
+		class="com.genfu.reform.controller.DishCommentController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+</beans>

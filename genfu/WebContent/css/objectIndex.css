@@ -1,0 +1,10 @@
+@charset "utf-8";
+#search_title {
+	border: 1px solid rgb(238, 238, 238);
+}
+#search_div {
+	border: 1px solid rgb(238, 238, 238); background-color: rgb(238, 246, 255);
+}
+#resultList {
+	border: 1px solid rgb(238, 238, 238);
+}

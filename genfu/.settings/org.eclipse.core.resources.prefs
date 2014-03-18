@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/content/architecture/commonInclude.jsp=UTF-8
+encoding//src/global.properties=UTF-8
+encoding//src/global_de.properties=UTF-8
+encoding//src/global_fr.properties=UTF-8
+encoding//src/global_zh_CN.properties=UTF-8
+encoding//src/log4j.properties=UTF-8
+encoding/<project>=UTF-8
+separateDerivedEncodings=true

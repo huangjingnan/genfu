@@ -1,0 +1,72 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC 
+	"-//W3C//DTD XHTML 1.1 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>UserInfo ${id}</title>
+</head>
+<body>
+	<table>
+		<tr>
+			<th>ID</th>
+			<td>${id}</td>
+		</tr>
+		<tr>
+			<th>userName</th>
+			<td>${userName}</td>
+		</tr>
+		<tr>
+			<th>userCode</th>
+			<td>${userCode}</td>
+		</tr>
+		<tr>
+			<th>districtId</th>
+			<td>${districtId}</td>
+		</tr>
+		<tr>
+			<th>departmentId</th>
+			<td>${departmentId}</td>
+		</tr>
+		<tr>
+			<th>upperUserId</th>
+			<td>${upperUserId}</td>
+		</tr>
+		<tr>
+			<th>userEffDate</th>
+			<td>${userEffDate}</td>
+		</tr>
+		<tr>
+			<th>userEffDate</th>
+			<td>${userEffDate}</td>
+		</tr>
+		<tr>
+			<th>userFlag</th>
+			<td>${userFlag}</td>
+		</tr>
+		<tr>
+			<th>userDescription</th>
+			<td>${userDescription}</td>
+		</tr>
+		<tr>
+			<th>userOthers</th>
+			<td>${userOthers}</td>
+		</tr>
+		<tr>
+			<th>userCreateDate</th>
+			<td>${userCreateDate}</td>
+		</tr>
+		<tr>
+			<th>userUpdateDate</th>
+			<td>${userUpdateDate}</td>
+		</tr>
+		<tr>
+			<th>ROLE_INFO</th>
+			<td>${ROLE_INFO.size()}</td>
+		</tr>
+	</table>
+	<a href="${ctx}/user-info">Back to UserInfos</a>
+</body>
+</html>

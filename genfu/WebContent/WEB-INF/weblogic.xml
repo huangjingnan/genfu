@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-web-app>
+	<session-descriptor></session-descriptor>
+	<jsp-descriptor></jsp-descriptor>
+	<container-descriptor>
+		<prefer-web-inf-classes>true</prefer-web-inf-classes>
+	</container-descriptor>
+	<context-root>genfu</context-root>
+</weblogic-web-app>

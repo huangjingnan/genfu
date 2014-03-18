@@ -1,0 +1,30 @@
+body {
+	font: 12px/20px "Trebuchet MS", Trebuchet, Helvetica, sans-serif; margin: 20px; padding: 0px; color: rgb(107, 80, 107); min-width: 1000px; font-size-adjust: none; font-stretch: normal;
+}
+a {
+	color: rgb(107, 80, 107);
+}
+pre {
+	margin: 1em 0px; padding: 10px 16px; overflow: auto; border-left-color: rgb(105, 3, 126); border-left-width: 6px; border-left-style: solid; display: block; background-color: rgb(237, 237, 237);
+}
+code {
+	font: 11px/normal courier, fixed; padding: 0.3em 0.4em; color: rgb(10, 36, 106); font-size-adjust: none; font-stretch: normal; background-color: rgb(237, 237, 237);
+}
+pre code {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	font: 21px/normal normal Georgia; color: rgb(181, 155, 181); font-size-adjust: none; font-stretch: normal;
+}
+.demo {
+	padding: 0px 0px 5px 1px; width: 500px; color: rgb(10, 36, 106);
+}
+div #search_title {
+	border: 1px solid rgb(238, 238, 238);
+}
+div #search_div {
+	border: 1px solid rgb(238, 238, 238); background-color: rgb(238, 246, 255);
+}
+div #resultList {
+	border: 1px solid rgb(238, 238, 238);
+}

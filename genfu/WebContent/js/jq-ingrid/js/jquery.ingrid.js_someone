@@ -1,0 +1,752 @@
+jQuery.fn.ingrid = function(o) {
+	var cfg = {
+		height : 190, // 数据体高度
+		width : '100',// 整个table的宽度
+		// data from a previously saved state?
+		initialLoad : false, // when Ingrid is initialized, should it load data
+		// immediately?
+		contextMenuOption:{},
+		header : true,
+		colWidths : ['25%', '25%', '25%', '25%'], // width of each column
+		minColWidth : 60, // minimum column width
+		headerHeight : 25, // height of our header
+		headerClass : 'grid-header-bg', // header bg
+		headerTitle:[],
+		
+		tableClass : 'list-table',
+		rowClasses : ['grid-row-style1', 'grid-row-style2', 'grid-row-style3'],
+		colClasses : [], // array of classes : i.e. ['','grid-col-2','','']
+		rowHoverClass : 'grid-row-hover', // hovering over a row? use this
+		// class
+		rowSelection : true, // allow row selection?
+		rowSelectedClass : 'grid-row-sel', // hovering over a row? use this
+		// class
+		onRowSelect : function(tr, selected) {}, // function to call when row is clicked
+		
+		editCol : true,
+		editCallback : function(td,opt){},
+		editType :{},
+		
+		/* sorting */
+		sorting : true,
+		colSortParams : [0,1,1,1], // value to pass as sort param when header clicked
+		// (i.e. '&sort=param') ex:
+		// ['col1','col2','col3','col4']
+		sortAscParam : 'asc', // param passed on ascending sort (i.e.
+		// '&dir=asc)
+		sortDescParam : 'desc', // param passed on ascending sort (i.e.
+		sortString:'',
+		sortAscClass : 'grid-sort-asc', // class for ascending sorted col
+		sortDescClass : 'grid-sort-desc', // class for descending sorted col
+		sortNoneClass : 'grid-sort-none', // ... not sorted? use this class
+
+		/* paging */
+		paging : true, // create a paging toolbar
+		pageNumber : 1,
+		recordsPerPage : 17,
+		totalRecords : 0,
+		pageToolbarHeight : 22,
+		pageToolbarClass : 'grid-page-toolbar',
+		pageStartClass : 'grid-page-start',
+		pagePrevClass : 'grid-page-prev',
+		pageInfoClass : 'grid-page-info',
+		pageInputClass : 'grid-page-input',
+		pageNextClass : 'grid-page-next',
+		pageEndClass : 'grid-page-end',
+		pageViewingRecordsInfoClass : 'grid-page-viewing-records-info',
+		// Download by http://www.codefans.net
+		/* ajax stuff */
+		url : 'index.html', // url to fetch data
+		type : 'GET', // 'POST' or 'GET'
+		dataType : 'json', // 'html' or 'json' or 'resourse'  - expected dataType returned
+		resourse : '',
+		extraParams : '', // a map of extra params to send to the server
+		getRandom : '',
+		/* should seldom change */
+		resizeHandleHtml : '', // resize handle html + css
+		resizeHandleClass : 'grid-col-resize',
+		scrollbarW : 17, // width allocated for scrollbar
+		
+		dragCols:false,
+		resizableCols:true
+	};
+	jQuery.extend(cfg, o);
+	var _selfTable=$(this);
+	if (cfg.header) {
+		//表头
+		var h = jQuery('<div class="table-header"></div>').append('<table cellpadding="0" cellspacing="0"></table>');
+		var tmp_str='<tr>';
+		$.each(cfg.headerTitle,function(i,title){
+			tmp_str+='<th>'+title+'</th>';
+		});
+		tmp_str+='</tr>';
+		h.find('table')
+		.html(tmp_str).addClass(cfg.headerClass)
+		.height(cfg.headerHeight).width(cfg.width-17);
+		//初始化表
+		h.find('th').each(function(i) {
+			// init width
+			var tmp_a=Number(cfg.colWidths[i].replace('%',''))/100;
+			var tmp_w=cfg.width-17;
+			var tmp_w=Math.ceil(tmp_w*tmp_a);
+			jQuery(this).width(tmp_w).height(cfg.headerHeight);
+			var col_label = jQuery('<div />').html(jQuery(this).html()).css({
+				float : 'left',
+				display : 'block'
+			}).css('-moz-user-select', 'none')
+			.css('-khtml-user-select', 'none').css('user-select',
+			'none').attr('unselectable', 'on');
+			// column sorting?
+			jQuery(this).html(col_label);
+			
+			if(cfg.dragCols){
+				col_label.bind('mousedown',function(evt){
+					var th 		= jQuery(this).parent();
+					var left  = evt.clientX;
+					d.resizeStart(th,left);
+				});
+			}
+			
+			if (cfg.resizableCols) {
+				jQuery(this).bind('resizeColumn', {col_num : i}, function(e, w){
+					var wc=jQuery(this).width();
+					var tableWidth=g.find('table').width();
+					g.find('>div:visible').width(tableWidth+w+17);
+					g.find('table').width(tableWidth+w);
+					jQuery(this).width(wc+w);
+					b.find('tr:first td').each(function(j,n){
+						$(n).width(h.find('th').eq(j).width());
+					});
+				});
+				var handle = jQuery('<div />').html(cfg.resizeHandleHtml == '' ? '-' : cfg.resizeHandleHtml).addClass(cfg.resizeHandleClass);
+				handle.bind('mousedown', function(e){
+					var th 		= jQuery(this).parent();
+					var left  = e.clientX;
+					z.resizeStart(th, left);
+				});
+				jQuery(this).append(handle);
+			}
+			
+			if (cfg.sorting) {
+				if(cfg.colSortParams[i]){
+					var sort_lable=jQuery('<div>&nbsp;</div>')
+					sort_lable.addClass(cfg.sortNoneClass).click(function(){
+						
+						var _sortSelf=$(this);
+						var cls=_sortSelf.hasClass(cfg.sortAscClass)?cfg.sortDescClass:_sortSelf.hasClass(cfg.sortDescClass)?cfg.sortAscClass:cfg.sortAscClass;
+						if(cls==cfg.sortAscClass){
+							var para=cfg.sortAscParam+'='+cfg.colSortParams[i];
+						}
+						else if(cls==cfg.sortDescClass){
+							var para=cfg.sortDescParam+'='+cfg.colSortParams[i];
+						}
+						if(para){
+							g.load({sortString:para},function(){
+								_sortSelf.removeClass().addClass(cls);
+								initSortClick(_sortSelf);
+							});
+						}
+						
+					});
+					function initSortClick(s){
+						s.parent().nextAll().each(function(){
+							var tmp_div=$(this).find('div:last');
+							if(tmp_div.html()!='-')
+							tmp_div.removeClass().addClass(cfg.sortNoneClass);
+						});
+						s.parent().prevAll().each(function(){
+							var tmp_div=$(this).find('div:last');
+							if(tmp_div.html()!='-')
+							tmp_div.removeClass().addClass(cfg.sortNoneClass);;
+						});
+					}
+					jQuery.extend({initSortClick:initSortClick});
+					jQuery(this).append(sort_lable);
+				}
+			}
+			
+		});
+	}
+	//数据体表格
+	var b = jQuery('<div />')
+	.html(jQuery('<table cellpadding="0" cellspacing="0"></table>').addClass('list-table')
+	.width(cfg.width-17)).css('overflow-y', 'scroll').css(
+	'overflow-x', 'hidden').height(cfg.height).width(cfg.width);
+	
+	//是不是可以改变单元格的大小
+	if (cfg.resizableCols) {
+		var z_sel = 'vertical-resize-divider' + new Date().getTime();
+		var z	= jQuery('<div id="' + z_sel + '"></div>')
+		.css({
+			backgroundColor: '#ababab',
+			height: (cfg.headerHeight + cfg.height),
+			width: '2px',
+			position: 'absolute',
+			zIndex: '10',
+			display: 'block'
+		})
+		.extend({
+			resizeStart : function(th, eventX){
+				// this is fired onmousedown of the column's resize handle
+				var pos	= th.offset();
+				jQuery(this).show().css({
+					top: pos.top,
+					left: eventX,
+					height:$('#ingrid-list-div >div:eq(1)').height()+cfg.headerHeight
+				});
+				jQuery('#' + z_sel).attr('l', eventX);
+				// when resizing, bind some listeners for mousemove & mouseup events
+				jQuery('body').bind('mousemove', {col : th}, function(e){
+					var th 		= e.data.col;
+					var pos		= th.width();
+					var col_w	= pos+e.clientX - jQuery('#' + z_sel).attr('l');
+					if (col_w <= cfg.minColWidth) {
+						return;
+					}
+					jQuery('#' + z_sel).css('left', e.clientX);
+				});
+				jQuery('body').bind('mouseup', {col : th}, function(e){
+					jQuery(this).unbind('mousemove').unbind('mouseup');
+					jQuery('#' + z_sel).hide();
+					var tmp_obj=jQuery('#' + z_sel);
+					var col_w=Number(tmp_obj.css('left').replace('px',''))-tmp_obj.attr('l');
+					th.trigger('resizeColumn', [col_w]);
+				});
+			}
+		});
+	}
+	//drag thread
+	if(cfg.dragCols){
+		var d_sel = 'vertical-drag-divider' + new Date().getTime();
+		var d	= jQuery('<div id="' + z_sel + '"></div>')
+		.css({
+			border:'1px solid #ababab',
+			height: (cfg.headerHeight + cfg.height),
+			width: '20',
+			position: 'absolute',
+			zIndex: '10',
+			display: 'block'
+		})
+		.extend({
+			resizeStart : function(th, eventX){
+				// this is fired onmousedown of the column's resize handle
+				var pos	= th.offset();
+				jQuery(this).show().css({
+					top: pos.top,
+					left: pos.left,
+					width:th.width(),
+					'overflow':'hidden',
+					height:$('#ingrid-list-div >div:eq(1)').height()+cfg.headerHeight
+				});
+				var disW=eventX-pos.left;
+				d.attr('l',eventX);
+				d.html('<table width="100%" cellpadding="0" cellspacing="0" ><tr><th>'+th.html()+'</th></tr></table>');
+				d.append('<table width="100%" class="list-table" cellspacing="0" cellpadding="0"></td>');
+				b.find('tr').each(function(){
+					var cloneTr=$(this).clone();
+					cloneTr.html('<td>'+$(this).find('td').eq(th[0].cellIndex).html()+'</td>');
+					d.find('table:last').append(cloneTr);
+				});
+				d.appendTo($(document.body));
+				jQuery('body').bind('mousemove', {colNum : th}, function(e){
+					d.css('left', e.clientX-disW);
+				});
+				jQuery('body').bind('mouseup', {colNum : th}, function(evt){
+					jQuery(this).unbind('mousemove').unbind('mouseup');
+					d.remove();
+					var wM=evt.clientX-d.attr('l');
+					var moveColsNum=evt.data.colNum[0].cellIndex;
+					var moveWidth=evt.data.colNum.width();
+					var targColNum=0;
+				
+					//right move
+					if(wM>0){
+						//move in current th
+						if(wM<=moveWidth) return;
+						iebindevent(evt.data.colNum.nextAll());
+						b.find('tr').each(function(){
+							var td=$(this).find('td').eq(moveColsNum);
+							var ttd=$(this).find('td').eq(targColNum+1);
+							var tmp_obj_c=td.clone(true);
+							td.remove();
+							tmp_obj_c.insertAfter(ttd);
+						});
+					}
+					else{
+						if(Math.abs(wM)<=evt.data.colNum.prev().width) return;
+						iebindevent(evt.data.colNum.prevAll());
+						b.find('tr').each(function(){
+							var td=$(this).find('td').eq(moveColsNum);
+							var ttd=$(this).find('td').eq(targColNum);
+							var tmp_obj_c=td.clone(true);
+							td.remove();
+							tmp_obj_c.insertBefore(ttd);
+						});
+					}
+					function iebindevent(obj){
+						obj.each(function(i){
+							moveWidth+=$(this).width();
+							if(Math.abs(wM)<=moveWidth){
+								var tmp_obj_c=evt.data.colNum.clone(true);
+								tmp_obj_c.find('div').each(function(i){
+									if(i==0){
+										if(cfg.dragCols){
+											$(this).unbind('mousedown').bind('mousedown',function(evt){
+												var th 		= jQuery(this).parent();
+												var left  = evt.clientX;
+												d.resizeStart(th,left);
+											});
+										}
+										return true;
+									}
+									if (cfg.resizableCols&&$(this).html()=='-') {
+										$(this).unbind('mousedown').bind('mousedown',function(e){
+											var th 		= jQuery(this).parent();
+											var left  = e.clientX;
+											z.resizeStart(th, left);
+										});
+										return true;
+									}
+									if(cfg.sorting){
+										$(this).unbind('click').click(function(){
+											var _sortSelf=$(this);
+											var cls=_sortSelf.hasClass(cfg.sortAscClass)?cfg.sortDescClass:_sortSelf.hasClass(cfg.sortDescClass)?cfg.sortAscClass:cfg.sortAscClass;
+											if(cls==cfg.sortAscClass){
+												var para=cfg.sortAscParam+'='+cfg.colSortParams[i];
+											}
+											else if(cls==cfg.sortDescClass){
+												var para=cfg.sortDescParam+'='+cfg.colSortParams[i];
+											}
+											if(para){
+												g.load({sortString:para},function(){
+													_sortSelf.removeClass().addClass(cls);
+													$.initSortClick(_sortSelf);
+												});
+											}
+										});
+									}
+								});
+								evt.data.colNum.remove();
+								targColNum=this.cellIndex;
+								tmp_obj_c.insertBefore($(this));
+								return false;
+							}
+						});
+					}
+					//th.trigger('resizeColumn', [col_w]);
+				});
+			}
+		});
+	}
+	//最外层数据体
+	var g = jQuery('<div />').append(h).append(b).attr('id','ingrid-list-div').css({'overflow-x':'auto',width:cfg.width});
+	if (cfg.resizableCols) {
+		g.append(z.hide()).extend({ z : z });
+	}
+	var totr = cfg.recordsPerPage > 0? cfg.recordsPerPage: b.find('tr').length;
+	var pv = jQuery('<div />').addClass(cfg.pageViewingRecordsInfoClass)
+	.extend({
+		updateViewInfo : function(loaded_rows, page, totalRecords) {
+			var _start = ((loaded_rows * (page - 1) + 1));
+			var _end = ((loaded_rows * page) > totalRecords
+			? totalRecords
+			: loaded_rows * page);
+
+			this.html('右键操作信息,双击信息查看,双击标签关闭,按住Ctrl多选信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'第<span class="txt-important">' + _start
+			+ '</span> - <span class="txt-important">' + _end
+			+ '</span> / <span class="txt-important">'
+			+ totalRecords + '</span>条');
+			return this;
+		}
+	});
+	//分页
+	if (cfg.paging) {
+		var p = jQuery('<div />').addClass(cfg.pageToolbarClass)
+		.height(cfg.pageToolbarHeight).width(cfg.width).extend({
+			setPage : function(p) {
+				var input = this.find('input.' + cfg.pageInputClass);
+				input.val(p);
+				g.load(
+				null
+				, function() {
+					var totr = cfg.recordsPerPage > 0
+					? cfg.recordsPerPage
+					: b.find('tr').length;
+					pv.updateViewInfo(totr, p, cfg.totalRecords);
+				});
+				return this;
+			},
+			getPage : function() {
+				var p = Number(this.find('input.' + cfg.pageInputClass)
+				.val());
+				return p;
+			}
+		});
+		//向前
+		var pb1 = jQuery('<a href="javascript:;">&laquo;</a>').addClass(cfg.pageStartClass)
+		.click(function() {
+			p.setPage(1);
+		});
+		//向后
+		var pb2 = jQuery('<a href="javascript:;">&lt;</a>').addClass(cfg.pagePrevClass)
+		.click(function() {
+			var _p = p.getPage();
+			if (_p > 1) {
+				_p--;
+				p.setPage(_p);
+			}
+		});
+		var pb3 = jQuery('<a href="javascript:;">&gt;</a>').addClass(cfg.pageNextClass)
+		var pfld = jQuery('<input type="text" value="' + cfg.pageNumber + '"/>')
+		.addClass(cfg.pageInputClass);
+		var pinfo = jQuery('<div />').addClass(cfg.pageInfoClass).append(pfld)
+		.extend({
+			updateInfo : function(totp) {
+				if (this.find("span").html()) {
+					this.find("span")
+					.replaceWith('<span class="txt-important">'
+					+ totp + '</span>');
+				} else {
+					this.html('第 ' + this.html()
+					+ ' / <span class="txt-important">' + totp
+					+ '</span>页');
+				}
+				var pform = jQuery('<form></form>').append(this)
+				.submit(function() {
+					var _p = parseInt(p.getPage());
+					if (_p) {
+						if (totp) {
+							if (_p <= totp)
+							p.setPage(_p);
+						} else if (_p > 0) {
+							p.setPage(_p);
+						}
+					} else {
+						alert('页码错误');
+					}
+					return false;
+				});
+				return pform;
+			}
+		});
+		var pb4 = jQuery('<a href="javascript:;">&raquo;</a>').addClass(cfg.pageEndClass);
+		g.append(p);
+	}
+
+	g.extend({
+		load : function(opt,callback){
+			var tmp_r=Math.random()+'000000';
+			tmp_r=tmp_r.substr(0,18);
+			cfg.getRandom="&"+tmp_r;
+			//选项1：ul请求地址；2：id：form的id；3：extraParams扩展参数
+			if(opt){
+				opt.ul ?cfg.url=opt.ul:null;
+				opt.id ?cfg.extraParams=$('#'+opt.id).serialize():null;
+				opt.extraParams?cfg.extraParams=opt.extraParams:null;
+				opt.sortString?cfg.sortString=opt.sortString:null
+			}
+			cfg.extraParams?u=cfg.url+'&'+cfg.extraParams:u=cfg.url;
+			cfg.sortString?u=cfg.url+'&'+cfg.sortString:u=cfg.url;
+			
+			if(callback) u=u+'&page='+parseInt(p.getPage())+cfg.getRandom;
+			if (cfg.dataType == 'json') {
+				g.mload({url:u,success:function(result) {
+						var rows = eval('('+result+')');
+						var TmpStr = "";
+						var tmpi=0,lasttr=null;
+						if(rows!=null){
+							for(var i in rows["data"]){
+								tmpi++;
+								lasttr=rows["data"][i];
+								var istr=i.split('|');
+								istr.length<2?istr[1]=1:null;
+								TmpStr += "<tr rowid=" + istr[0] + " ismy='"+istr[1]+"'>";
+								$kkk=0;
+								$.each(rows["data"][i],function(j, l){
+									if(tmpi==1){
+										if(cfg.header){
+											var tmp_w=g.find('th').eq($kkk).width();
+										}
+										else{
+											var tmp_w=cfg.colWidths[$kkk];
+										}
+										$kkk++
+											TmpStr += '<td name="'+j+'" width="' + tmp_w + '">';
+										l?TmpStr += l:TmpStr += "&nbsp;";
+										TmpStr += "</td>";
+									}
+									else{
+										TmpStr += '<td name="'+j+'">';
+										l?TmpStr += l:TmpStr += "&nbsp;";
+										TmpStr += "</td>";
+									}
+								});
+								TmpStr += "</tr>";
+							}
+						}
+						if(cfg.recordsPerPage>0){
+							for(;tmpi<cfg.recordsPerPage;tmpi++){
+								TmpStr += "<tr rowid=0>";
+								if(lasttr!=null){
+									$.each(lasttr,function(j, l) {
+										TmpStr += "<td>";
+										TmpStr += "&nbsp;";
+										TmpStr += "</td>";
+									});
+								}
+								TmpStr += "</tr>";
+							}
+						}
+						b.find('table').html(TmpStr);
+						if(cfg.editCol){
+							editCol();
+						}
+						g.initStylesAndWidths();
+						b.find('table tr:eq(0)').dblclick();
+						b.scrollTop(0);
+					
+					if(cfg.paging){
+						  cfg.paging=false;
+							p.find("form input").val(1);
+							cfg.totalRecords = rows['total'];
+							var totp = Math.ceil(cfg.totalRecords / totr);
+							pv.updateViewInfo(totr, cfg.pageNumber, rows['total']);
+							var pform = pinfo.updateInfo(totp);
+							pb3.unbind("click").click(function() {
+								var _p = p.getPage();
+								_p++;
+								if (totp) {
+									if (_p <= totp)
+									p.setPage(_p);
+								} else {
+									p.setPage(_p);
+								}
+							});
+							pb4.unbind("click").click(function() {
+								var _p = p.getPage();
+								_p++;
+								if (totp) {
+									if (_p <= totp)
+									p.setPage(totp);
+								}
+							});
+							p.append(pb1).append(pb2).append(pform).append(pb3).append(pb4).append(pv);
+					}
+				}});
+			}
+			else if(cfg.dataType='resourse'){
+				    var rows = eval('('+cfg.resourse+')');
+						var TmpStr = "";
+						var tmpi=0,lasttr=null;
+						if(rows!=null){
+							for(var i in rows){
+								tmpi++;
+								lasttr=rows[i];
+								TmpStr += "<tr rowid=" + i +">";
+								$kkk=0;
+								$.each(rows[i],function(j, l){
+									if(tmpi==1){
+										var tmp_w=cfg.colWidths[$kkk];
+										$kkk++
+										TmpStr += '<td name="'+j+'" width="' + tmp_w + '">';
+										l?TmpStr += l:TmpStr += "&nbsp;";
+										TmpStr += "</td>";
+									}
+									else{
+										TmpStr += '<td name="'+j+'">';
+										l?TmpStr += l:TmpStr += "&nbsp;";
+										TmpStr += "</td>";
+									}
+								});
+								TmpStr += "</tr>";
+							}
+						}
+						b.css('overflow-y', 'hidden')
+						b.find('table').width(b.width()).html(TmpStr);
+						if(cfg.editCol){
+							editCol();
+						}
+						g.initStylesAndWidths();
+						b.find('table tr:eq(0)').dblclick();
+						b.scrollTop(0);
+			}
+			else{
+				b.css('overflow-y', 'hidden')
+				b.find('table').width(b.width()+17).html(result);
+				if(cfg.editCol){
+					editCol();
+				}
+				g.initStylesAndWidths();
+				b.find('table tr:eq(0)').dblclick();
+				b.scrollTop(0);
+			}
+			if (callback) {
+				callback();
+			}
+			function editCol(){
+	      b.find('td').each(function(){
+					var _self=$(this);
+					_self.dblclick(function(evt){
+						if(_self.find('input,select').length > 0) return;
+						//select
+						if(cfg.editType[_self.attr('name')]&&cfg.editType[_self.attr('name')]['type']=='select'){
+								var inp=$(cfg.editType[_self.attr('name')]['resourse']).css({
+									'width':_self.width()-4
+								});
+								inp.blur(function(){
+									_self.html($(this).find('option:selected').text());
+									cfg.editCallback(_self,{'rowid':_self.parent().attr('rowid'),'name':_self.attr('name'),'value':$(this).val()});
+								});
+								_self.html(inp);
+								inp.val(_self.html());
+								inp.focus();
+						}
+						//alert 
+						else if(cfg.editType[_self.attr('name')]&&cfg.editType[_self.attr('name')]['type']=='alert'){
+							var inp=$('<input type="text" value="'+_self.html()+'" />').css({
+								'width':_self.width()-10
+							});
+							var ind=$('<span></span>');
+							inp.val(_self.html());
+							_self.html(inp).append(ind);
+							inp.click(function(evt){
+								evt.stopPropagation();
+							});
+							ind.showTree(cfg.editType[_self.attr('name')]['resourse']);
+							_selfTable.unbind('click').click(function(){
+								_self.html(inp.val());
+								cfg.editCallback(_self,{'rowid':_self.parent().attr('rowid'),'name':_self.attr('name'),'value':inp.val()});
+							});
+						}
+						//default input
+						else{
+							var inp=$('<input type="text" value="'+_self.html()+'">').css({
+								'width':_self.width()-4
+							});
+							inp.blur(function(){
+								_self.html($(this).val());
+								cfg.editCallback(_self,{'rowid':_self.parent().attr('rowid'),'name':_self.attr('name'),'value':$(this).val()});
+							});
+							_self.html(inp);
+							inp.focus();
+						}
+						
+					});
+				});
+			}
+		},
+	
+		getHeaders : function(cb) {
+			var ths = this.find('th');
+			if (cb) {
+				ths.each(function() {
+					cb(jQuery(this));
+				});
+				return this;
+			} else {
+				return ths;
+			}
+		},
+		getRows : function(cb) {
+			var trs = b.find("tr");
+			if (cb) {
+				trs.each(function() {
+					cb(jQuery(this));
+				});
+				return this;
+			} else {
+				return trs;
+			}
+		},
+		initStylesAndWidths : function() {
+			this.getRows().each(function(r) {
+				// custom row styles (striping, etc) & hover
+				if (cfg.rowClasses.length > 0) {
+					var cursor = (r == 0 ? 0 : r % cfg.rowClasses.length);
+					if (cfg.rowClasses[cursor] != '') {
+						// custom row class
+						jQuery(this).addClass(cfg.rowClasses[cursor]);
+					}
+					if (cfg.rowHoverClass != '') {
+						// hover class
+						jQuery(this).hover(function() {
+							if (jQuery(this).attr('_selected') != 'true')
+							jQuery(this)
+							.removeClass(cfg.rowClasses[cursor])
+							.addClass(cfg.rowHoverClass);
+						}, function() {
+							if (jQuery(this).attr('_selected') != 'true')
+							jQuery(this).removeClass(cfg.rowHoverClass)
+							.addClass(cfg.rowClasses[cursor]);
+						});
+					}
+					// bind row selection behaviors
+					if (cfg.rowSelection == true&&$(this).attr('rowid')!="0") {
+						var t = this;
+						var tmp_str=+new Date();
+						var tmp_div_id="MyTableGridMenu"+tmp_str;
+						$(this).dblclick(function() {
+							if($(this).attr('rowid')=="0") return false;
+							$(this).parent().find("tr[_selected=true]")
+							.attr('_selected', 'false')
+							.removeClass(cfg.rowSelectedClass);
+							$(this).attr('_selected', 'true')
+							.addClass(cfg.rowSelectedClass);
+							if (cfg.onRowSelect) {
+								cfg.onRowSelect($(this), true);
+							}
+						}).click(function(e){
+							var ctrl=0;
+							if(e){
+								if(e.ctrlKey){
+									ctrl=1;
+								}
+							}
+							else{
+								if(event.ctrlKey){
+									ctrl=1;
+								}
+							}
+							if(!ctrl){
+								$(this).parent().find("tr[_selected=true]")
+								.attr('_selected', 'false')
+								.removeClass(cfg.rowSelectedClass);
+							}
+							if($(this).attr('_selected')=='true'){
+								$(this).attr('_selected', 'false').removeClass(cfg.rowSelectedClass)
+								.removeClass(cfg.rowHoverClass)
+								.addClass(cfg.rowClasses[cursor]);
+							}
+							else{
+								$(this).attr('_selected', 'true')
+								.removeClass(cfg.rowHoverClass)
+								.addClass(cfg.rowSelectedClass)
+								.addClass(cfg.rowClasses[cursor]);
+								if($('#note_content').find('div[num='+$(this).attr('rowid')+']').html()!=null){
+									$('#tag-box').find('a').removeClass('on');
+									$('#tag-box').find('a[num='+$(this).attr('rowid')+']').addClass('on');
+									$('#note_content').find('div').hide();
+									$('#note_content').find('div[num='+$(this).attr('rowid')+']').show();
+								};
+							}
+						}).contextMenu(this,tmp_div_id, cfg.contextMenuOption);
+					}
+				}
+				// setup column IDs & classes on row's cells
+				jQuery(this).find('td').each(function(i) {
+					// column colors
+					if (cfg.colClasses.length > 0) {
+						if (cfg.colClasses[i] != '') {
+							jQuery(this).addClass(cfg.colClasses[i]);
+						}
+					}
+				});
+			});
+		}
+	});
+	
+	 return this.each(function(tblIter) {
+		jQuery(this).append(g)
+			g.load();
+	}).extend({g:g});
+};

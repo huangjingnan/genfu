@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- /* * $Id: struts-plugin.xml 722219 2008-12-01 20:41:26Z musachy $ * 
+	* Licensed to the Apache Software Foundation (ASF) under one * or more contributor 
+	license agreements. See the NOTICE file * distributed with this work for 
+	additional information * regarding copyright ownership. The ASF licenses 
+	this file * to you under the Apache License, Version 2.0 (the * "License"); 
+	you may not use this file except in compliance * with the License. You may 
+	obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 
+	* * Unless required by applicable law or agreed to in writing, * software 
+	distributed under the License is distributed on an * "AS IS" BASIS, WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY * KIND, either express or implied. See the 
+	License for the * specific language governing permissions and limitations 
+	* under the License. */ -->
+
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+
+<struts>
+
+	<!-- Set to false, to prevent Convention from creating a default mapping 
+		to "execute" when there are other methods annotated as actions in the class -->
+	<constant name="struts.convention.action.alwaysMapExecute"
+		value="false" />
+	<!-- An optional list of action packages that this should create configuration 
+		for (they don't need to match a locator pattern) -->
+	<!-- <constant name="struts.convention.action.packages" value="com.yuxl.test.controller" 
+		/> -->
+	<!-- Packages excluded from the action scanning, packages already excluded 
+		cannot be included in other way, eg. org.demo.actions.exclude is specified 
+		as a part of the struts.convention.exclude.packages so all packages below 
+		are also excluded, eg. org.demo.actions.exclude.include even if include is 
+		specified as a struts.convention.package.locators or struts.convention.action.packages -->
+	<!-- <constant name="struts.convention.exclude.packages" value="*.js.*,*.js" 
+		/> -->
+	<constant name="struts.action.excludePattern" value=".js.*,.console.*" />
+
+	<!-- <constant name="struts.rest.content.restrictToGET" value="false" /> -->
+	<!-- <bean name="yaml" type="org.apache.struts2.rest.handler.ContentTypeHandler" 
+		class="com.yuxl.test.handler.MyYamlContentHandler" /> <bean name="myXml" 
+		type="org.apache.struts2.rest.handler.ContentTypeHandler" class="com.yuxl.test.handler.MyXmlContentHandler" 
+		/> <constant name="struts.rest.handlerOverride.xml" value="myXml" /> -->
+	<!-- <constant name="struts.mapper.class" value="rest" /> -->
+	<!-- Enable the composite action mapper. -->
+	<!-- <constant name="struts.mapper.class" value="composite" /> -->
+	<!-- If set, only packages that start with its value will be scanned for 
+		actions. -->
+	<!-- <constant name="struts.convention.package.locators.basePackage" value="com.yuxl.test.controller" 
+		/> -->
+
+	<!-- Provide action mappers for the composite mapper. Order is sensible. -->
+	<!-- <constant name="struts.mapper.composite" value="rest,struts" /> -->
+
+	<!-- Disable the scanning of packages based on package locators -->
+	<!-- <constant name="struts.convention.package.locators.disable" value="false" 
+		/> Scan packages for actions. <constant name="struts.convention.action.disableScanning" 
+		value="false" /> -->
+	<!-- <constant name="struts.rest.namespace" value="/" /> -->
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.custom.i18n.resources" value="global" />
+	<constant name="struts.objectFactory" value="spring" />
+	<!-- The Convention plugin can automatically reload configuration changes, 
+		made in classes the contain actions, without restarting the container. -->
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.convention.classes.reload" value="false" />
+	<!-- <package name="default" namespace="/" extends="struts-default"> <action 
+		name="locale" class="com.mkyong.common.action.LocaleAction"> <result name="SUCCESS">/login.jsp</result> 
+		</action> </package> -->
+	<package name="genfu-rest" extends="rest-default" namespace="genfu">
+		<result-types>
+			<result-type name="json" class="org.apache.struts2.json.JSONResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="genfuAuthentication"
+				class="com.genfu.reform.controller.GenfuAuthenticationInterceptor" />
+			<interceptor name="json"
+				class="org.apache.struts2.json.JSONInterceptor" />
+			<interceptor-stack name="genfuAuthenticationStack">
+				<interceptor-ref name="createSession" />
+				<interceptor-ref name="exception" />
+				<interceptor-ref name="alias" />
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="i18n" />
+				<interceptor-ref name="chain" />
+				<interceptor-ref name="debugging" />
+				<interceptor-ref name="modelDriven" />
+				<interceptor-ref name="fileUpload" />
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="conversionError" />
+				<interceptor-ref name="validation">
+					<param name="excludeMethods">input,back,cancel,browse</param>
+				</interceptor-ref>
+				<interceptor-ref name="workflow">
+					<param name="excludeMethods">input,back,cancel,browse</param>
+				</interceptor-ref>
+				<interceptor-ref name="genfuAuthentication" />
+			</interceptor-stack>
+		</interceptors>
+		<!-- <action name="fragment" class="FragmentAction"> <result name="next" 
+			type="redirectAction">${nextAction}</result> </action> -->
+	</package>
+	<!-- This feature is experimental and has not been tested on all container, 
+		and it is strongly advised not to use it in production environments. -->
+	<!-- When using this plugin with JBoss, you need to set the following constants -->
+
+	<!-- <constant name="struts.convention.exclude.parentClassLoader" value="true" 
+		/> <constant name="struts.convention.action.fileProtocols" value="jar,vfsfile,vfszip" 
+		/> -->
+
+	<!-- When using this plugin with Jetty in embedded mode, you need to set 
+		the following constants -->
+	<!-- <constant name="struts.convention.exclude.parentClassLoader" value="false" 
+		/> <constant name="struts.convention.action.fileProtocols" value="jar,code-source" 
+		/> -->
+
+	<!-- Overwrite Convention -->
+	<constant name="struts.convention.action.suffix" value="Controller" />
+	<constant name="struts.convention.action.mapAllMatches" value="true" />
+	<constant name="struts.convention.default.parent.package"
+		value="rest-default" />
+
+	<constant name="struts.convention.package.locators" value="controller" />
+
+	<constant name="struts.rest.logger" value="true" />
+	<constant name="struts.multipart.maxSize" value="209715200" />
+	<constant name="struts.multipart.saveDir" value="./temp" />
+</struts>    

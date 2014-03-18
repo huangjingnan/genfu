@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>simple dialog</title>
+<style type="text/css">
+@import url(jquery.simpledialog.0.1.css);
+</style>
+
+<script type="application/javascript"
+	src="${ctx}/js/jquery-ui-1.8.20.custom/development-bundle/jquery-1.7.2.js"></script>
+<script type="application/javascript"
+	src="${ctx}/js/jquery-ui-1.8.20.custom/development-bundle/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="jquery.simpledialog.0.1.js"></script>
+<script type="text/javascript">
+	$(document).ready(
+			function() {
+				$('#sdHc3')
+						.simpleDialog(
+								{
+									showCloseLabel : false,
+									open : function() {
+										$('#checkboxStatus').html('');
+									},
+									close : function() {
+										var c = [];
+										$('#checkboxForm :checkbox:checked')
+												.each(function() {
+													c.push($(this).val());
+												});
+										$('#checkboxStatus')
+												.html(
+														'Checked '
+																+ c.join(', ')
+																+ '.').show();
+									}
+								});
+			});
+</script>
+</head>
+<body>
+	<a href="#" id="sdHc3" rel="simpleDialog3">show dialog!</a>
+	<span style="display: none;" id="checkboxStatus"></span>
+	<!-- content -->
+	<div style="display: none;" id="simpleDialog3">
+		<h3>DEMO3</h3>
+		<form id="checkboxForm">
+			#1. <input type="checkbox" class="chckbx" value="1" /><br /> #2. <input
+				type="checkbox" class="chckbx" value="2" /><br /> #3. <input
+				type="checkbox" class="chckbx" value="3" />
+		</form>
+		<p>
+			<a href="#" class="close">Close</a>
+		</p>
+	</div>
+</body>
+</html>
