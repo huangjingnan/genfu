@@ -42,8 +42,8 @@ import com.opensymphony.xwork2.ValidationAwareSupport;
 				"/login.jsp" }),
 		@Result(name = "json", type = "json"),
 		@Result(name = "success", type = "redirectAction", params = {
-				"actionName", "order-item" }) })
-public class OrderItemController extends ValidationAwareSupport implements
+				"actionName", "group-orderitem" }) })
+public class GroupOrderitemController extends ValidationAwareSupport implements
 		ModelDriven<Object>, Validateable, SessionAware, ServletRequestAware,
 		ServletResponseAware, ParameterAware, Preparable {
 
@@ -103,18 +103,14 @@ public class OrderItemController extends ValidationAwareSupport implements
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
+		jsonObject = genfuCommonService.validateOperates("", "", "group-orderitem",
 				"index", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
 
-			if (null != this.parameters.get("style")
-					&& null != this.parameters.get("orderId")) {
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(
-						"SELECT x FROM OrderItem x WHERE x.orderId="
-								+ parameters.get("orderId")[0],
-						OrderItem.class, parameters);
+			if (null != this.parameters.get("style")) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(OrderItem.class, parameters);
 			} else {
 				// list = genfuCommonService.searchList(OrderItem.class,
 				// parameters);
