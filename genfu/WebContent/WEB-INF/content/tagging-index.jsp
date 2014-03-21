@@ -316,7 +316,7 @@
 		var tagId = jQuery("#tagging_tags").jqGrid('getGridParam','selarrrow');
 		//if ($.isArray(dishId)) {dishId = dishId.join();}
 		//if ($.isArray(tagId)) {tagId = tagId.join();} 
-		if(dishId.length < 1 && tagId.length < 1){
+		if(dishId.length < 1 || tagId.length < 1){
 			return;
 		}
 		$.ajax({
