@@ -146,7 +146,8 @@ public class UserInfoController extends ValidationAwareSupport implements
 				"SELECT * FROM USER_INFO WHERE USER_ID=:userId0", par,
 				UserInfo.class);
 		if (!theUI.get(0).getUserPassword()
-				.equalsIgnoreCase(model.getUserPassword())) {
+				.equalsIgnoreCase(model.getUserPassword())
+				&& model.getUserPassword().length() > 0) {
 			DES des = new DES(model.getUserCode());
 			model.setUserPassword(des.getEncString(model.getUserPassword()));
 		}

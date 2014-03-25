@@ -294,7 +294,7 @@ native2ascii -reverse  new.txt   yan.txt
 
  
 
-native2ascii -encoding gbk  old.txt   new.txt
+native2ascii -encoding gbk  yuan.txt   new.txt
 
 
 function rebuild_tree($parent, $left) {   

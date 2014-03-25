@@ -24,7 +24,7 @@
 </p>
 <s:if test="model.total()>0">
 	<p id="clear_cart_link">
-		<small> <a href="javascript:void(0)" onclick="clearCart();" title="Clear cart">Clear Cart</a>
+		<small> <a href="javascript:void(0)" onclick="clearCart();" title="Clear cart"><s:text name="carts.clear"/></a>
 		</small>
 	</p>
 </s:if>

@@ -233,7 +233,7 @@
 	   		{name:'userName',index:'userName', width:150,editable:true},
 	   		{name:'userCode',index:'userCode', width:150,editable:true},
 	   		{name:'roleInfos',index:'roleInfos',width:200,formatter:roleInfosFmatter},
-	   		{name:'userPassword',index:'userPassword', width:150,editable:true,edittype:"password",editrules:{edithidden:true,required:true}, hidden:true},
+	   		{name:'userPassword',index:'userPassword', width:150,editable:true,edittype:"password",editrules:{edithidden:true}, hidden:true},
 	   		{name:'userDescription',index:'userDescription',width:250,sortable:false,editable:true,edittype:"textarea",editoptions:{rows:"2",cols:"20"}},
 	   		{name:'userFlag',index:'userFlag', width:100, editable: true,edittype:"select",editoptions:{value:"OPEN:OPEN;CLOSED:CLOSED"}},
 	   		{name:'userEffDate',index:'userEffDate', width: 80, editable: true,
