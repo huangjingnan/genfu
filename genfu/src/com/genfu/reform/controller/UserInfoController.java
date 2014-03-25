@@ -140,16 +140,16 @@ public class UserInfoController extends ValidationAwareSupport implements
 
 	public String update() {
 
-		Map<String, Object> par = new HashMap<String, Object>();
-		par.put("userId0", model.getId());
-		List<UserInfo> theUI = genfuCommonService.searchNativeQuery(
-				"SELECT * FROM USER_INFO WHERE USER_ID=:userId0", par,
-				UserInfo.class);
-		if (!theUI.get(0).getUserPassword()
-				.equalsIgnoreCase(model.getUserPassword())
-				&& model.getUserPassword().length() > 0) {
+		if (model.getUserPassword().length() > 0) {
 			DES des = new DES(model.getUserCode());
 			model.setUserPassword(des.getEncString(model.getUserPassword()));
+		} else {
+			Map<String, Object> par = new HashMap<String, Object>();
+			par.put("userId0", model.getId());
+			List<UserInfo> theUI = genfuCommonService.searchNativeQuery(
+					"SELECT * FROM USER_INFO WHERE USER_ID=:userId0", par,
+					UserInfo.class);
+			model.setUserPassword(theUI.get(0).getUserPassword());
 		}
 		genfuCommonService.update(model);
 		addActionMessage("Object updated successfully");

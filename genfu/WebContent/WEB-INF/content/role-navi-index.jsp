@@ -294,7 +294,7 @@
 	}
 	
 		jQuery("#userinfos").jqGrid('navGrid','#userinfo_pager',{},
-				{url:'${ctx}/user-info/0?_method=put',reloadAfterSubmit:false},
+				{url:'${ctx}/user-info/0?_method=put',reloadAfterSubmit:false,closeAfterEdit:true},
 				{url:'${ctx}/user-info',clearAfterAdd:true,reloadAfterSubmit:false},
 				{url:'${ctx}/genfu-common/0?_method=DELETE&className=com.genfu.reform.model.UserInfo',reloadAfterSubmit:false},
 				{multipleSearch:true, multipleGroup:true, showQuery: true});
