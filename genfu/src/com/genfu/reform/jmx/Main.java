@@ -5,12 +5,12 @@ import java.lang.management.ManagementFactory;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-public class MainTest {
+public class Main {
 	public static void main(String[] args) throws Exception {
 
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		ObjectName name = new ObjectName("com.example:type=Hello");
-		ServerMonitor mbean = new ServerMonitor();
+		Hello mbean = new Hello();
 		mbs.registerMBean(mbean, name);
 
 		System.out.println("Waiting forever...");
