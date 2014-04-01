@@ -1,11 +1,1 @@
-/META-INF
 /com
-/ehcache.xml
-/global.properties
-/global_de.properties
-/global_fr.properties
-/global_zh_CN.properties
-/hibernate-redis.properties
-/log4j.properties
-/org
-/struts.xml
