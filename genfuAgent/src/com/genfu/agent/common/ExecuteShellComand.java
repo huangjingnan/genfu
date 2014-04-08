@@ -11,7 +11,8 @@ public class ExecuteShellComand {
 	public static void main(String[] args) {
 		ExecuteShellComand obj = new ExecuteShellComand();
 		try {
-			obj.editInterfaces("test");
+			obj.editInterfaces(
+					"C:\\Users\\xuzhenfu\\Downloads\\interfaces.txt", "test");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -23,13 +24,13 @@ public class ExecuteShellComand {
 		// in windows
 		// String command = "ping -n 3 " + domainName;
 
-		String output = obj.executeCommand(command,"GBK");
+		String output = obj.executeCommand(command, "GBK");
 
 		System.out.println(output);
 
 	}
 
-	private String executeCommand(String command,String charsetName) {
+	private String executeCommand(String command, String charsetName) {
 
 		StringBuffer output = new StringBuffer();
 
@@ -38,7 +39,7 @@ public class ExecuteShellComand {
 			p = Runtime.getRuntime().exec(command);
 			p.waitFor();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					p.getInputStream(),charsetName));
+					p.getInputStream(), charsetName));
 
 			String line = "";
 			while ((line = reader.readLine()) != null) {
@@ -53,15 +54,15 @@ public class ExecuteShellComand {
 
 	}
 
-	private String editInterfaces(String command) throws IOException {
+	private String editInterfaces(String path, String command)
+			throws IOException {
 
 		// FileInputStream inp = null;
 		FileOutputStream out = null;
 		try {
 			// inp = new
 			// FileInputStream("C:\\Users\\xuzhenfu\\Downloads\\interfaces.txt");
-			out = new FileOutputStream(
-					"C:\\Users\\xuzhenfu\\Downloads\\interfaces.txt");
+			out = new FileOutputStream(path);
 
 			StringBuffer context = new StringBuffer();
 			context.append("# This file describes the network interfaces available on your system\r\n");
@@ -95,24 +96,6 @@ public class ExecuteShellComand {
 			}
 		}
 
-		// StringBuffer output = new StringBuffer();
-		//
-		// Process p;
-		// try {
-		// p = Runtime.getRuntime().exec(command);
-		// p.waitFor();
-		// BufferedReader reader =
-		// new BufferedReader(new InputStreamReader(p.getInputStream()));
-		//
-		// String line = "";
-		// while ((line = reader.readLine())!= null) {
-		// output.append(line + "\n");
-		// }
-		//
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-		//
 		return "0";
 
 	}

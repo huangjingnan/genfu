@@ -1,4 +1,4 @@
-package com.genfu.reform.jmx;
+package com.genfu.reform.jmx.mbeans;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.MBeanNotificationInfo;

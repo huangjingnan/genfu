@@ -1,4 +1,4 @@
-package com.genfu.reform.jmx;
+package com.genfu.reform.jmx.mbeans;
 
 import java.lang.management.ManagementFactory;
 
