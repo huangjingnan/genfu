@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class ConfigNetwork implements ConfigNetworkMXBean {
 
+	// extends NotificationBroadcasterSupport
 	// private String address = "192.168.0.222";
 	// private String netmask = "255.255.255.0";
 	// private String gateway = "192.168.0.1";
@@ -25,9 +26,9 @@ public class ConfigNetwork implements ConfigNetworkMXBean {
 			throws IOException {
 		synchronized (this) {
 
-			this.executeCommand(
-					"cp /etc/network/interfaces /etc/network/interfaces_bak",
-					"UTF-8");
+			// this.executeCommand(
+			// "cp /etc/network/interfaces /etc/network/interfaces_bak",
+			// "UTF-8");
 
 			FileOutputStream out = null;
 			try {
@@ -96,4 +97,13 @@ public class ConfigNetwork implements ConfigNetworkMXBean {
 		return output.toString();
 
 	}
+
+	// public MBeanNotificationInfo[] getNotificationInfo() {
+	// return new MBeanNotificationInfo[] {
+	// new MBeanNotificationInfo(
+	// new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE },
+	// AttributeChangeNotification.class.getName(),
+	// "This notification is emitted when the reset() method is called.")
+	// };
+	// }
 }
