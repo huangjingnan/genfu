@@ -1,4 +1,13 @@
 
+export CLASSPATH=. ; rmiregistry 9999 &
+
+java -classpath .:./ -Djavax.net.ssl.keyStore=config/keystore -Djavax.net.ssl.keyStorePassword=password -Djava.security.manager -Djava.security.policy=config/java.policy -jar genfuAgent.jar &
+
+C:\\Users\\xuzhenfu\\Downloads\\jmx_examples\\jmx_examples\\Security\\fine_grained\\config\\truststore
+
+java -classpath client;server;mbeans      -Djavax.net.ssl.trustStore=config/truststore      -Djavax.net.ssl.trustStorePassword=trustword      Client
+
+
 ---***dish-image begin***---
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
