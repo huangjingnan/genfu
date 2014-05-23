@@ -25,7 +25,8 @@ jQuery("#k_process").jqGrid({
  	   	{name:'updatedAt',index:'updatedAt', width:150,align:"center",sorttype:'datetime',
    			formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
-    caption: 'process',
+   	multiselect: true,
+   	caption: 'process',
     pager: '#pk_process'
 });
 jQuery("#k_process").jqGrid('navGrid','#pk_process',{edit:false,add:false,del:false},
@@ -73,6 +74,7 @@ jQuery("#k_open").jqGrid({
  	   	{name:'updatedAt',index:'updatedAt', width:150,align:"center",sorttype:'datetime',
    			formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
+   	multiselect: true,
     caption: 'open',
     pager: '#pk_open'
 });

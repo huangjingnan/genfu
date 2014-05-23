@@ -1,4 +1,9 @@
 
+
+
+/home/hadoop/hadoop-2.2.0-src/hadoop-common-project/hadoop-auth/
+[ERROR] class file for org.mortbay.component.AbstractLifeCycle not found
+
 export CLASSPATH=. ; rmiregistry 9999 &
 
 java -classpath .:./ -Djavax.net.ssl.keyStore=config/keystore -Djavax.net.ssl.keyStorePassword=password -Djava.security.manager -Djava.security.policy=config/java.policy -jar genfuAgent.jar &

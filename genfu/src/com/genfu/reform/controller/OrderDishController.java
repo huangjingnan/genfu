@@ -129,7 +129,7 @@ public class OrderDishController extends ValidationAwareSupport implements
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
-			if ("OPEN".equalsIgnoreCase(model.getStatus())
+			if (!"CLOSED".equalsIgnoreCase(model.getStatus())
 					&& parameters.containsKey("dishIds[]")) {
 
 				Map<String, Object> tempPara = new HashMap<String, Object>();
