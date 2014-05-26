@@ -6,7 +6,7 @@
 <div id="accordion">
 	<s:iterator value="model">
 		<div class="group">
-		<h3>${id}#-${orderName}-${numberPeople}位-${staffNumber}</h3>
+		<h3>${id}#-${orderName}-${status}-${numberPeople}位-${staffNumber}</h3>
 		<div>
 			<p>
 			</p>

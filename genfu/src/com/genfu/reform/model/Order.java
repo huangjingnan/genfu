@@ -290,7 +290,7 @@ public class Order implements Serializable {
 		return true;
 	}
 
-	public void PlaceOrder(Cart cart, long multiplier) {
+	public void PlaceOrder(Cart cart, long multiplier,String staffNumber) {
 		Set<CartItem> cartItems = cart.getCartItems();
 		if (null != cartItems && cartItems.size() > 0) {
 			if (null != this.orderItems) {
@@ -313,6 +313,7 @@ public class Order implements Serializable {
 					tempOrderItem.setCreatedAt(timestamp);
 					tempOrderItem.setUpdatedAt(timestamp);
 					tempOrderItem.setOrderId(this.id);
+					tempOrderItem.setStaffNumber(staffNumber);
 					this.orderItems.add(tempOrderItem);
 				}
 			} else {
@@ -326,6 +327,7 @@ public class Order implements Serializable {
 					tempOrderItem.setCreatedAt(timestamp);
 					tempOrderItem.setUpdatedAt(timestamp);
 					tempOrderItem.setOrderId(this.id);
+					tempOrderItem.setStaffNumber(staffNumber);
 					this.orderItems.add(tempOrderItem);
 				}
 			}

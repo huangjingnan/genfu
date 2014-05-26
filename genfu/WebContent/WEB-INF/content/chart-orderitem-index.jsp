@@ -29,7 +29,7 @@
 <h1>统计图表</h1>
 <table style="margin-left:auto;margin-right:auto;"><tr>
 <td style="text-align:center;">
-	<h3 style="margin-bottom:0px;">Example 1</h3>
+	<h3 style="margin-bottom:0px;">Example 222</h3>
 	<div id="chart_orderitem1" style="width:540px;height:250px;padding:5px;"></div>
 <div style="text-align:right;padding-right:5px;">
 	Start delay: <input id="chart_orderitemstart" style="width:35px" value="0" />

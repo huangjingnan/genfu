@@ -118,7 +118,8 @@ public class MyOrderController extends ValidationAwareSupport implements
 			this.model = (Order) genfuCommonService.find(
 					Long.parseLong(parameters.get("orderId")[0]), Order.class);
 			encode = des.getEncString(model.getCreatedAt().toString());
-			if (parameters.get("encode")[0].equalsIgnoreCase(encode.replace("+", " "))) {
+			if (parameters.get("encode")[0].equalsIgnoreCase(encode.replace(
+					"+", " "))) {
 				verifyingOperates = true;
 			}
 
@@ -194,10 +195,10 @@ public class MyOrderController extends ValidationAwareSupport implements
 			if (parameters.containsKey("multiplied")) {
 
 				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]));
+						Long.parseLong(parameters.get("multiplied")[0]), "100");
 			} else {
 
-				model.PlaceOrder(myCart, 1);
+				model.PlaceOrder(myCart, 1, "100");
 			}
 			model.setUpdatedAt(new Date());
 			genfuCommonService.update(model);
@@ -242,10 +243,10 @@ public class MyOrderController extends ValidationAwareSupport implements
 			if (parameters.containsKey("multiplied")) {
 
 				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]));
+						Long.parseLong(parameters.get("multiplied")[0]), "100");
 			} else {
 
-				model.PlaceOrder(myCart, 1);
+				model.PlaceOrder(myCart, 1, "100");
 			}
 			// model.setId(myCart.getId());
 			genfuCommonService.save(model);

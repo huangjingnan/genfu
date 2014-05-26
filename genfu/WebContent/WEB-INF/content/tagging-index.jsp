@@ -29,11 +29,12 @@
 	multiselect: true, caption: "标签"
 }); 
 
-	jQuery("#tagging_tags").jqGrid('navGrid','#tagging_tag_pager',{},
+	jQuery("#tagging_tags").jqGrid('navGrid','#tagging_tag_pager',{view:true},
 			{url:'${ctx}/tag/0?_method=put',reloadAfterSubmit:false},
 			{url:'${ctx}/tag',clearAfterAdd:false,reloadAfterSubmit:false},
 			{url:'${ctx}/tag/0?_method=DELETE&className=com.genfu.reform.model.Tag',reloadAfterSubmit:false},
-			{multipleSearch:true, multipleGroup:false, showQuery: false});
+			{multipleSearch:true, multipleGroup:false, showQuery: false},
+			{height:250,jqModal:false,closeOnEscape:true});
 	//jQuery("#tagging_tag_pager").jqGrid('filterToolbar',{stringResult: true,searchOnEnter : false});
 	
 	var tags = { "groupOp": "AND", "rules": [ { "field": "taggings.name", "op": "bw", "data": "a" } ] } ;
@@ -67,11 +68,12 @@
 	autowidth: true,
 	multiselect: true, caption: "商品" }); 
 
-	jQuery("#tagging_dishes").jqGrid('navGrid','#tagging_dish_pager',{},
+	jQuery("#tagging_dishes").jqGrid('navGrid','#tagging_dish_pager',{view:true},
 			{url:'${ctx}/dish/0?_method=put',reloadAfterSubmit:false,recreateForm:true,beforeSubmit:editfileUpload},
 			{url:'${ctx}/dish',clearAfterAdd:true,reloadAfterSubmit:false,recreateForm:true,beforeSubmit:fileUpload},
 			{url:'${ctx}/dish/0?_method=DELETE',reloadAfterSubmit:false},
-			{multipleSearch:true, multipleGroup:true, showQuery: true,"tmplNames" : ["tags"],"tmplFilters": [tags]});
+			{multipleSearch:true, multipleGroup:true, showQuery: true,"tmplNames" : ["tags"],"tmplFilters": [tags]},
+			{height:250,jqModal:false,closeOnEscape:true});
 			
 	function tagsFmatter ( cellvalue, options, rowObject ){
 		var tagNames="";

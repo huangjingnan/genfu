@@ -155,7 +155,9 @@ public class CheckoutController extends ValidationAwareSupport implements
 
 		if (verifyingOperates) {
 
-			list = genfuCommonService.searchList(Order.class, parameters);
+			list = genfuCommonService.searchList(
+					"from Order WHERE status IN ('OPEN','PROCESS')", null,
+					Order.class);
 		}
 		jsonObject = null;
 		return new DefaultHttpHeaders("index").disableCaching();
@@ -173,13 +175,16 @@ public class CheckoutController extends ValidationAwareSupport implements
 				&& jsonObject.getBoolean("validResult");
 
 		if (verifyingOperates) {
+			jsonObject = (JSONObject) session
+					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
 			if (parameters.containsKey("multiplied")) {
 
 				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]));
+						Long.parseLong(parameters.get("multiplied")[0]),
+						jsonObject.getString("userId"));
 			} else {
 
-				model.PlaceOrder(myCart, 1);
+				model.PlaceOrder(myCart, 1, jsonObject.getString("userId"));
 			}
 			model.setUpdatedAt(new Date());
 			genfuCommonService.update(model);
@@ -230,10 +235,11 @@ public class CheckoutController extends ValidationAwareSupport implements
 			if (parameters.containsKey("multiplied")) {
 
 				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]));
+						Long.parseLong(parameters.get("multiplied")[0]),
+						model.getStaffNumber());
 			} else {
 
-				model.PlaceOrder(myCart, 1);
+				model.PlaceOrder(myCart, 1, model.getStaffNumber());
 			}
 			// model.setId(myCart.getId());
 			genfuCommonService.save(model);
