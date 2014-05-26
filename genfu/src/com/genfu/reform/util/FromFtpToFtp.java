@@ -1,8 +1,10 @@
 package com.genfu.reform.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -15,12 +17,12 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 public class FromFtpToFtp {
-	public static final String USAGE = "Usage: FromFtpToFtp source target localDir account sourcePasswd targetPasswd\n";
+	public static final String USAGE = "Usage: FromFtpToFtp source target localDir account sourceUser sourcePasswd targetUser targetPasswd\n";
 
 	public static void main(String[] args) {
 
 		// target source localDir account sourcePasswd targetPasswd
-		if (args.length != 6) {
+		if (args.length != 8) {
 
 			System.err.println(USAGE);
 			System.exit(1);
@@ -30,7 +32,7 @@ public class FromFtpToFtp {
 		serverFrom = args[0];
 
 		String serverTo = "192.168.56.109";
-		serverFrom = args[1];
+		serverTo = args[1];
 
 		FTPClient ftpFrom = new FTPClient();
 
@@ -96,8 +98,8 @@ public class FromFtpToFtp {
 
 		// 登录
 		try {
-			ftpFrom.login(args[3], args[4]);
-			ftpTo.login(args[3], args[5]);
+			ftpFrom.login(args[4], args[5]);
+			ftpTo.login(args[6], args[7]);
 
 			Set<DirectoryNode> dirListTemp = new HashSet<DirectoryNode>();
 			// 设置连接类型二进制
@@ -124,6 +126,7 @@ public class FromFtpToFtp {
 					File file = new File(localRootFolder);
 					if (!file.exists() && !file.isDirectory()) {
 						file.mkdirs();
+						ftpTo.makeDirectory(remoteRootFolder);
 					}
 					if (f.isFile()) {
 						// 下载文件
@@ -134,13 +137,13 @@ public class FromFtpToFtp {
 								+ f.getName(), output);
 						output.close();
 
-						// InputStream input;
-						// input = new FileInputStream(localRootFolder
-						// + File.separator + f.getName());
-						// ftpTo.storeFile(
-						// remoteRootFolder + File.separator + f.getName(),
-						// input);
-						// input.close();
+						InputStream input;
+						input = new FileInputStream(localRootFolder
+								+ File.separator + f.getName());
+						ftpTo.storeFile(
+								remoteRootFolder + File.separator + f.getName(),
+								input);
+						input.close();
 					} else if (f.isDirectory()) {
 
 						dirListTemp.add(new DirectoryNode(f.getName(),
