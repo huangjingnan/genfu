@@ -18,6 +18,7 @@ public class DES {
 	private SecureRandom secureRandom;
 
 	public DES() {
+		setKey("0123456709ABCDEF");// 生成密匙
 	}
 
 	public DES(String str) {
@@ -77,6 +78,7 @@ public class DES {
 			byteMi = this.getEncCode(byteMing);
 			strMi = base64en.encode(byteMi);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(
 					"Error initializing SqlMap class. Cause: " + e);
 		} finally {
@@ -93,23 +95,20 @@ public class DES {
 	 * @param strMi
 	 * @return
 	 */
-	public String getDesString(String strMi) {
+	public String getDesString(String strMi) throws Exception {
 		BASE64Decoder base64De = new BASE64Decoder();
 		byte[] byteMing = null;
 		byte[] byteMi = null;
 		String strMing = "";
-		try {
-			byteMi = base64De.decodeBuffer(strMi);
-			byteMing = this.getDesCode(byteMi);
-			strMing = new String(byteMing, "UTF8");
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error initializing SqlMap class. Cause: " + e);
-		} finally {
-			base64De = null;
-			byteMing = null;
-			byteMi = null;
-		}
+		byteMi = base64De.decodeBuffer(strMi);
+		byteMing = this.getDesCode(byteMi);
+		strMing = new String(byteMing, "UTF8");
+
+		// throw new RuntimeException(
+		// "Error initializing SqlMap class. Cause: " + e);
+		// base64De = null;
+		// byteMing = null;
+		// byteMi = null;
 		return strMing;
 	}
 
@@ -167,7 +166,13 @@ public class DES {
 		String str1 = "我的";
 		// DES加密
 		String str2 = des.getEncString(str1);
-		String deStr = des.getDesString(str2);
+		String deStr = "";
+		try {
+			deStr = des.getDesString(str2);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("密文:" + str2);
 		// DES解密
 		System.out.println("明文:" + deStr);

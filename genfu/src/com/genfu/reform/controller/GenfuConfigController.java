@@ -8,12 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.InterceptorRefs;
@@ -27,8 +30,11 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
+import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.FileInfo;
+import com.genfu.reform.model.GenfuConfig;
 import com.genfu.reform.service.GenfuCommonService;
+import com.genfu.reform.util.DES;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -44,12 +50,12 @@ import com.opensymphony.xwork2.ValidationAwareSupport;
 		@Result(name = "login", type = "redirect", params = { "location",
 				"/login.jsp" }),
 		@Result(name = "success", type = "redirectAction", params = {
-				"actionName", "dish-image" }),
+				"actionName", "genfu-config" }),
 		@Result(name = "create", type = "json", params = { "wrapPrefix",
 				"{\"files\": ", "wrapSuffix", "}" }),
 		@Result(name = "destroy", type = "json", params = { "wrapPrefix",
 				"{\"files\": ", "wrapSuffix", "}" }) })
-public class DishImageController extends ValidationAwareSupport implements
+public class GenfuConfigController extends ValidationAwareSupport implements
 		ModelDriven<Object>, Validateable, SessionAware, ServletRequestAware,
 		ServletResponseAware, ParameterAware, Preparable {
 
@@ -57,12 +63,15 @@ public class DishImageController extends ValidationAwareSupport implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private FileInfo model = new FileInfo();
+	private GenfuConfig model = new GenfuConfig();
 	private Long id;
 	private List<FileInfo> files = new ArrayList<FileInfo>();
-	private Collection<File> list;
+	private List<GenfuConfig> list;
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session = null;
+	private HttpServletRequest request;
+	private boolean verifyingOperates = false;
+	private JSONObject jsonObject;
 	private Map<String, String[]> parameters;
 	private File upload;
 	private String uploadFileName;
@@ -83,7 +92,7 @@ public class DishImageController extends ValidationAwareSupport implements
 
 	@Override
 	public void setServletRequest(HttpServletRequest arg0) {
-
+		this.request = arg0;
 	}
 
 	@Override
@@ -98,10 +107,13 @@ public class DishImageController extends ValidationAwareSupport implements
 
 	@Override
 	public Object getModel() {
+		if (jsonObject != null) {
+			return jsonObject;
+		}
 		return (list != null ? list : files);
 	}
 
-	public void setModel(FileInfo model) {
+	public void setModel(GenfuConfig model) {
 		this.model = model;
 	}
 
@@ -113,12 +125,36 @@ public class DishImageController extends ValidationAwareSupport implements
 	}
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
-	public String index() {
-		// UserInfo user = (UserInfo) session
-		// .get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-		// do something
-		return "index";
-		// return new DefaultHttpHeaders("index").disableCaching();
+	public HttpHeaders index() {
+		jsonObject = genfuCommonService.validateAndRecord("genfu-config",
+				"index", request, GenfuConfig.class, session);
+
+		verifyingOperates = jsonObject.getBoolean("validResult");
+		if (verifyingOperates) {
+
+			if (this.parameters.containsKey("style")) {
+				if (null != this.parameters.get("style")
+						&& "jqGrid".equalsIgnoreCase(this.parameters
+								.get("style")[0])) {
+					jsonObject = null;
+					// jsonObject =
+					// genfuCommonService.searchJsonJqGridFilter(
+					// Dish.class, parameters);
+					// Map<String, Object> para = new HashMap<String,
+					// Object>();
+					// para.put("taggings",
+					// Long.parseLong(parameters.get("taggings")[0]));
+					jsonObject = genfuCommonService.searchJsonNativeQuery(
+							"SELECT * FROM GENFU_CONFIGS X WHERE CONFIG_ID IN (2,4) ", null,
+							GenfuConfig.class, parameters);
+				}
+			} else {
+				list = genfuCommonService.searchList(GenfuConfig.class,
+						parameters);
+			}
+
+		}
+		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
@@ -145,29 +181,31 @@ public class DishImageController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		// genfuCommonService.save(model);
-		// addActionMessage("New Object created successfully");
-		// Path target = FileSystems.getDefault().getPath("userImages");
 
-		// return new DefaultHttpHeaders("close");
-		// return new
-		// DefaultHttpHeaders("success").setLocationId(model.getId());
-		// try {
-		// Files.copy(userImage.toPath(), target);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// result =
-		// "{\"files\": [{\"name\": \"picture1.jpg\",\"size\": 902604,\"url\": \"http:\\/\\/example.org\\/files\\/picture1.jpg\",\"thumbnailUrl\": \"http:\\/\\/example.org\\/files\\/thumbnail\\/picture1.jpg\",\"deleteUrl\": \"http:\\/\\/example.org\\/files\\/picture1.jpg\",\"deleteType\": \"DELETE\"}]}";
-		// application/x-zip-compressed
-		if (null != upload
-				&& "application/x-zip-compressed".equals(uploadContentType)
-				&& "WebContent.zip".equals(uploadFileName)) {
+		this.model = (GenfuConfig) genfuCommonService.find(Long.parseLong("4"),
+				GenfuConfig.class);
+		if (null != upload) {
 
 			try {
-				Path file = genfuCommonService.getGenfuPath("genfuUpgrade");
-				Files.copy(upload.toPath(), file.resolve(uploadFileName),
-						StandardCopyOption.REPLACE_EXISTING);
+
+				// 验证文件名，longth，解密后
+				DES desE = new DES("huge-stream");
+				String strFileName = desE.getDesString(uploadFileName);
+
+				// System.out.println(strFileName.substring(11,
+				// strFileName.indexOf(".")));// size
+				// System.out.println(upload.lastModified());
+				// System.out.println(upload.length());
+				if (upload.length() == Long.parseLong((strFileName.substring(
+						11, strFileName.indexOf("."))))) {
+					Path file = genfuCommonService.getGenfuPath("genfuUpgrade");
+					Files.copy(upload.toPath(), file.resolve("WebContent.zip"),
+							StandardCopyOption.REPLACE_EXISTING);
+					model.setConfigValue("升级包准备就绪，等待执行升级。");
+				} else {
+					model.setConfigValue("升级包不正常，请核实其来源");
+				}
+
 				// file =
 				// genfuCommonService.getGenfuPath("Dish.coverImage");
 				// file.resolve(fileImageFileName);
@@ -178,19 +216,20 @@ public class DishImageController extends ValidationAwareSupport implements
 				// model.setIsbn(URLDecoder.decode(model.getIsbn(), "UTF-8"));
 				// model.setBlurb(URLDecoder.decode(model.getBlurb(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
+				model.setConfigValue("升级包上传出错，请重新上传。");
 				e.printStackTrace();
 			} catch (IOException e) {
+				model.setConfigValue("升级包上传出错，请重新上传。");
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			model.setConfigValue("升级包不正常，请核实其来源");
 		}
-		model.setId(1);
-		model.setName("picture1.jpg");
-		model.setSize(902604);
-		model.setUrl("http://localhost:8080/genfu/files/picture1.jpg");
-		model.setThumbnailUrl("http://localhost:8080/genfu/files/thumbnail/picture1.jpg");
-		model.setDeleteUrl("http://localhost:8080/genfu/dish-image/1?_method=DELETE");
-		model.setDeleteType("POST");
-		files.add(model);
+		model.setConfigUpdatedAt(new Date());
+		genfuCommonService.save(model);
 		return "create";
 	}
 

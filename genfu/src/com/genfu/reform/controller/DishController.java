@@ -129,7 +129,6 @@ public class DishController extends ValidationAwareSupport implements
 				if (null != this.parameters.get("style")
 						&& "jqGrid".equalsIgnoreCase(this.parameters
 								.get("style")[0])) {
-
 					jsonObject = null;
 					if (null != this.parameters.get("cd_mask")) {
 						try {

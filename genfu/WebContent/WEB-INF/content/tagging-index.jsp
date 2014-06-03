@@ -9,8 +9,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>tagging</title>
 <script src="${ctx}/js/uploadfile/jquery.form.js" type="text/javascript"></script>
-<script type="text/javascript">
 
+<script type="text/javascript">
 	jQuery("#tagging_tags").jqGrid({ 
 	url:'/genfu/tag.json?style=jqGrid',
 	datatype: "json", 
