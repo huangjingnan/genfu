@@ -1,4 +1,4 @@
-
+ps -ef|grep rmiregistry|grep -v grep|awk '{print $2}'|xargs kill -9
 
 
 /home/hadoop/hadoop-2.2.0-src/hadoop-common-project/hadoop-auth/
@@ -12,6 +12,7 @@ C:\\Users\\xuzhenfu\\Downloads\\jmx_examples\\jmx_examples\\Security\\fine_grain
 
 java -classpath client;server;mbeans      -Djavax.net.ssl.trustStore=config/truststore      -Djavax.net.ssl.trustStorePassword=trustword      Client
 
+keytool -importkeystore -srckeystore truststore -destkeystore cacerts.jks -srcstorepass trustword
 
 ---***dish-image begin***---
 <%@ page language="java" contentType="text/html; charset=UTF-8"

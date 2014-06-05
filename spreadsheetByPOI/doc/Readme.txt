@@ -1,0 +1,1 @@
+java -jar appOfPOI.jar 10.109.221.205 test umap_root admin123 resources C:\\Users\\xuzf\\Downloads\\ftp_session_20130910_20130911104250131\\ftp_session_20130910_20130911104250131\\workbook1-1000.xls
