@@ -450,4 +450,8 @@
 		class="com.genfu.reform.controller.DishCommentController" autowire="no">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
+	<bean id="genfuConfigController" scope="prototype"
+		class="com.genfu.reform.controller.GenfuConfigController" autowire="no">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
 </beans>

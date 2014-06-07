@@ -145,7 +145,7 @@ jQuery("#configListUpgrade").jqGrid({
    	sortname: 'id',
     viewrecords: true, 
 	autowidth: true,
-	multiselect: true, caption: "configListUpgrade" }); 
+	multiselect: false, caption: "configListUpgrade" }); 
 	
 jQuery("#configListUpgrade").jqGrid('navGrid','#pconfigListUpgrade',{edit:true,add:false,del:false},
 		{url:'${ctx}/genfu-config/0?_method=put',reloadAfterSubmit:false,width: 640},
@@ -155,38 +155,34 @@ jQuery("#configListUpgrade").jqGrid('navButtonAdd','#pconfigListUpgrade',
 		{caption:"执行",
 			buttonicon:"ui-icon-wrench",
 			onClickButton:function(){
-				confirm_oper('wrenchConfig','configListUpgrade',wrenchConfig);
+				confirm_oper('idWrenchConfig','configListUpgrade',wrenchConfig);
 			} 
 		});	
 		
 function wrenchConfig(){
-	alert(0);
-	/* var dishId = jQuery("#tagging_dishes").jqGrid('getGridParam','selarrrow');
-	var tagId = jQuery("#tagging_tags").jqGrid('getGridParam','selarrrow');
-	if(dishId.length < 1 && tagId.length < 1){
+	debugger;
+	var tempUrl = '${ctx}/genfu-config/0?_method=put';
+	var configId = jQuery("#configListUpgrade").jqGrid('getGridParam','selrow');
+	if(configId == null){
 		return;
 	}
-	var jsonObject = {};
-	if(dishId !== undefined && dishId.length > 0){
-		jsonObject["dishIds"]=dishId;
-	} 
-	if(tagId !== undefined && tagId.length > 0){
-		jsonObject["tagIds"]=tagId;
-	} 
+	var jsonObject = jQuery("#configListUpgrade").jqGrid('getRowData',configId[0]);
+	tempUrl=tempUrl+'&jmx='+jsonObject.configKey;
+
 	$.ajax({
         type: 'POST',
         data:jsonObject,
-        url: '${ctx}/tagging/0?_method=DELETE',
+        url: tempUrl,
         dataType: 'json',
         success: function (data) {
         	//debugger;
-        	jQuery("#tagging_dishes").trigger("reloadGrid");
+        	jQuery("#configListUpgrade").trigger("reloadGrid");
         	//alert(typeof(data));
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(errorThrown);
         }
-	}); */
+	});
 }		
 
 $(function () {
