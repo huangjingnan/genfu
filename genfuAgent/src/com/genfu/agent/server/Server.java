@@ -50,7 +50,7 @@ public class Server {
 			//
 			System.out.println("\nCreate an RMI connector server");
 			JMXServiceURL url = new JMXServiceURL(
-					"service:jmx:rmi:///jndi/rmi://genfu:9999/server");
+					"service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 			JMXConnectorServer cs = JMXConnectorServerFactory
 					.newJMXConnectorServer(url, env, mbs);
 

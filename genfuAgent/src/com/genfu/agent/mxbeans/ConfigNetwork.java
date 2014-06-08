@@ -31,7 +31,7 @@ public class ConfigNetwork implements ConfigNetworkMXBean {
 			// "cp /etc/network/interfaces /etc/network/interfaces_bak",
 			// "UTF-8");
 			Pattern pattern = Pattern
-					.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+					.compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
 
 			if (pattern.matcher(address).matches()
 					&& pattern.matcher(netmask).matches()
@@ -41,8 +41,6 @@ public class ConfigNetwork implements ConfigNetworkMXBean {
 				try {
 					// inp = new
 					// FileInputStream("C:\\Users\\xuzhenfu\\Downloads\\interfaces.txt");
-
-					// 修改前，变更数据库状态，禁止再上传升级包
 
 					out = new FileOutputStream("/etc/network/interfaces");
 
@@ -106,8 +104,18 @@ public class ConfigNetwork implements ConfigNetworkMXBean {
 			e.printStackTrace();
 		}
 
+		System.out.println(output.toString());
 		return output.toString();
 
+	}
+
+	@Override
+	public ConfigResult cfgUpgrade(String password, String password2,
+			String password3) throws IOException {
+		synchronized (this) {
+			this.executeCommand("/root/upgrade.sh " + password, "UTF-8");
+			return new ConfigResult(new Date(), 0, "");
+		}
 	}
 
 	// public MBeanNotificationInfo[] getNotificationInfo() {

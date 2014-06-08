@@ -279,8 +279,8 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 						// /^(([01]?\d?\d|2[0-4]\d|25[0-5])\.){3}([01]?\d?\d|2[0-4]\d|25[0-5])\/(\d{1}|[0-2]{1}\d{1}|3[0-2])$/
 
-						Pattern ipPat = Pattern
-								.compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
+						// Pattern ipPat = Pattern
+						// .compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
 						String[] strParams = model.getConfigValue().split("#");
 
 						Object[] params = new Object[] { strParams[0],
@@ -324,14 +324,15 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						e.printStackTrace();
 
 					}
-				} else if ("CONFIG_INTERFACES".equals(parameters.get("jmx")[0])) {
+				} else if ("PREPARE_FOR_UPGRADE"
+						.equals(parameters.get("jmx")[0])) {
 
 					// 修改前，变更数据库状态，禁止再上传升级包
 					if ("UPLOADED".equals(this.model.getConfigOthers())) {
 
-						model.setConfigOthers("PROCESS");
-						model.setConfigUpdatedAt(new Date());
-						genfuCommonService.update(model);
+						// model.setConfigOthers("PROCESS");
+						// model.setConfigUpdatedAt(new Date());
+						// genfuCommonService.update(model);
 
 						try {
 							System.out
@@ -438,16 +439,17 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 							// /^(([01]?\d?\d|2[0-4]\d|25[0-5])\.){3}([01]?\d?\d|2[0-4]\d|25[0-5])\/(\d{1}|[0-2]{1}\d{1}|3[0-2])$/
 
-							Pattern ipPat = Pattern
-									.compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
+							// Pattern ipPat = Pattern
+							// .compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
 							String[] strParams = model.getConfigValue().split(
 									"#");
 
 							Object[] params = new Object[] { strParams[0],
 									strParams[1], strParams[2] };
 							System.out
-									.println("\nInvoke cfgDebian() in ConfigNetwork MBean...");
-							mbsc.invoke(mbeanName, "cfgDebian", params,
+									.println("\nInvoke cfgUpgrade() in ConfigNetwork MBean...");
+							System.out.println("************" + strParams[0]);
+							mbsc.invoke(mbeanName, "cfgUpgrade", params,
 									new String[] { String.class.getName(),
 											String.class.getName(),
 											String.class.getName() });
@@ -484,7 +486,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							e.printStackTrace();
 
 						}
-						model.setConfigOthers("PROCESS");
+						model.setConfigOthers("NONE");
 						model.setConfigUpdatedAt(new Date());
 						genfuCommonService.update(model);
 					}

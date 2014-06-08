@@ -251,12 +251,13 @@ function logout(){
 				<li><a href="#tabs-1">home</a></li>
 			</ul>
 			<div id="tabs-1" style="font-size:12px;">
-			<br/>注意：本架构用到的所有软件均为开源，唯独项目本身代码没有开源，原因为开发者自己觉得代码尚待优化；
-			<br/>未经允去请不要破解以及反编译项目源码，如果您坚持这么做，我只能画个圈圈诅咒你；
+			<br/>注意：
+			<br/>未经允去请不要破解项目的操作系统及文件，如果您坚持这么做，我只能画个圈圈诅咒你；
 			<br/>当您看到此页面，表示您同意以上内容；
 			<br/>特点：HTML5、RESTful、NoSQL、JPA2.0、JMX、OSGi、Security，兼容任何设备上的任何浏览器；
-			<br/>致谢：项目中所有开源产品（Debian、PostgreSQL、Redis等）；
-			<br/>邮箱：zhenfuxu@gmail.com
+			<br/>致谢：项目中所有开源产品（Debian、PostgreSQL、Redis等），分享最新技术信息的某些人；
+			<br/>联系：zhenfuxu@gmail.com
+			<br/>&copy; 2009-2014 genfu
 				<%-- <s:property value="%{#session.userCode}" /> --%>
 			</div>
 		</div>

@@ -640,6 +640,6 @@
 	</div>
 	<div id="content">欢迎您！</div>
 	<div id="shopping_cart"></div>
-	<div id="footer">&copy; 2009-2013 genfu</div>
+	<div id="footer">&copy; 2009-2014 genfu</div>
 </body>
 </html>
