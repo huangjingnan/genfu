@@ -7,10 +7,10 @@ public class TestAny {
 	public static void main(String[] args) {
 
 		try {
-			String strAnyS = "WebContent#4544.zip";// 5gUhZ1KF8vlr4Nn+sXgV7W04GPXziP0c
+			String strAnyS = "WebContent#38997154.zip";// 5gUhZ1KF8vlr4Nn+sXgV7W04GPXziP0c
 			// WebContent#1234.zip
 
-			DES fileNameDES = new DES("huge-stream");
+			DES fileNameDES = new DES("stream-huge");
 
 			strAnyS = fileNameDES.getEncString(strAnyS);
 			System.out.println(strAnyS);

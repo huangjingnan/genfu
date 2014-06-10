@@ -17,7 +17,7 @@
 				<li>${item.dishId}#&nbsp;|&nbsp;${item.orderItemName}&nbsp;|&nbsp;${item.status}&nbsp;|&nbsp;￥${item.price}&nbsp;|&nbsp;${item.amount}&nbsp;|&nbsp;￥<em>${item.price*item.amount}</em>&nbsp;|&nbsp;${item.createdAt}</li>
 			</s:iterator>
 			</ol>
-			<em>Total: <s:property value="#countAmount"/>份,￥</em><em id="em_order_${id}">0.00</em>
+			<em><s:text name="carts.total"/>: <s:property value="#countAmount"/>份,￥</em><em id="em_order_${id}">0.00</em>
 			<script type="text/javascript">
 				//<![CDATA[
 				jQuery(function() {

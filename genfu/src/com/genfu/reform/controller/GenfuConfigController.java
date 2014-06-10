@@ -386,6 +386,11 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 									"com.genfu.agent.mxbeans:type=ConfigNetwork");
 							System.out
 									.println("\nCreate ConfigNetwork MBean...");
+							try {
+								mbsc.unregisterMBean(mbeanName);
+							} catch (Exception e) {
+								//e.printStackTrace();
+							}
 							mbsc.createMBean(
 									"com.genfu.agent.mxbeans.ConfigNetwork",
 									mbeanName, null, null);
@@ -524,14 +529,14 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 		synchronized (this) {
 			this.model = (GenfuConfig) genfuCommonService.find(
 					Long.parseLong("4"), GenfuConfig.class);
-			if (null != upload && !"PROCESS".equals(model.getConfigOthers())) {
+			if (null != upload) {
 
 				// NONE=等待上传；UPLOADED=已经上传；PROCESS=正在升级；
 
 				try {
 
 					// 验证文件名，longth，解密后
-					DES desE = new DES("huge-stream");
+					DES desE = new DES(model.getConfigValue().split("#")[1]);
 					String strFileName = desE.getDesString(uploadFileName);
 
 					// System.out.println(strFileName.substring(11,
@@ -581,7 +586,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 				model.setConfigValue("升级包不正常，请核实其来源");
 			}
 			model.setConfigUpdatedAt(new Date());
-			genfuCommonService.save(model);
+			genfuCommonService.update(model);
 			return "create";
 		}
 	}

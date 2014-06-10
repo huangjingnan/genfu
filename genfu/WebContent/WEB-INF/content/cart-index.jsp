@@ -20,7 +20,7 @@
 	</s:iterator>
 </ul>
 <p id="cart_total">
-	<strong>Total:${model.cartItems.size()} 道,<s:property value="#countAmount"/>份,￥${model.total()}</strong>
+	<strong><s:text name="carts.total"/>:${model.cartItems.size()} 道,<s:property value="#countAmount"/>份,￥${model.total()}</strong>
 </p>
 <s:if test="model.total()>0">
 	<p id="clear_cart_link">

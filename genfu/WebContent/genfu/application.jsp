@@ -59,7 +59,7 @@ html, body {
 	src="${ctx}/js/jquery-ui-1.10.3/ui/jquery-ui.js"></script> --%>
 <script src="${ctx}/js/tonytomov-jqGrid/jqGrid_Demos_files/jquery-ui-custom.js" type="text/javascript"></script>
 <script src="${ctx}/js/tonytomov-jqGrid/jqGrid_Demos_files/jquery.layout.js" type="text/javascript"></script>
-<script src="${ctx}/js/jquery.jqGrid-4.6.0/js/i18n/grid.locale-en.js" type="text/javascript"></script>
+<script src="${ctx}/js/jquery.jqGrid-4.6.0/js/i18n/grid.locale-cn.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$.jgrid.no_legacy_api = true;
 	$.jgrid.useJSON = true;
@@ -252,12 +252,11 @@ function logout(){
 			</ul>
 			<div id="tabs-1" style="font-size:12px;">
 			<br/>注意：
-			<br/>未经允去请不要破解项目的操作系统及文件，如果您坚持这么做，我只能画个圈圈诅咒你；
-			<br/>当您看到此页面，表示您同意以上内容；
-			<br/>特点：HTML5、RESTful、NoSQL、JPA2.0、JMX、OSGi、Security，兼容任何设备上的任何浏览器；
-			<br/>致谢：项目中所有开源产品（Debian、PostgreSQL、Redis等），分享最新技术信息的某些人；
+			<br/>未经允去请不要打开项目的操作系统及文件；
+			<br/>当您看到此页面，表示您同意上述内容；
 			<br/>联系：zhenfuxu@gmail.com
 			<br/>&copy; 2009-2014 genfu
+			<br/>1.0.0
 				<%-- <s:property value="%{#session.userCode}" /> --%>
 			</div>
 		</div>

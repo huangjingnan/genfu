@@ -119,7 +119,18 @@ function confirm_oper(theId,gID,operate,p){
 		$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:true, overlay:30, modal:false});
 	}
 }
-
+function dishDatefmt(cellvalue, options, rowObject)
+{
+	//debugger;
+	if(cellvalue !== undefined && cellvalue !== null && cellvalue !== ""){
+		return new Date(cellvalue.time).toLocaleString("ca");
+	}else{
+		return "";
+	}
+	//
+	//return cellvalue.toLocaleString("ca");
+	//return 0;
+}
 jQuery("#configListUpgrade").jqGrid({ 
 	url:'${ctx}/genfu-config.json?style=jqGrid',
 	datatype: "json", 
@@ -128,16 +139,16 @@ jQuery("#configListUpgrade").jqGrid({
 	colModel:[
    		{name:'id',index:'id', width:55,editable:true,editoptions:{readonly:true,size:10}},
    		{name:'configKey',index:'configKey', width:80,editoptions:{size:10}},
-   		{name:'configDescription',index:'configDescription', width:90,hidden:true,editoptions:{size:25}},
-   		{name:'configOthers',index:'configOthers', width:60,hidden:true,editoptions:{size:10}},
+   		{name:'configDescription',index:'configDescription',width:90,hidden:true,editoptions:{size:25}},
+   		{name:'configOthers',index:'configOthers',editable:true,width:60,editoptions:{size:50}},
    		{name:'configCreatedAt',index:'configCreatedAt', width: 80,hidden:true, align: 'center', sorttype: 'date',
             formatter: 'date',editrules:{date:true,required:false}, formatoptions: {newformat: 'Y-m-d H:i:sO'}, datefmt: 'Y-m-d H:i:sO'},
    		{name:'configFlag',index:'configFlag', width:40, editable: false,align:"left",edittype:"select",editoptions:{value:"OPEN:OPEN;CLOSED:CLOSED"}},
    		{name:'configParentId',index:'configParentId',hidden:true, align:"right",formatter:'number', width:80},
    		{name:'configEffDate',index:'configEffDate',hidden:true,width:100,align:"center",formatter: { srcformat:'Y-m-d', newformat: 'd/m/Y'}},
-   		{name:'configUpdatedAt',index:'configUpdatedAt',width:60,align:"center"},	
+   		{name:'configUpdatedAt',index:'configUpdatedAt', formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}, width:100,align:"center"},	
    		{name:'configSrc',index:'configSrc',hidden:true, width:100,editoptions:{size:25}},
-   		{name:'configValue',index:'configValue',editable:true, width:60,editoptions:{size:100}}
+   		{name:'configValue',index:'configValue',editable:true,width:60,editoptions:{size:100}}
    	],
    	rowNum:20,
    	rowList:[20,30,50],
@@ -160,7 +171,7 @@ jQuery("#configListUpgrade").jqGrid('navButtonAdd','#pconfigListUpgrade',
 		});	
 		
 function wrenchConfig(){
-	debugger;
+	//debugger;
 	var tempUrl = '${ctx}/genfu-config/0?_method=put';
 	var configId = jQuery("#configListUpgrade").jqGrid('getGridParam','selrow');
 	if(configId == null){

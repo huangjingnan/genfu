@@ -26,7 +26,7 @@ jQuery("#k_process").jqGrid({
    			formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
    	multiselect: true,
-   	caption: 'process',
+   	caption: 'process(烹饪)',
     pager: '#pk_process'
 });
 jQuery("#k_process").jqGrid('navGrid','#pk_process',{edit:false,add:false,del:false},
@@ -50,7 +50,7 @@ jQuery("#k_fruition").jqGrid({
  	   	{name:'updatedAt',index:'updatedAt', width:150,align:"center",sorttype:'datetime',
    			formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
-    caption: 'fruition',
+    caption: 'fruition(享用)',
     pager: '#pk_fruition'
 });
 jQuery("#k_fruition").jqGrid('navGrid','#pk_fruition',{edit:false,add:false,del:false},
@@ -75,7 +75,7 @@ jQuery("#k_open").jqGrid({
    			formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
    	multiselect: true,
-    caption: 'open',
+    caption: 'open(未开始)',
     pager: '#pk_open'
 });
 jQuery("#k_open").jqGrid('navGrid','#pk_open',{edit:false,add:false,del:false},
@@ -99,7 +99,7 @@ jQuery("#k_waiting").jqGrid({
  	   	{name:'updatedAt',index:'updatedAt', width:150,align:"center",sorttype:'datetime',
    	   		formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}}
    	],
-    caption: 'waiting',
+    caption: 'waiting(完成，待上蔡)',
     pager: '#pk_waiting'
 });
 jQuery("#k_waiting").jqGrid('navGrid','#pk_waiting',{edit:false,add:false,del:false},

@@ -11,7 +11,7 @@ pre {
 }
 
 a {
-    color: #000;
+    color: #6D7264;
 }
 
 a:visited {
@@ -137,7 +137,7 @@ dt {
 
 #shopping_cart {
     border-left: 3px solid #666;
-    background: #aaa;
+    background: #FFFDFD;
     position: fixed;
     bottom: 0;
     right: 0;
@@ -168,7 +168,7 @@ dt {
 
 body {
     background-color: #fff;
-    color: #333;
+    color: #8A8484;
     margin-right: 230px;
 }
 
