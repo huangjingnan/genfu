@@ -22,6 +22,7 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
+import com.genfu.reform.model.Order;
 import com.genfu.reform.model.OrderItem;
 import com.genfu.reform.service.GenfuCommonService;
 import com.opensymphony.xwork2.ModelDriven;
@@ -107,10 +108,9 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 				Map<String, Object> par = new HashMap<String, Object>();
 				par.put("itemStatus", "WAITING");
 
-				jsonObject = genfuCommonService
-						.searchJsonJqGridFilter(
-								"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
-								par, OrderItem.class, parameters);
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
+						par, OrderItem.class, parameters);
 			} else {
 				/*
 				 * list = genfuCommonService.searchList(OrderItem.class,
@@ -122,7 +122,23 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
-		if ("PROCESS".equalsIgnoreCase(model.getStatus())) {
+		if (parameters.containsKey("orderItemId")) {
+
+			String orderItemId = parameters.get("orderItemId")[0];
+			StringBuffer strBuffJPQL = new StringBuffer();
+
+			Map<String, Object> param = new HashMap<String, Object>();
+
+			strBuffJPQL = new StringBuffer(
+					"UPDATE ORDER_ITEMS SET STATUS = :_status, UPDATED_AT = :_now WHERE STATUS = :_status_old AND ORDER_ITEM_ID IN(");
+			strBuffJPQL.append(orderItemId);
+			strBuffJPQL.append(")");
+
+			param.put("_status", "WAITING");
+			param.put("_now", new Date());
+			param.put("_status_old", "PROCESS");
+			genfuCommonService.excuseNativeQuery(strBuffJPQL.toString(), param);
+		} else if ("PROCESS".equalsIgnoreCase(model.getStatus())) {
 			model.setStatus("WAITING");
 			model.setUpdatedAt(new Date());
 			genfuCommonService.update(model);
@@ -131,7 +147,7 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 	}
 
 	public void setId(Long id) {
-		if (id != null) {
+		if (id != null && id > 0) {
 			model = (OrderItem) genfuCommonService.find(id, OrderItem.class);
 		}
 		this.id = id;

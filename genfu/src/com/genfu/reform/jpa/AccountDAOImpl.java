@@ -294,4 +294,10 @@ public class AccountDAOImpl implements GenfuCommonDAO {
 		return 0;
 	}
 
+	@Override
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

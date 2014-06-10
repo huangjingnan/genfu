@@ -1283,4 +1283,10 @@ public class AccountServiceImpl implements GenfuCommonService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

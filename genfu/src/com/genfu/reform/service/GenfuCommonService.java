@@ -73,6 +73,8 @@ public interface GenfuCommonService {
 
 	public int batchExcuseNativeQuery(String strSQLSplt);
 
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0);
+
 	public boolean verifyingOperates(Map<String, String[]> arg0,
 			Map<String, Object> session);
 

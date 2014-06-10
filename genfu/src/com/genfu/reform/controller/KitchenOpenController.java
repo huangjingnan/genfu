@@ -131,7 +131,7 @@ public class KitchenOpenController extends ValidationAwareSupport implements
 	}
 
 	public void setId(Long id) {
-		if (id != null) {
+		if (id != null && id > 0) {
 			model = (OrderItem) genfuCommonService.find(id, OrderItem.class);
 		}
 		this.id = id;
@@ -147,7 +147,7 @@ public class KitchenOpenController extends ValidationAwareSupport implements
 	}
 
 	public HttpHeaders create() {
-		//genfuCommonService.save(model);
+		// genfuCommonService.save(model);
 		return new DefaultHttpHeaders("thanks").setLocationId(model.getId());
 	}
 

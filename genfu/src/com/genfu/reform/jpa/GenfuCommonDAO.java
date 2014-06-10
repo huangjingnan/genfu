@@ -64,6 +64,8 @@ public interface GenfuCommonDAO {
 			LockModeType lockMode);
 
 	public int batchExcuseNativeQuery(String strSQL);
+	
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0);
 
 	/**
 	 * Find by primary key, using the specified properties. Search for an entity

@@ -1271,7 +1271,8 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, int FIRST_RESULT, int MAX_RESULTS) {
-		return genfuCommonTransaction.searchNativeQuery(jpql, parameters, FIRST_RESULT, MAX_RESULTS);
+		return genfuCommonTransaction.searchNativeQuery(jpql, parameters,
+				FIRST_RESULT, MAX_RESULTS);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1333,5 +1334,10 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 				page * limit));
 
 		return jsonObject;
+	}
+
+	@Override
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
+		return genfuCommonTransaction.excuseNativeQuery(strSQLSplt, agr0);
 	}
 }

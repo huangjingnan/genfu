@@ -166,7 +166,7 @@ public class TaggingController extends ValidationAwareSupport implements
 				}
 
 				strBuffJPQL.delete(0, 1);
-				// taggable = strBuffJPQL.toString();
+				// taggable = strBuffJPQL.toString();删除第一个逗号
 				strBuffJPQL.insert(0, "from Tagging WHERE TAGGABLE_ID IN (");
 				strBuffJPQL.append(") ORDER BY TAGGABLE_ID,TAG_ID");
 				List<Tagging> tagginglist = genfuCommonService.searchList(

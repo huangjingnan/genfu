@@ -122,21 +122,56 @@ public class KitchenProcessController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
+		Order theOrder = new Order();
+		if (parameters.containsKey("orderItemId")) {
 
-		Order theOrder = (Order) genfuCommonService.find(model.getOrderId(),
-				Order.class);
+			String orderItemId = parameters.get("orderItemId")[0];
+			StringBuffer strBuffJPQL = new StringBuffer();
+			strBuffJPQL
+					.append("SELECT t FROM OrderItem t WHERE t.status = 'OPEN' AND t.id IN (");
+			strBuffJPQL.append(orderItemId).append(") ORDER BY t.orderId ASC");
 
-		if ("OPEN".equalsIgnoreCase(model.getStatus())
-				&& "PROCESS".equalsIgnoreCase(theOrder.getStatus())) {
-			model.setStatus("PROCESS");
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
+			List<OrderItem> oitemList = genfuCommonService.searchList(
+					strBuffJPQL.toString(), null, OrderItem.class);
+
+			Map<String, Object> param = new HashMap<String, Object>();
+
+			strBuffJPQL = new StringBuffer(
+					"UPDATE ORDER_ITEMS SET STATUS = :_status, UPDATED_AT = :_now WHERE STATUS = :_status_old AND ORDER_ITEM_ID IN(0");
+
+			for (OrderItem oi : oitemList) {
+				if (theOrder.getId() != oi.getOrderId()) {
+					theOrder = (Order) genfuCommonService.find(oi.getOrderId(),
+							Order.class);
+				}
+				if ("PROCESS".equalsIgnoreCase(theOrder.getStatus())) {
+					strBuffJPQL.append(",");
+					strBuffJPQL.append(oi.getId());
+				}
+
+			}
+			strBuffJPQL.append(")");
+
+			param.put("_status", "PROCESS");
+			param.put("_now", new Date());
+			param.put("_status_old", "OPEN");
+			genfuCommonService.excuseNativeQuery(strBuffJPQL.toString(), param);
+		} else if (model.getId() > 0
+				&& "OPEN".equalsIgnoreCase(model.getStatus())) {
+
+			theOrder = (Order) genfuCommonService.find(model.getOrderId(),
+					Order.class);
+			if ("PROCESS".equalsIgnoreCase(theOrder.getStatus())) {
+				model.setStatus("PROCESS");
+				model.setUpdatedAt(new Date());
+				genfuCommonService.update(model);
+			}
 		}
 		return "json";
 	}
 
 	public void setId(Long id) {
-		if (id != null) {
+		if (id != null && id > 0) {
 			model = (OrderItem) genfuCommonService.find(id, OrderItem.class);
 		}
 		this.id = id;

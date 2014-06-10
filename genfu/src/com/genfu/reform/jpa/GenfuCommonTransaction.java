@@ -330,4 +330,24 @@ public class GenfuCommonTransaction implements GenfuCommonDAO {
 		return query.getResultList().size();
 	}
 
+	@Override
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
+		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction = em.getTransaction();
+		entityTransaction.begin();
+		Query query = em.createNativeQuery(strSQLSplt);
+		for (Parameter<?> sqlParam : query.getParameters()) {
+			String paramName = sqlParam.getName();
+			query.setParameter(paramName, agr0.get(paramName));
+			paramName = null;
+		}
+		int ret = query.executeUpdate();
+
+		logger.info(strSQLSplt + ret);
+		entityTransaction.commit();
+		em.clear();
+		em.close();
+		return ret;
+	}
+
 }

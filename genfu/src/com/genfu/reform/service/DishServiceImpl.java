@@ -1235,4 +1235,10 @@ public class DishServiceImpl implements GenfuCommonService {
 		return null;
 	}
 
+	@Override
+	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

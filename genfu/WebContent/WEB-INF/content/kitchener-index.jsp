@@ -34,6 +34,35 @@ jQuery("#k_process").jqGrid('navGrid','#pk_process',{edit:false,add:false,del:fa
 		{url:'${ctx}/kitchen-process',clearAfterAdd:true,reloadAfterSubmit:false,recreateForm:true},
 		{url:'${ctx}/genfu-common/0?_method=DELETE&className=com.genfu.reform.model.OrderItem',reloadAfterSubmit:false},
 		{multipleSearch:true, multipleGroup:false, showQuery: true});
+jQuery("#k_process").jqGrid('navButtonAdd','#pk_process',
+		{caption:"加工完成，准备上菜",
+			buttonicon:"ui-icon-arrowthick-1-n",
+			onClickButton:function(){
+				confirmkitchen('idk_process','k_waiting',k_process_arrow_n);
+			} 
+		});			
+function k_process_arrow_n(){
+	var k_processId = jQuery("#k_process").jqGrid('getGridParam','selarrrow');
+	if ($.isArray(k_processId)) {k_processId = k_processId.join();}
+	if(k_processId.length < 1){
+		return;
+	}
+
+	$.ajax({
+        type: 'POST',
+        data:{orderItemId:k_processId},
+        url: '${ctx}/kitchen-waiting/0?_method=put',
+        dataType: 'json',
+        success: function (data) {
+        	jQuery("#k_process").trigger("reloadGrid");
+        	jQuery("#k_waiting").trigger("reloadGrid");
+        	//alert(typeof(data));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+	});
+}				
 jQuery("#k_fruition").jqGrid({
 	url:'${ctx}/kitchen-fruition.json?style=jqGrid',
 	datatype: "json", 
@@ -79,10 +108,132 @@ jQuery("#k_open").jqGrid({
     pager: '#pk_open'
 });
 jQuery("#k_open").jqGrid('navGrid','#pk_open',{edit:false,add:false,del:false},
-		{url:'${ctx}/kitchen-process/0?_method=put',reloadAfterSubmit:false,recreateForm:true},
-		{url:'${ctx}/kitchen-process',clearAfterAdd:true,reloadAfterSubmit:false,recreateForm:true},
-		{url:'${ctx}/genfu-common/0?_method=DELETE&className=com.genfu.reform.model.OrderItem',reloadAfterSubmit:false},
+		{url:'${ctx}/kitchen-open/0?_method=put',reloadAfterSubmit:false,recreateForm:true},
+		{url:'${ctx}/kitchen-open',clearAfterAdd:true,reloadAfterSubmit:false,recreateForm:true},
+		{url:'${ctx}/kitchen-open/0?_method=DELETE&className=com.genfu.reform.model.OrderItem',reloadAfterSubmit:false},
 		{multipleSearch:true, multipleGroup:false, showQuery: true});
+jQuery("#k_open").jqGrid('navButtonAdd','#pk_open',
+		{caption:"开始加工",
+			buttonicon:"ui-icon-arrowthick-1-n",
+			onClickButton:function(){
+				confirmkitchen('idarrow_n','k_process',k_open_arrow_n);
+			} 
+		});	
+
+function confirmkitchen(theId,gID,operate,p){
+	p = $.extend(true, {
+		top : 320,
+		left: 370,
+		width: 240,
+		height: 'auto',
+		dataheight : 'auto',
+		modal: false,
+		overlay: 30,
+		drag: true,
+		resize: true,
+		url : '',
+		mtype : "POST",
+		reloadAfterSubmit: true,
+		beforeShowForm: null,
+		beforeInitData : null,
+		afterShowForm: null,
+		beforeSubmit: null,
+		onclickSubmit: null,
+		afterSubmit: null,
+		jqModal : true,
+		closeOnEscape : false,
+		delData: {},
+		delicon : [],
+		cancelicon : [],
+		onClose : null,
+		ajaxDelOptions : {},
+		processing : false,
+		serializeDelData : null,
+		useDataProxy : false
+	}, $.jgrid.col, p ||{});
+	var $t = jQuery("#"+theId),onCS = {},
+	dtbl = "gConTbl_"+$.jgrid.jqID(gID),postd, idname, opers, oper,
+	dtbl_id = "gConTbl_" + gID,
+	IDs = {themodal:'gConmod'+gID,modalhead:'gConhd'+gID,modalcontent:'gConcnt'+gID, scrollelm: dtbl};
+	//debugger;
+	var theOperate = $.isFunction( operate );
+	//onOperate.call($t, $("#"+frmgr), frmoper); 
+	if ( $("#"+$.jgrid.jqID(IDs.themodal))[0] !== undefined ) {
+		$("#DelData>td","#"+dtbl).text('rowids');
+		$("#DelError","#"+dtbl).hide();
+		$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:true,jqM: false, overlay: 30, modal:false});
+	} else {
+		var dh = "80px",
+		dw = "250px",
+		tbl = "<div id='"+dtbl_id+"' class='formdata' style='width:"+dw+";overflow:auto;position:relative;height:"+dh+";'>";
+		tbl += "<table class='DelTable'><tbody>";
+		// error data
+		tbl += "<tr id='DelError' style='display:none'><td class='ui-state-error'></td></tr>";
+		tbl += "<tr id='DelData' style='display:none'><td >"+'rowids'+"</td></tr>";
+		tbl += "<tr><td class=\"delmsg\" style=\"white-space:pre;\">"+"确定执行此操作吗？"+"</td></tr><tr><td >&#160;</td></tr>";
+		// buttons at footer
+		tbl += "</tbody></table></div>";
+		var bS  = "<a id='dData' class='fm-button ui-state-default ui-corner-all'>"+p.bSubmit+"</a>",
+		bC  = "<a id='eData' class='fm-button ui-state-default ui-corner-all'>"+p.bCancel+"</a>";
+		tbl += "<table cellspacing='0' cellpadding='0' border='0' class='EditTable' id='"+dtbl+"_2'><tbody><tr><td><hr class='ui-widget-content' style='margin:1px'/></td></tr><tr><td class='DelButton EditButton'>"+bS+"&#160;"+bC+"</td></tr></tbody></table>";
+		p.gbox = "#gbox_"+$.jgrid.jqID(gID);
+		$.jgrid.createModal(IDs,tbl,p,"#gview_"+gID,$("#gview_"+gID)[0]);
+
+		/*$(".fm-button","#"+dtbl+"_2").hover(
+			function(){$(this).addClass('ui-state-hover');},
+			function(){$(this).removeClass('ui-state-hover');}
+		);*/
+		p.delicon = [true,"left","ui-icon-check"];
+		p.cancelicon = [true,"left","ui-icon-cancel"];
+		if(p.delicon[0]===true) {
+			$("#dData","#"+dtbl+"_2").addClass(p.delicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+			.append("<span class='ui-icon "+p.delicon[2]+"'></span>");
+		}
+		if(p.cancelicon[0]===true) {
+			$("#eData","#"+dtbl+"_2").addClass(p.cancelicon[1] === "right" ? 'fm-button-icon-right' : 'fm-button-icon-left')
+			.append("<span class='ui-icon "+p.cancelicon[2]+"'></span>");
+		}
+		$("#dData","#"+dtbl+"_2").click(function(){
+
+			if(theOperate){
+				operate.call();
+			}
+
+			//$("#dData", "#"+dtbl+"_2").removeClass('ui-state-active');
+			$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:true, onClose: null});
+		
+			return false;
+		});
+		$("#eData", "#"+dtbl+"_2").click(function(){
+			$.jgrid.hideModal("#"+$.jgrid.jqID(IDs.themodal),{gb:"#gbox_"+$.jgrid.jqID(gID),jqm:true, onClose: null});
+			return false;
+		});
+		$.jgrid.viewModal("#"+$.jgrid.jqID(IDs.themodal),{gbox:"#gbox_"+$.jgrid.jqID(gID),jqm:true, overlay:30, modal:false});
+	}
+}
+function k_open_arrow_n(){
+	var k_openId = jQuery("#k_open").jqGrid('getGridParam','selarrrow');
+	if ($.isArray(k_openId)) {k_openId = k_openId.join();}
+	if(k_openId.length < 1){
+		return;
+	}
+
+	$.ajax({
+        type: 'POST',
+        data:{orderItemId:k_openId},
+        url: '${ctx}/kitchen-process/0?_method=put',
+        dataType: 'json',
+        success: function (data) {
+        	jQuery("#k_process").trigger("reloadGrid");
+        	jQuery("#k_open").trigger("reloadGrid");
+        	//alert(typeof(data));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+	});
+}			
+		
 jQuery("#k_waiting").jqGrid({
 	url:'${ctx}/kitchen-waiting.json?style=jqGrid',
 	datatype: "json", 
@@ -107,6 +258,36 @@ jQuery("#k_waiting").jqGrid('navGrid','#pk_waiting',{edit:false,add:false,del:fa
 		{url:'${ctx}/kitchen-process',clearAfterAdd:true,reloadAfterSubmit:false,recreateForm:true},
 		{url:'${ctx}/genfu-common/0?_method=DELETE&className=com.genfu.reform.model.OrderItem',reloadAfterSubmit:false},
 		{multipleSearch:true, multipleGroup:false, showQuery: true});
+/* jQuery("#k_waiting").jqGrid('navButtonAdd','#pk_waiting',
+		{caption:"开始上菜",
+			buttonicon:"ui-icon-arrowthick-1-n",
+			onClickButton:function(){
+				confirmkitchen('idk_waiting','k_waiting',k_waiting_arrow_n);
+			} 
+		}); */			
+function k_waiting_arrow_n(){
+	var k_waitingId = jQuery("#k_waiting").jqGrid('getGridParam','selarrrow');
+	if ($.isArray(k_waitingId)) {k_waitingId = k_waitingId.join();}
+	if(k_waitingId.length < 1){
+		return;
+	}
+
+	$.ajax({
+        type: 'POST',
+        data:{orderItemId:k_waitingId},
+        url: '${ctx}/kitchen-fruition/0?_method=put',
+        dataType: 'json',
+        success: function (data) {
+        	jQuery("#k_fruition").trigger("reloadGrid");
+        	jQuery("#k_waiting").trigger("reloadGrid");
+        	//alert(typeof(data));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+	});
+}		
+		
 function dishDatefmt(cellvalue, options, rowObject)
 {
 	//debugger;
