@@ -34,10 +34,10 @@
 		</s:iterator>
 		<tr>
 			<s:if test="#itemSize<17">
-				<td></td><td></td><td align="right"></td><td align="right"></td><td align="right"><b>Total: <s:property value="#itemSize"/>道,<s:property value="#countAmount"/>份,￥</b><b id="b_checkout">0.00</b></td><td></td>
+				<td></td><td></td><td align="right"></td><td align="right"></td><td align="right"><b><s:text name="carts.total"/>: <s:property value="#itemSize"/>道,<s:property value="#countAmount"/>份,￥</b><b id="b_checkout">0.00</b></td><td></td>
 			</s:if>
 			<s:else>
-				<td></td><td></td><td></td><td align="right"></td><td align="right"></td><td align="right"><b>Total: <s:property value="#itemSize"/>道,<s:property value="#countAmount"/>份,￥</b><b id="b_checkout">0.00</b></td><td></td>
+				<td></td><td></td><td></td><td align="right"></td><td align="right"></td><td align="right"><b><s:text name="carts.total"/>: <s:property value="#itemSize"/>道,<s:property value="#countAmount"/>份,￥</b><b id="b_checkout">0.00</b></td><td></td>
 			</s:else>
 		</tr>
 	</table>
