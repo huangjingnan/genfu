@@ -17,12 +17,12 @@ import com.genfu.reform.model.NavigationNode;
 @Transactional
 public class NavigationNodeDAOImpl implements NavigationNodeDAO {
 
-	private static Logger logger = Logger.getLogger("NavigationNodeDAOImpl");
+	// private static Logger logger = Logger.getLogger("NavigationNodeDAOImpl");
 	@PersistenceContext
 	private EntityManager em;
 
 	public List<NavigationNode> findAll() {
-		logger.info("findAll...");
+//		logger.info("findAll...");
 		List<NavigationNode> result = em.createQuery(
 				"from NavigationNode ORDER BY NAVI_PARENT_ID, NAVI_ID ASC",
 				NavigationNode.class).getResultList();
@@ -36,35 +36,35 @@ public class NavigationNodeDAOImpl implements NavigationNodeDAO {
 	}
 
 	public void save(NavigationNode model) {
-		logger.info("save...");
+//		logger.info("save...");
 		// model.setDate(new Date());
 		em.persist(model);
 		// em.close();
 	}
 
 	public void merge(NavigationNode model) {
-		logger.info("merge...");
+//		logger.info("merge...");
 		// model.setDate(new Date());
 		em.merge(model);
 		// em.close();
 	}
 
 	public void remove(NavigationNode model) {
-		logger.info("remove...");
+//		logger.info("remove...");
 		em.remove(model);
 		// em.close();
 	}
 
 	@Override
 	public NavigationNode find(Long id) {
-		logger.info("find...");
+//		logger.info("find...");
 		NavigationNode tmpNavigationNode = em.find(NavigationNode.class, id);
 		return tmpNavigationNode;
 	}
 
 	@Override
 	public List<NavigationNode> searchList(Map<String, Object> mapCondition) {
-		logger.info("searchList...");
+//		logger.info("searchList...");
 		StringBuffer jpql = new StringBuffer();//
 		jpql.append("from NavigationNode WHERE STATEDATE<=:_STATEDATE");
 		TypedQuery<NavigationNode> TypedQuery = em.createQuery(jpql.toString(),
@@ -79,7 +79,7 @@ public class NavigationNodeDAOImpl implements NavigationNodeDAO {
 	@Override
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
-		logger.info("searchList...3");
+//		logger.info("searchList...3");
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),

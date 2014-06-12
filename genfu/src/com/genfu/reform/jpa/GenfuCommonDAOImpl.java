@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class GenfuCommonDAOImpl implements GenfuCommonDAO {
-	private static Logger logger = Logger.getLogger("GenfuCommonDAOImpl");
+	// private static Logger logger = Logger.getLogger("GenfuCommonDAOImpl");
 	@PersistenceContext
 	private EntityManager em;
 
 	@Override
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
-		logger.info("searchList...");
+		// logger.info("searchList...");
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -45,7 +45,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	@Override
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity, int FIRST_RESULT, int MAX_RESULTS) {
-		//logger.info("searchModel...");
+		// logger.info("searchModel...");
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -63,28 +63,28 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 
 	@Override
 	public <T> Object find(Long id, Class<T> entity) {
-		//logger.info("find...");
+		// logger.info("find...");
 		// em.
 		return em.find(entity, id);
 	}
 
 	@Override
 	public int save(Object model) {
-		//logger.info("save...");
+		// logger.info("save...");
 		em.persist(model);
 		return 0;
 	}
 
 	@Override
 	public int merge(Object model) {
-		//logger.info("merge...");
+		// logger.info("merge...");
 		em.merge(model);
 		return 0;
 	}
 
 	@Override
 	public int remove(Object model) {
-		//logger.info("remove...");
+		// logger.info("remove...");
 		em.remove(model);
 		return 0;
 	}

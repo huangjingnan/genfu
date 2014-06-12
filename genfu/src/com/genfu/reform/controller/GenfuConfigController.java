@@ -202,9 +202,9 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						// Create an RMI connector client and
 						// connect it to the RMI connector server
 						//
-						System.out
-								.println("\nCreate an RMI connector client and "
-										+ "connect it to the RMI connector server");
+						// System.out
+						// .println("\nCreate an RMI connector client and "
+						// + "connect it to the RMI connector server");
 						JMXServiceURL url = new JMXServiceURL(
 								"service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 						JMXConnector jmxc = JMXConnectorFactory.connect(url,
@@ -212,13 +212,13 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 						// Get an MBeanServerConnection
 						//
-						System.out.println("\nGet an MBeanServerConnection");
+						// System.out.println("\nGet an MBeanServerConnection");
 						MBeanServerConnection mbsc = jmxc
 								.getMBeanServerConnection();
 
 						// Get domains from MBeanServer
 						//
-						System.out.println("\nDomains:");
+						// System.out.println("\nDomains:");
 						String domains[] = mbsc.getDomains();
 						for (int i = 0; i < domains.length; i++) {
 							System.out.println("\tDomain[" + i + "] = "
@@ -229,15 +229,15 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						//
 						ObjectName mbeanName = new ObjectName(
 								"com.genfu.agent.mxbeans:type=ConfigNetwork");
-						System.out.println("\nCreate ConfigNetwork MBean...");
+						// System.out.println("\nCreate ConfigNetwork MBean...");
 						mbsc.createMBean(
 								"com.genfu.agent.mxbeans.ConfigNetwork",
 								mbeanName, null, null);
 
 						// Get MBean count
 						//
-						System.out.println("\nMBean count = "
-								+ mbsc.getMBeanCount());
+						// System.out.println("\nMBean count = "
+						// + mbsc.getMBeanCount());
 
 						// Get State attribute
 						//
@@ -285,8 +285,8 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 						Object[] params = new Object[] { strParams[0],
 								strParams[1], strParams[2] };
-						System.out
-								.println("\nInvoke cfgDebian() in ConfigNetwork MBean...");
+						// System.out
+						// .println("\nInvoke cfgDebian() in ConfigNetwork MBean...");
 						mbsc.invoke(
 								mbeanName,
 								"cfgDebian",
@@ -300,7 +300,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						// notification before removing the notification
 						// listener.
 						//
-						System.out.println("\nWaiting for notification...");
+						// System.out.println("\nWaiting for notification...");
 						Thread.sleep(2000);
 
 						// Remove notification listener on ConfigNetwork MBean
@@ -310,14 +310,14 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 						// Unregister ConfigNetwork MBean
 						//
-						System.out
-								.println("\nUnregister ConfigNetwork MBean...");
+						// System.out
+						// .println("\nUnregister ConfigNetwork MBean...");
 						mbsc.unregisterMBean(mbeanName);
 
 						// Close MBeanServer connection
 						//
-						System.out
-								.println("\nClose the connection to the server");
+						// System.out
+						// .println("\nClose the connection to the server");
 						jmxc.close();
 						System.out.println("\nBye! Bye!");
 					} catch (Exception e) {
@@ -356,9 +356,9 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							// Create an RMI connector client and
 							// connect it to the RMI connector server
 							//
-							System.out
-									.println("\nCreate an RMI connector client and "
-											+ "connect it to the RMI connector server");
+//							System.out
+//									.println("\nCreate an RMI connector client and "
+//											+ "connect it to the RMI connector server");
 							JMXServiceURL url = new JMXServiceURL(
 									"service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 							JMXConnector jmxc = JMXConnectorFactory.connect(
@@ -366,14 +366,14 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 							// Get an MBeanServerConnection
 							//
-							System.out
-									.println("\nGet an MBeanServerConnection");
+//							System.out
+//									.println("\nGet an MBeanServerConnection");
 							MBeanServerConnection mbsc = jmxc
 									.getMBeanServerConnection();
 
 							// Get domains from MBeanServer
 							//
-							System.out.println("\nDomains:");
+//							System.out.println("\nDomains:");
 							String domains[] = mbsc.getDomains();
 							for (int i = 0; i < domains.length; i++) {
 								System.out.println("\tDomain[" + i + "] = "
@@ -397,8 +397,8 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 							// Get MBean count
 							//
-							System.out.println("\nMBean count = "
-									+ mbsc.getMBeanCount());
+							// System.out.println("\nMBean count = "
+							// + mbsc.getMBeanCount());
 
 							// Get State attribute
 							//
