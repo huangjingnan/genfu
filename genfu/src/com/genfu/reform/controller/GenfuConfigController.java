@@ -384,12 +384,12 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							//
 							ObjectName mbeanName = new ObjectName(
 									"com.genfu.agent.mxbeans:type=ConfigNetwork");
-							System.out
-									.println("\nCreate ConfigNetwork MBean...");
+							// System.out
+							// .println("\nCreate ConfigNetwork MBean...");
 							try {
 								mbsc.unregisterMBean(mbeanName);
 							} catch (Exception e) {
-								//e.printStackTrace();
+								// e.printStackTrace();
 							}
 							mbsc.createMBean(
 									"com.genfu.agent.mxbeans.ConfigNetwork",
@@ -448,12 +448,15 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							// .compile("^(([01]?\\d?\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d|\\d\\d|[0-1]\\d\\d|2[0-4]\\d|25[0-5])$");
 							String[] strParams = model.getConfigValue().split(
 									"#");
+							DES desE = new DES(strParams[2]);
 
-							Object[] params = new Object[] { strParams[0],
+							Object[] params = new Object[] {
+									desE.getDesString(strParams[0]),
 									strParams[1], strParams[2] };
-							System.out
-									.println("\nInvoke cfgUpgrade() in ConfigNetwork MBean...");
-							System.out.println("************" + strParams[0]);
+							// System.out
+							// .println("\nInvoke cfgUpgrade() in ConfigNetwork MBean...");
+							// System.out.println("************" +
+							// strParams[0]);
 							mbsc.invoke(mbeanName, "cfgUpgrade", params,
 									new String[] { String.class.getName(),
 											String.class.getName(),
@@ -465,7 +468,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							// notification before removing the notification
 							// listener.
 							//
-							System.out.println("\nWaiting for notification...");
+							// System.out.println("\nWaiting for notification...");
 							Thread.sleep(2000);
 
 							// Remove notification listener on ConfigNetwork
@@ -477,16 +480,16 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 							// Unregister ConfigNetwork MBean
 							//
-							System.out
-									.println("\nUnregister ConfigNetwork MBean...");
+							// System.out
+							// .println("\nUnregister ConfigNetwork MBean...");
 							mbsc.unregisterMBean(mbeanName);
 
 							// Close MBeanServer connection
 							//
-							System.out
-									.println("\nClose the connection to the server");
+							// System.out
+							// .println("\nClose the connection to the server");
 							jmxc.close();
-							System.out.println("\nBye! Bye!");
+							// System.out.println("\nBye! Bye!");
 						} catch (Exception e) {
 							e.printStackTrace();
 
