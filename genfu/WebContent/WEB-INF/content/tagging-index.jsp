@@ -91,40 +91,9 @@
 	}
 	function fileUpload(postdata, formid){
 		var ret = [true,""];
-		//formid[0].coverImage.formEnctype="multipart/form-data";
-		//formid[0].coverImage.formMethod="post";
-		//jQuery("#FrmGrid_tagging_dishes").attr("enctype","multipart/form-data");
 		if(formid[0].fileImage.files.length>0){
 			ret[0] = false;
 			formid[0].id.value = 0;
-			formid[0].dishName.value = encodeURIComponent(formid[0].dishName.value);
-			formid[0].isbn.value = encodeURIComponent(formid[0].isbn.value);
-			formid[0].price.value = encodeURIComponent(formid[0].price.value);
-			formid[0].blurb.value = encodeURIComponent(formid[0].blurb.value);
-			//postdata["coverImage"]=formid[0].coverImage.files[0].name;
-			//$("#tempCoverImage")[0].files = formid[0].coverImage.files;
-			//var myfile = $("#coverImage");
-			
-			//var form = '<form action="${ctx}/dish-image" method="post" enctype="multipart/form-data" />';
-			//form = $("#coverImage").wrapAll(form);
-			//form.submit();
-			//form.submit();
-			//alert($file);
-			//formid[0].coverImage.files;
-			//$("#tempCoverImage").attr("value","‪C:\\Users\\xuzf\\Desktop\\2.jpg");
-			//$("#tempCoverImage").attr("files",formid[0].coverImage.files);
-			//var imageForm = $("#imageupload");
-			//http://www.irt.org/script/1154.htm;http://www.cs.tut.fi/~jkorpela/forms/file.html
-			//alert(imageForm);
-			//jQuery("#FrmGrid_tagging_dishes").attr("method","post");
-			//jQuery("#FrmGrid_tagging_dishes").attr("action","${ctx}/dish");
-			//jQuery("#FrmGrid_tagging_dishes").attr("enctype","multipart/form-data");
-			//jQuery("#FrmGrid_tagging_dishes").removeAttr("onSubmit");
-			//formid[0].submit();
-			//$("#tagging_dishes").jqGrid("addRowData",ret[2],postdata,"first");
-			//$("#imageupload").append($file);
-			//$("#imageupload").submit();
-			//debugger;
 			jQuery("#FrmGrid_tagging_dishes").ajaxSubmit({
 				forceSync:false,
 				dataType:'json',
@@ -132,11 +101,6 @@
 				url:'${ctx}/dish',
 	        	success:function(json){
 	            	console.info(json);
-	            	formid[0].fileImage.value = "";
-	            	formid[0].dishName.value = "";
-	            	formid[0].price.value = "";
-	            	formid[0].blurb.value = "";
-	            	formid[0].isbn.value = "";
 	            	$("#tagging_dishes").jqGrid("addRowData",json.id,json,"first");
 				},
 				error:function(){alert('请求异常');},
@@ -155,13 +119,6 @@
 			//jQuery("#FrmGrid_tagging_dishes").removeAttr("enctype");
 			//jQuery("#FrmGrid_tagging_dishes").attr("onSubmit","return false;");
 		}
-		//alert(formid[0].coverImage.files[0].name);
-		//alert(formid[0].coverImage.files[0].size);
-		//alert(formid[0].coverImage.files[0].type);
-		//alert(formid[0].coverImage.value);
-		//formid[0].enctype="multipart/form-data";
-		//alert(formid[0].enctype);
-		//debugger;
 		return ret;
 	}
 	
@@ -173,55 +130,17 @@
 		if(formid[0].fileImage.files.length>0){
 			ret[0] = false;
 			var urls = '${ctx}/dish/'+formid[0].id.value+'?_method=put';
-			var dishName = formid[0].dishName.value;
-			formid[0].dishName.value = encodeURIComponent(formid[0].dishName.value);
-			var isbn = formid[0].isbn.value;
-			formid[0].isbn.value = encodeURIComponent(formid[0].isbn.value);
-			var price = formid[0].price.value;
-			formid[0].price.value = encodeURIComponent(formid[0].price.value);
-			var blurb = formid[0].blurb.value;
-			formid[0].blurb.value = encodeURIComponent(formid[0].blurb.value);
-			//formid[0].id.value = 0;
-			//postdata["coverImage"]=formid[0].coverImage.files[0].name;
-			//$("#tempCoverImage")[0].files = formid[0].coverImage.files;
-			//var myfile = $("#coverImage");
-			
-			//var form = '<form action="${ctx}/dish-image" method="post" enctype="multipart/form-data" />';
-			//form = $("#coverImage").wrapAll(form);
-			//form.submit();
-			//form.submit();
-			//alert($file);
-			//formid[0].coverImage.files;
-			//$("#tempCoverImage").attr("value","‪C:\\Users\\xuzf\\Desktop\\2.jpg");
-			//$("#tempCoverImage").attr("files",formid[0].coverImage.files);
-			//var imageForm = $("#imageupload");
-			//http://www.irt.org/script/1154.htm;http://www.cs.tut.fi/~jkorpela/forms/file.html
-			//alert(imageForm);
-			//jQuery("#FrmGrid_tagging_dishes").attr("method","post");
-			//jQuery("#FrmGrid_tagging_dishes").attr("action","${ctx}/dish");
-			//jQuery("#FrmGrid_tagging_dishes").attr("enctype","multipart/form-data");
-			//jQuery("#FrmGrid_tagging_dishes").removeAttr("onSubmit");
-			//formid[0].submit();
-			//$("#tagging_dishes").jqGrid("addRowData",ret[2],postdata,"first");
-			//$("#imageupload").append($file);
-			//$("#imageupload").submit();
 			jQuery("#FrmGrid_tagging_dishes").ajaxSubmit({
 				forceSync:false,
 				dataType:'json',
 				type:'POST',
 				url:urls,
 	        	success:function(json){
-	            	//console.info(json);
 	            	formid[0].fileImage.value = "";
-	    			formid[0].dishName.value = dishName;
-	    			formid[0].isbn.value = isbn;
-	    			formid[0].price.value = price;
-	    			formid[0].blurb.value = blurb;
 	            	$("#tagging_dishes").jqGrid("setRowData", json.id,json);
 				},
 				error:function(){alert('请求异常');},
 				complete:function(){
-					//alert(data);
 	           		//buttons.attr('disabled', false);
 				},
 				beforeSubmit:function(){

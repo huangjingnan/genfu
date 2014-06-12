@@ -128,37 +128,37 @@ public class KitchenFruitionController extends ValidationAwareSupport implements
 		// 最后一个上完，如果是process直接更改订单为CLOSED，如果已经是closed，就不更新
 		Order theOrder = (Order) genfuCommonService.find(model.getOrderId(),
 				Order.class);
-		if ("PROCESS".equalsIgnoreCase(theOrder.getStatus())) {
-			// 并且这个为最后一个 ！= FRUITION，
-			int ctn = 0;
-			Set<OrderItem> tempOs = theOrder.getOrderItems();
-			for (OrderItem tOI : tempOs) {
-				if (!"FRUITION".equalsIgnoreCase(tOI.getStatus())) {
-					ctn++;
-					if (ctn > 1) {
-						break;
-					}
-				}
-			}
-			if (ctn > 1) {
-				if ("WAITING".equalsIgnoreCase(model.getStatus())) {
-					model.setStatus("FRUITION");
-					model.setUpdatedAt(new Date());
-					genfuCommonService.update(model);
-				}
-			} else {
-
-				if ("WAITING".equalsIgnoreCase(model.getStatus())) {
-					model.setStatus("FRUITION");
-					model.setUpdatedAt(new Date());
-					theOrder.setStatus("CLOSED");
-					List<Object> uList = new ArrayList<Object>();
-					uList.add(theOrder);
-					uList.add(model);
-					genfuCommonService.update(uList);
+		// if ("PROCESS".equalsIgnoreCase(theOrder.getStatus())) {
+		// 并且这个为最后一个 ！= FRUITION，
+		int ctn = 0;
+		Set<OrderItem> tempOs = theOrder.getOrderItems();
+		for (OrderItem tOI : tempOs) {
+			if (!"FRUITION".equalsIgnoreCase(tOI.getStatus())) {
+				ctn++;
+				if (ctn > 1) {
+					break;
 				}
 			}
 		}
+		if (ctn > 1) {
+			if ("WAITING".equalsIgnoreCase(model.getStatus())) {
+				model.setStatus("FRUITION");
+				model.setUpdatedAt(new Date());
+				genfuCommonService.update(model);
+			}
+		} else {
+
+			if ("WAITING".equalsIgnoreCase(model.getStatus())) {
+				model.setStatus("FRUITION");
+				model.setUpdatedAt(new Date());
+				theOrder.setStatus("CLOSED");
+				List<Object> uList = new ArrayList<Object>();
+				uList.add(theOrder);
+				uList.add(model);
+				genfuCommonService.update(uList);
+			}
+		}
+		// }
 		return "json";
 	}
 

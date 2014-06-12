@@ -192,10 +192,6 @@ public class DishController extends ValidationAwareSupport implements
 					// file.resolve(fileImageFileName);
 					model.setCoverImage("/genfu/files/dishImage/"
 							+ fileImageFileName);
-					model.setDishName(URLDecoder.decode(model.getDishName(),
-							"UTF-8"));
-					model.setIsbn(URLDecoder.decode(model.getIsbn(), "UTF-8"));
-					model.setBlurb(URLDecoder.decode(model.getBlurb(), "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -248,10 +244,6 @@ public class DishController extends ValidationAwareSupport implements
 					// file.resolve(fileImageFileName);
 					model.setCoverImage("/genfu/files/dishImage/"
 							+ fileImageFileName);
-					model.setDishName(URLDecoder.decode(model.getDishName(),
-							"UTF-8"));
-					model.setIsbn(URLDecoder.decode(model.getIsbn(), "UTF-8"));
-					model.setBlurb(URLDecoder.decode(model.getBlurb(), "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
