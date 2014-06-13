@@ -4105,7 +4105,7 @@ $.jgrid.extend({
 					}
 				});
 				var sd =  j>0 ? true : false;
-				debugger;
+				//debugger;
 				if(p.stringResult === true || $t.p.datatype === "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
@@ -4183,7 +4183,7 @@ $.jgrid.extend({
 				});
 				var sd =  j>0 ? true : false;
 				$t.p.resetsearch =  true;
-				debugger;
+				//debugger;
 				if(p.stringResult === true || $t.p.datatype === "local") {
 					var ruleGroup = "{\"groupOp\":\"" + p.groupOp + "\",\"rules\":[";
 					var gi=0;
@@ -5268,7 +5268,7 @@ var xmlJsonClass = {
 				//encodeURIComponent(tempVal)
 				//var tempVal = o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"');
 				json += (name && ":") + "\"" + o.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + "\"";
-				debugger;
+				//debugger;
 			//}
 			}
 		else {
@@ -7040,7 +7040,7 @@ $.fn.jqFilter = function( arg ) {
 				}
 			}
 			if (cm == undefined) { return ""; }
-			debugger;
+			//debugger;
 			val = rule.data;
 			if(opC === 'bw' || opC === 'bn') { val = val+"%"; }
 			if(opC === 'ew' || opC === 'en') { val = "%"+val; }

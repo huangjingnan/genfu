@@ -14,7 +14,7 @@
 jQuery("#groupOrderItem").jqGrid({
    	url:'${ctx}/group-orderitem.json?style=jqGrid',
 	datatype: "json",
-   	colNames:['ID', '订单ID','商品ID','商品名称', '商品价格','数量','总额','服务员','厨师','createAt','updatedAt','status'],
+   	colNames:['ID', '订单ID','商品ID','商品名称', '商品价格','数量','总额','服务员','厨师','创建时间','更新时间','状态'],
    	colModel:[
    		{name:'id',index:'id', width:55, editable:false, sorttype:'int',summaryType:'count', summaryTpl : '({0}) total'},
    		{name:'orderId',index:'orderId', width:100},
@@ -42,7 +42,7 @@ jQuery("#groupOrderItem").jqGrid({
    		{name:'status',index:'status', width:90}	
    	],
    	rowNum:10,
-   	rowList:[10,20,30],
+   	rowList:[10,20,30,300],
    	height: 'auto',
    	pager: '#pgroupOrderItem',
    	sortname: 'id',
@@ -63,6 +63,14 @@ jQuery("#groupOrderItem").jqGrid({
     footerrow: true,
     userDataOnFooter: true
 });
+
+jQuery("#groupOrderItem").jqGrid('navGrid','#pgroupOrderItem',{view:true,edit:false,add:false,del:false},
+		{},
+		{},
+		{},
+		{multipleSearch:true, multipleGroup:true, showQuery: true},
+		{height:250,jqModal:false,closeOnEscape:true});
+
 jQuery("#chnGroupOrderItem").change(function(){
 	var vl = $(this).val();
 	if(vl) {
@@ -97,10 +105,10 @@ function dishDatefmt(cellvalue, options, rowObject)
 <s:head />
 </head>
 <body>
-Group By: <select id="chnGroupOrderItem">
-	<option value="dishId">dishId</option>
-	<option value="createdAt">createdAt</option>
-	<option value="orderId">orderId</option>	
+分组: <select id="chnGroupOrderItem">
+	<option value="dishId">商品ID</option>
+	<option value="createdAt">创建时间</option>
+	<option value="orderId">订单ID</option>	
 </select>
 <br />
 <br />
