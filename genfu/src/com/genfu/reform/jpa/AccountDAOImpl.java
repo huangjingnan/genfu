@@ -217,7 +217,7 @@ public class AccountDAOImpl implements GenfuCommonDAO {
 	@Override
 	public int batchExcuseNativeQuery(String strSQL) {
 
-		String exec[] = strSQL.split("#");
+		String[] exec = strSQL.split("#");
 
 		EntityManager em = entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction = em.getTransaction();

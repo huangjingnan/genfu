@@ -250,8 +250,8 @@ public class TaggingController extends ValidationAwareSupport implements
 			if (parameters.containsKey("dishIds[]")
 					&& parameters.containsKey("tagIds[]")) {
 
-				String dishIds[] = parameters.get("dishIds[]");
-				String tagIds[] = parameters.get("tagIds[]");
+				String[] dishIds = parameters.get("dishIds[]");
+				String[] tagIds = parameters.get("tagIds[]");
 
 				if (dishIds.length > 0 && tagIds.length > 0) {
 					strBuffJPQL = new StringBuffer();
@@ -283,7 +283,7 @@ public class TaggingController extends ValidationAwareSupport implements
 			} else if (parameters.containsKey("dishIds[]")
 					&& !parameters.containsKey("tagIds[]")) {
 
-				String dishIds[] = parameters.get("dishIds[]");
+				String[] dishIds = parameters.get("dishIds[]");
 
 				if (dishIds.length > 0) {
 					strBuffJPQL = new StringBuffer();
@@ -305,7 +305,7 @@ public class TaggingController extends ValidationAwareSupport implements
 			} else if (!parameters.containsKey("dishIds[]")
 					&& parameters.containsKey("tagIds[]")) {
 
-				String tagIds[] = parameters.get("tagIds[]");
+				String[] tagIds = parameters.get("tagIds[]");
 
 				if (tagIds.length > 0) {
 					strBuffJPQL = new StringBuffer();

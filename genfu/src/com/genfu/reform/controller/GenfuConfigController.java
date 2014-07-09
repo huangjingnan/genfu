@@ -219,7 +219,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						// Get domains from MBeanServer
 						//
 						// System.out.println("\nDomains:");
-						String domains[] = mbsc.getDomains();
+						String[] domains = mbsc.getDomains();
 						for (int i = 0; i < domains.length; i++) {
 							System.out.println("\tDomain[" + i + "] = "
 									+ domains[i]);
@@ -374,7 +374,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							// Get domains from MBeanServer
 							//
 //							System.out.println("\nDomains:");
-							String domains[] = mbsc.getDomains();
+							String[] domains = mbsc.getDomains();
 							for (int i = 0; i < domains.length; i++) {
 								System.out.println("\tDomain[" + i + "] = "
 										+ domains[i]);
@@ -590,6 +590,16 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 			}
 			model.setConfigUpdatedAt(new Date());
 			genfuCommonService.update(model);
+			
+			FileInfo fInfo = new FileInfo();
+			fInfo.setId(0);
+			fInfo.setName("picture1.jpg");
+			fInfo.setSize(902604);
+			fInfo.setUrl("http://localhost:8080/genfu/files/picture1.jpg");
+			fInfo.setThumbnailUrl("http://localhost:8080/genfu/files/thumbnail/picture1.jpg");
+			fInfo.setDeleteUrl("http://localhost:8080/genfu/file/1?_method=DELETE");
+			fInfo.setDeleteType("POST");
+			files.add(fInfo);
 			return "create";
 		}
 	}

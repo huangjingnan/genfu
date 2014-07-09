@@ -69,7 +69,7 @@
 	
 	$("#chart_orderitembnt1").attr("disabled", "disabled");
 	$("#chart_orderitem1").on("animatorComplete", function() {
-		$("#chart_orderitembnt1").removeAttr("disabled")
+		$("#chart_orderitembnt1").removeAttr("disabled");
 	});
 	$("#chart_orderitembnt1").on("click",function() {
 		$("#chart_orderitembnt1").attr("disabled", "disabled");
@@ -84,7 +84,7 @@
 
 	$("#chart_orderitembnt2").attr("disabled", "disabled");
 	$("#chart_orderitem2").on("animatorComplete", function() {
-		$("#chart_orderitembnt2").removeAttr("disabled")
+		$("#chart_orderitembnt2").removeAttr("disabled");
 	});
 	$("#chart_orderitembnt2").on("click",function() {
 		$("#chart_orderitembnt2").attr("disabled", "disabled");
@@ -98,7 +98,7 @@
 
 	$("#chart_orderitembnt3").attr("disabled", "disabled");
 	$("#chart_orderitem3").on("animatorComplete", function() {
-		$("#chart_orderitembnt3").removeAttr("disabled")
+		$("#chart_orderitembnt3").removeAttr("disabled");
 	});
 	$("#chart_orderitembnt3").on("click",function() {
 		$("#chart_orderitembnt3").attr("disabled", "disabled");
@@ -113,7 +113,7 @@
 
 	$("#chart_orderitembnt4").attr("disabled", "disabled");
 	$("#chart_orderitem4").on("animatorComplete", function() {
-		$("#chart_orderitembnt4").removeAttr("disabled")
+		$("#chart_orderitembnt4").removeAttr("disabled");
 	});
 	$("#chart_orderitembnt4").on("click",function() {
 		$("#chart_orderitembnt4").attr("disabled", "disabled");

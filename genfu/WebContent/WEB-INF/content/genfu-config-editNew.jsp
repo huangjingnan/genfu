@@ -18,6 +18,8 @@
 </head>
 <body>
 <input id="configUpload" type="file" name="upload" data-url="/genfu/genfu-config" multiple>
+<div id="whichisuploading">
+</div>
 <div id="progress">
     <div class="bar" style="width: 0%;"></div>
 </div>
@@ -199,14 +201,19 @@ function wrenchConfig(){
 $(function () {
 	$('#configUpload').fileupload({
 		dataType: 'json',
+		limitMultiFileUploads: 1,
         add: function (e, data) {
-            data.context = $('<p/>').text('Uploading...').appendTo(document.body);
+			debugger;
+            data.context = $('<p/>').text('正在上传...').appendTo($('#whichisuploading'));
+            //data.context = $('<p/>').text('Uploading...').appendTo(document.body);
             data.submit();
         },
         done: function (e, data) {
-            data.context.text('Upload finished.');
+			debugger;
+            data.context.text('上传完成。');
         },
 		progressall: function (e, data) {
+			debugger;
 	        var progress = parseInt(data.loaded / data.total * 100, 10);
 	        $('#progress .bar').css(
 	            'width',

@@ -1,3 +1,14 @@
+<OBJECT 
+  classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" type="application/x-java-applet" width="200" height="200">
+  
+  <PARAM name="archive" value="applet_HelloWorld.jar">
+  <PARAM name="code" value="HelloWorld.class">
+</OBJECT>
+select t.created_at,sum(order_item_total) from (
+select *, price*amount order_item_total from order_items where order_id in
+(select order_id from orders where pay_flag='001'))t group by t.created_at
+
+
 ps -ef|grep rmiregistry|grep -v grep|awk '{print $2}'|xargs kill -9
 
 
