@@ -72,10 +72,19 @@ public class TaggingController extends ValidationAwareSupport implements
 		return inputStream;
 	}
 
-	@Autowired
-	public TaggingController(
-			@Qualifier("genfuCommonService") GenfuCommonService theService) {
-		genfuCommonService = theService;
+//	@Autowired
+//	public TaggingController(
+//			@Qualifier("genfuCommonService") GenfuCommonService theService) {
+//		genfuCommonService = theService;
+//	}
+	
+
+	public GenfuCommonService getGenfuCommonService() {
+		return genfuCommonService;
+	}
+
+	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
+		this.genfuCommonService = genfuCommonService;
 	}
 
 	@Override

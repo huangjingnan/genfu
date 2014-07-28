@@ -76,10 +76,19 @@ public class DishController extends ValidationAwareSupport implements
 	private String fileImageContentType;
 	private String fileImageFileName;
 
-	@Autowired
-	public DishController(
-			@Qualifier("dishService") GenfuCommonService theService) {
-		genfuCommonService = theService;
+	/*
+	 * @Autowired public DishController(
+	 * 
+	 * @Qualifier("dishService") GenfuCommonService theService) {
+	 * genfuCommonService = theService; }
+	 */
+
+	public GenfuCommonService getGenfuCommonService() {
+		return genfuCommonService;
+	}
+
+	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
+		this.genfuCommonService = genfuCommonService;
 	}
 
 	@Override

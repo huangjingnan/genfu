@@ -69,10 +69,18 @@ public class TagController extends ValidationAwareSupport implements
 		return inputStream;
 	}
 
-	@Autowired
-	public TagController(
-			@Qualifier("genfuCommonService") GenfuCommonService theService) {
-		genfuCommonService = theService;
+	// @Autowired
+	// public TagController(
+	// @Qualifier("genfuCommonService") GenfuCommonService theService) {
+	// genfuCommonService = theService;
+	// }
+
+	public GenfuCommonService getGenfuCommonService() {
+		return genfuCommonService;
+	}
+
+	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
+		this.genfuCommonService = genfuCommonService;
 	}
 
 	@Override
