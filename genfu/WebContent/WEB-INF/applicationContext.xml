@@ -272,7 +272,7 @@
 		/> -->
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean class="com.genfu.reform.controller.DishController" scope="session" />
+	<bean class="com.genfu.reform.controller.DishController" scope="prototype" />
 
 	<!-- <bean id="cartDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
 		/> <bean id="cartTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
@@ -460,7 +460,7 @@
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 	<bean class="com.genfu.reform.controller.GenfuConfigController"
-		scope="session">
+		scope="prototype">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 

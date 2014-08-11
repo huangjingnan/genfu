@@ -64,7 +64,7 @@ jQuery("#tagging_dishes").jqGrid({
    		{name:'updatedAt',index:'updatedAt',width:100,align:"center", hidden:true,sorttype:'date',formatter:'date', formatoptions: {newformat: 'Y-M-d'}, datefmt: 'Y-M-d H:i:s'},	
    		{name:'coverImage',index:'coverImage',width:170},	
    		{name:'fileImage',index:'fileImage',width:70,editable:true,editrules:{edithidden:true,required:false}, hidden:true,edittype:"file"},
-   		{name:'taggings',index:'taggings',width:200,formatter:tagsFmatter},
+   		{name:'taggings',index:'taggings',width:200},
    		{name:'blurb',index:'blurb',width:250,sortable:false,editable:true,edittype:"textarea",editoptions:{rows:"2",cols:"20"}}	
    	],
    	rowNum:20,
@@ -80,7 +80,7 @@ jQuery("#tagging_dishes").jqGrid({
 
 	var d8 = [[1, 10.50], [2, 13.33], [3, 12.35], [4, 9.89], [5, 12.35], [6, 6.35], [7, 8.35], [8, 6], [9, 4], [10, 2], [11, 12.35], [12, 11.35], [13, 12.35], [14, 5]];
 	var d9 = [[1.5, 10.50], [2.5, 13.33], [3.5, 12.35], [4.5, 9.89], [5.5, 12.35], [6.5, 6.35], [7.5, 8.35], [8.5, 6], [9.5, 4], [10.5, 2], [11.5, 12.35], [12.5, 11.35], [13.5, 12.35], [14.5, 5]];
-	debugger;
+	//debugger;
 	var plot1 = $.plotAnimator($("#chart1"), [{data : d8, bars: { show: true, fill: true}},{data : d9, lines: {lineWidth:5}, animator: {start:0, steps:135, duration:30, direction: "left"}}]);
 	//var plot1 = $.plotAnimator($("#chart1"), [{data : d8, bars: { show: true, fill: true}}]);
 	

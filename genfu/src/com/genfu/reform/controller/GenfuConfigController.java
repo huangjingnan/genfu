@@ -356,9 +356,9 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 							// Create an RMI connector client and
 							// connect it to the RMI connector server
 							//
-//							System.out
-//									.println("\nCreate an RMI connector client and "
-//											+ "connect it to the RMI connector server");
+							// System.out
+							// .println("\nCreate an RMI connector client and "
+							// + "connect it to the RMI connector server");
 							JMXServiceURL url = new JMXServiceURL(
 									"service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 							JMXConnector jmxc = JMXConnectorFactory.connect(
@@ -366,14 +366,14 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 							// Get an MBeanServerConnection
 							//
-//							System.out
-//									.println("\nGet an MBeanServerConnection");
+							// System.out
+							// .println("\nGet an MBeanServerConnection");
 							MBeanServerConnection mbsc = jmxc
 									.getMBeanServerConnection();
 
 							// Get domains from MBeanServer
 							//
-//							System.out.println("\nDomains:");
+							// System.out.println("\nDomains:");
 							String[] domains = mbsc.getDomains();
 							for (int i = 0; i < domains.length; i++) {
 								System.out.println("\tDomain[" + i + "] = "
@@ -546,8 +546,9 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 					// strFileName.indexOf(".")));// size
 					// System.out.println(upload.lastModified());
 					// System.out.println(upload.length());
-					if (upload.length() == Long.parseLong((strFileName
-							.substring(11, strFileName.indexOf("."))))) {
+					if (Math.abs(upload.length()
+							- Long.parseLong((strFileName.substring(11,
+									strFileName.indexOf("."))))) < 10) {
 						Path file = genfuCommonService
 								.getGenfuPath("genfuUpgrade");
 						Files.copy(upload.toPath(),
@@ -586,11 +587,11 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 				}
 			} else {
 				model.setConfigOthers("NONE");
-				model.setConfigValue("升级包不正常，请核实其来源");
+				model.setConfigValue("没有上传的文件！");
 			}
 			model.setConfigUpdatedAt(new Date());
 			genfuCommonService.update(model);
-			
+
 			FileInfo fInfo = new FileInfo();
 			fInfo.setId(0);
 			fInfo.setName("picture1.jpg");
