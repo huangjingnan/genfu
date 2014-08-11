@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,14 +56,21 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	private Long id;
 	private List<OrderItem> list;
 	private JSONObject jsonObject;
-	private GenfuCommonService genfuCommonService;
+	private GenfuCommonService groupOrderitemService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
 	private boolean verifyingOperates;
 
 	// public OrderItemController(GenfuCommonService theService) {
-	// genfuCommonService = theService;
+	// groupOrderitemService = theService;
 	// }
+	
+	// If you intend to express annotation-driven injection by name, do not
+	// primarily use @Autowired, even if is technically capable of referring to
+	// a bean name through @Qualifier values. Instead, use the JSR-250 @Resource
+	// annotation, which is semantically defined to identify a specific target
+	// component by its unique name, with the declared type being irrelevant for
+	// the matching process.
 
 	@Override
 	public void setServletResponse(HttpServletResponse arg0) {
@@ -70,11 +78,12 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
+		return groupOrderitemService;
 	}
 
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	@Resource(name="groupOrderitemService")
+	public void setGenfuCommonService(GenfuCommonService groupOrderitemService) {
+		this.groupOrderitemService = groupOrderitemService;
 	}
 
 	@Override
@@ -103,16 +112,16 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		jsonObject = genfuCommonService.validateOperates("", "", "group-orderitem",
+		jsonObject = groupOrderitemService.validateOperates("", "", "group-orderitem",
 				"index", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
 
 			if (null != this.parameters.get("style")) {
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(OrderItem.class, parameters);
+				jsonObject = groupOrderitemService.searchJsonJqGridFilter(OrderItem.class, parameters);
 			} else {
-				// list = genfuCommonService.searchList(OrderItem.class,
+				// list = groupOrderitemService.searchList(OrderItem.class,
 				// parameters);
 			}
 		}
@@ -120,19 +129,19 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
+		jsonObject = groupOrderitemService.validateOperates("", "", "order-item",
 				"update", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
 			Map<String, Object> par = new HashMap<String, Object>();
 			par.put("orderId0", model.getOrderId());
-			List<Order> theOrder = genfuCommonService.searchNativeQuery(
+			List<Order> theOrder = groupOrderitemService.searchNativeQuery(
 					"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
 					Order.class);
 			if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
 				model.setUpdatedAt(new Date());
-				genfuCommonService.update(model);
+				groupOrderitemService.update(model);
 				addActionMessage("Object updated successfully");
 			}
 		}
@@ -141,7 +150,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 
 	public void setId(Long id) {
 		if (id != null) {
-			model = (OrderItem) genfuCommonService.find(id, OrderItem.class);
+			model = (OrderItem) groupOrderitemService.find(id, OrderItem.class);
 		}
 		this.id = id;
 	}
@@ -156,7 +165,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		// genfuCommonService.save(model);
+		// groupOrderitemService.save(model);
 		return "json";
 	}
 
@@ -165,7 +174,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
+		jsonObject = groupOrderitemService.validateOperates("", "", "order-item",
 				"destroy", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
@@ -180,7 +189,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 					longOItemIds.add(Long.parseLong(ids[i]));
 				}
 				tempPara.put("oItemIds", longOItemIds);
-				List<OrderItem> tempOItems = genfuCommonService.searchList(
+				List<OrderItem> tempOItems = groupOrderitemService.searchList(
 						"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
 						tempPara, OrderItem.class);
 				List<OrderItem> oItemDel = new ArrayList<OrderItem>();
@@ -188,10 +197,10 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 				for (OrderItem tempI : tempOItems) {
 
 					if (null == theOrder) {
-						theOrder = (Order) genfuCommonService.find(
+						theOrder = (Order) groupOrderitemService.find(
 								tempI.getOrderId(), Order.class);
 					} else if (tempI.getOrderId() != theOrder.getId()) {
-						theOrder = (Order) genfuCommonService.find(
+						theOrder = (Order) groupOrderitemService.find(
 								tempI.getOrderId(), Order.class);
 					}
 
@@ -201,7 +210,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 					}
 				}
 
-				genfuCommonService.remove(oItemDel);
+				groupOrderitemService.remove(oItemDel);
 			}
 		}
 		jsonObject = new JSONObject();

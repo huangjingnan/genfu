@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +29,7 @@ public class DishServiceImpl implements GenfuCommonService {
 	// Iterator<String> it = null;
 	private GenfuCommonDAO genfuCommonDAO;
 	private GenfuCommonDAO genfuCommonTransaction;
-	private FabricationFilterSQL fabricationFilterSQL;
+	private FabricationFilterSQL dishfabricationFilterSQL;
 	private AuthValid authValidImpl;
 
 	public GenfuCommonDAO getGenfuCommonTransaction() {
@@ -48,12 +49,13 @@ public class DishServiceImpl implements GenfuCommonService {
 	}
 
 	public FabricationFilterSQL getFabricationFilterSQL() {
-		return fabricationFilterSQL;
+		return dishfabricationFilterSQL;
 	}
 
+	@Resource(name="dishfabricationFilterSQL")
 	public void setFabricationFilterSQL(
-			FabricationFilterSQL fabricationFilterSQL) {
-		this.fabricationFilterSQL = fabricationFilterSQL;
+			FabricationFilterSQL dishfabricationFilterSQL) {
+		this.dishfabricationFilterSQL = dishfabricationFilterSQL;
 	}
 
 	public AuthValid getAuthValidImpl() {
@@ -844,7 +846,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
 
-		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
+		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
 				entity, arg0);
 
 		JSONObject jsonObject = new JSONObject();
@@ -901,7 +903,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
 
-		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
+		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
 				sql, entity, arg0);
 
 		JSONObject jsonObject = new JSONObject();
@@ -1057,7 +1059,7 @@ public class DishServiceImpl implements GenfuCommonService {
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
 
-		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
+		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
 				sql, entity, arg0);
 		Map<String, Object> myPara;
 		if (null != parameters) {
@@ -1118,7 +1120,7 @@ public class DishServiceImpl implements GenfuCommonService {
 	public <T> JSONObject searchJsonNativeQuery(String sql,
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
-		Map<String, Object> filterSQL = fabricationFilterSQL
+		Map<String, Object> filterSQL = dishfabricationFilterSQL
 				.fabricationNativeSQL(sql, entity, arg0);
 		Map<String, Object> myPara;
 		if (null != parameters) {

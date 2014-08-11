@@ -27,7 +27,7 @@ import com.genfu.reform.model.UserInfo;
 import com.genfu.reform.util.AuthValid;
 import com.genfu.reform.util.FabricationFilterSQL;
 
-public class GenfuCommonServiceImpl implements GenfuCommonService {
+public class GroupOrderitemServiceImpl implements GenfuCommonService {
 	// private StringBuffer strBuffJPQL = new StringBuffer();
 	// private Map<String, Object> mapCondition = new HashMap<String, Object>();
 	// Iterator<String> it = null;
@@ -929,23 +929,36 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 				}
 			}
 		});
-		/*
-		 * cfg.registerJsonValueProcessor(java.util.Date.class, new
-		 * JsonValueProcessor() { public Object processObjectValue(String key,
-		 * Object value, JsonConfig jsonConfig) { if ("createdAt".equals(key) &&
-		 * value instanceof java.util.Date) { String str = new
-		 * SimpleDateFormat("yyyy-MM-dd") .format((java.util.Date) value);
-		 * return str; } return null == value ? "" : value.toString(); }
-		 * 
-		 * @Override public Object processArrayValue(Object value, JsonConfig
-		 * arg1) { String[] obj = {}; if (value instanceof Date[]) {
-		 * SimpleDateFormat sf = new SimpleDateFormat( "yyyy-MM-dd"); Date[]
-		 * dates = (Date[]) value; obj = new String[dates.length]; for (int i =
-		 * 0; i < dates.length; i++) { obj[i] = sf.format(dates[i]); } } return
-		 * obj; }
-		 * 
-		 * });
-		 */
+		cfg.registerJsonValueProcessor(java.util.Date.class,
+				new JsonValueProcessor() {
+					public Object processObjectValue(String key, Object value,
+							JsonConfig jsonConfig) {
+						if ("createdAt".equals(key)
+								&& value instanceof java.util.Date) {
+							String str = new SimpleDateFormat("yyyy-MM-dd")
+									.format((java.util.Date) value);
+							return str;
+						}
+						return null == value ? "" : value.toString();
+					}
+
+					@Override
+					public Object processArrayValue(Object value,
+							JsonConfig arg1) {
+						String[] obj = {};
+						if (value instanceof Date[]) {
+							SimpleDateFormat sf = new SimpleDateFormat(
+									"yyyy-MM-dd");
+							Date[] dates = (Date[]) value;
+							obj = new String[dates.length];
+							for (int i = 0; i < dates.length; i++) {
+								obj[i] = sf.format(dates[i]);
+							}
+						}
+						return obj;
+					}
+
+				});
 		// cfg.setJavaPropertyNameProcessorMatcher(null);
 		// net.sf.json.JSONException:
 		// java.lang.reflect.InvocationTargetException异常

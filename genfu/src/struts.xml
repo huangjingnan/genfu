@@ -60,6 +60,7 @@
 	<constant name="struts.i18n.encoding" value="UTF-8" />
 	<constant name="struts.custom.i18n.resources" value="global" />
 	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.objectFactory.spring.autoWire" value="name" />
 	<!-- The Convention plugin can automatically reload configuration changes, 
 		made in classes the contain actions, without restarting the container. -->
 	<constant name="struts.devMode" value="false" />

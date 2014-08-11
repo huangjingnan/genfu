@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,8 +29,6 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.genfu.reform.model.Dish;
 import com.genfu.reform.service.GenfuCommonService;
@@ -67,7 +66,7 @@ public class DishController extends ValidationAwareSupport implements
 	private Long id;
 	private List<Dish> list;
 	private JSONObject jsonObject;
-	private GenfuCommonService genfuCommonService;
+	private GenfuCommonService dishService;
 	private HttpServletRequest request;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
@@ -76,19 +75,13 @@ public class DishController extends ValidationAwareSupport implements
 	private String fileImageContentType;
 	private String fileImageFileName;
 
-	/*
-	 * @Autowired public DishController(
-	 * 
-	 * @Qualifier("dishService") GenfuCommonService theService) {
-	 * genfuCommonService = theService; }
-	 */
-
 	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
+		return dishService;
 	}
 
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	@Resource(name = "dishService")
+	public void setGenfuCommonService(GenfuCommonService dishService) {
+		this.dishService = dishService;
 	}
 
 	@Override
@@ -120,7 +113,7 @@ public class DishController extends ValidationAwareSupport implements
 	}
 
 	// public void prepareIndex() throws Exception {
-	// jsonObject = genfuCommonService.validateAndRecord("dish", "index",
+	// jsonObject = dishService.validateAndRecord("dish", "index",
 	// request, Dish.class, session);
 	//
 	// verifyingOperates = jsonObject.getBoolean("validResult");
@@ -128,8 +121,8 @@ public class DishController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = genfuCommonService.validateAndRecord("dish", "index",
-				request, Dish.class, session);
+		jsonObject = dishService.validateAndRecord("dish", "index", request,
+				Dish.class, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
@@ -146,32 +139,31 @@ public class DishController extends ValidationAwareSupport implements
 							Map<String, Object> paraMap = new HashMap<String, Object>();
 							paraMap.put("dishNameLike", mask + "%");
 
-							jsonObject = genfuCommonService
+							jsonObject = dishService
 									.searchJsonJqGridFilter(
 											"SELECT x FROM Dish x WHERE x.dishName LIKE :dishNameLike",
 											paraMap, Dish.class, parameters);
 
 						} catch (UnsupportedEncodingException e) {
 							e.printStackTrace();
-							jsonObject = genfuCommonService
-									.searchJsonJqGridFilter(Dish.class,
-											parameters);
+							jsonObject = dishService.searchJsonJqGridFilter(
+									Dish.class, parameters);
 						}
 					} else {
 						// jsonObject =
-						// genfuCommonService.searchJsonJqGridFilter(
+						// dishService.searchJsonJqGridFilter(
 						// Dish.class, parameters);
 						// Map<String, Object> para = new HashMap<String,
 						// Object>();
 						// para.put("taggings",
 						// Long.parseLong(parameters.get("taggings")[0]));
-						jsonObject = genfuCommonService.searchJsonNativeQuery(
+						jsonObject = dishService.searchJsonNativeQuery(
 								"SELECT * FROM DISHES X WHERE 1=1", null,
 								Dish.class, parameters);
 					}
 				}
 			} else {
-				list = genfuCommonService.searchList(Dish.class, parameters);
+				list = dishService.searchList(Dish.class, parameters);
 			}
 
 		}
@@ -183,21 +175,20 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String update() {
-		jsonObject = genfuCommonService.validateAndRecord("dish", "update",
-				request, Dish.class, session);
+		jsonObject = dishService.validateAndRecord("dish", "update", request,
+				Dish.class, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
 			if (null != fileImage) {
 
 				try {
-					Path file = genfuCommonService
-							.getGenfuPath("Dish.coverImage");
+					Path file = dishService.getGenfuPath("Dish.coverImage");
 					Files.copy(fileImage.toPath(),
 							file.resolve(fileImageFileName),
 							StandardCopyOption.REPLACE_EXISTING);
 					// file =
-					// genfuCommonService.getGenfuPath("Dish.coverImage");
+					// dishService.getGenfuPath("Dish.coverImage");
 					// file.resolve(fileImageFileName);
 					model.setCoverImage("/genfu/files/dishImage/"
 							+ fileImageFileName);
@@ -208,7 +199,7 @@ public class DishController extends ValidationAwareSupport implements
 				}
 			}
 			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
+			dishService.update(model);
 			addActionMessage("Object updated successfully");
 		}
 		return "json";
@@ -216,7 +207,7 @@ public class DishController extends ValidationAwareSupport implements
 
 	public void setId(Long id) {
 		if (id != null) {
-			model = (Dish) genfuCommonService.find(id, Dish.class);
+			model = (Dish) dishService.find(id, Dish.class);
 		}
 		this.id = id;
 	}
@@ -234,8 +225,8 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String create() {
-		jsonObject = genfuCommonService.validateAndRecord("dish", "create",
-				request, Dish.class, session);
+		jsonObject = dishService.validateAndRecord("dish", "create", request,
+				Dish.class, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
@@ -243,13 +234,12 @@ public class DishController extends ValidationAwareSupport implements
 
 				try {
 
-					Path file = genfuCommonService
-							.getGenfuPath("Dish.coverImage");
+					Path file = dishService.getGenfuPath("Dish.coverImage");
 					Files.copy(fileImage.toPath(),
 							file.resolve(fileImageFileName),
 							StandardCopyOption.REPLACE_EXISTING);
 					// file =
-					// genfuCommonService.getGenfuPath("Dish.coverImage");
+					// dishService.getGenfuPath("Dish.coverImage");
 					// file.resolve(fileImageFileName);
 					model.setCoverImage("/genfu/files/dishImage/"
 							+ fileImageFileName);
@@ -259,7 +249,7 @@ public class DishController extends ValidationAwareSupport implements
 					e.printStackTrace();
 				}
 			}
-			genfuCommonService.save(model);
+			dishService.save(model);
 		}
 		jsonObject = null;
 		return "json";
@@ -273,8 +263,8 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateAndRecord("dish", "destroy",
-				request, Dish.class, session);
+		jsonObject = dishService.validateAndRecord("dish", "destroy", request,
+				Dish.class, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
@@ -291,7 +281,7 @@ public class DishController extends ValidationAwareSupport implements
 				execSQL.append("#DELETE FROM DISHES WHERE DISH_ID IN (")
 						.append(ids).append(")");
 
-				genfuCommonService.batchExcuseNativeQuery(execSQL.toString());
+				dishService.batchExcuseNativeQuery(execSQL.toString());
 			}
 		}
 		jsonObject = new JSONObject();
