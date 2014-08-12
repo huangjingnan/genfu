@@ -1,6 +1,8 @@
 package com.genfu.reform.util;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -10,6 +12,8 @@ import net.sf.json.JSONObject;
 public class FabricationFilterSQLImpl implements FabricationFilterSQL {
 	public static String OPERANDS = "{\"eq\":\"=\",\"ne\":\"<>\",\"lt\":\"<\",\"le\":\"<=\",\"gt\":\">\",\"ge\":\">=\",\"bw\":\"LIKE\",\"bn\":\"NOT LIKE\",\"in\":\"IN\",\"ni\":\"NOT IN\",\"ew\":\"LIKE\",\"en\":\"NOT LIKE\",\"cn\":\"LIKE\",\"nc\":\"NOT LIKE\",\"nu\":\"IS NULL\",\"nn\":\"IS NOT NULL\"}";
 	public static JSONObject JSON_OPERANDS = JSONObject.fromObject(OPERANDS);
+	public static SimpleDateFormat formatter = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
 
 	private Map<String, Object> mapParameters = new Hashtable<String, Object>();
 	private StringBuffer strJpql = null;
@@ -202,7 +206,12 @@ public class FabricationFilterSQLImpl implements FabricationFilterSQL {
 			} else if ("java.lang.String".equals(typeName)) {
 				// val = (String) val;
 			} else if ("java.util.Date".equals(typeName)) {
-				// val = (String) val;
+				try {
+					val = formatter.parse((String) val);
+				} catch (ParseException e) {
+					e.printStackTrace();
+					val = new java.util.Date();
+				}
 			}
 		} catch (NoSuchFieldException e) {
 			val = 0;

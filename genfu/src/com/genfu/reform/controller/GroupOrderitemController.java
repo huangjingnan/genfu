@@ -64,7 +64,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	// public OrderItemController(GenfuCommonService theService) {
 	// groupOrderitemService = theService;
 	// }
-	
+
 	// If you intend to express annotation-driven injection by name, do not
 	// primarily use @Autowired, even if is technically capable of referring to
 	// a bean name through @Qualifier values. Instead, use the JSR-250 @Resource
@@ -81,7 +81,7 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 		return groupOrderitemService;
 	}
 
-	@Resource(name="groupOrderitemService")
+	@Resource(name = "groupOrderitemService")
 	public void setGenfuCommonService(GenfuCommonService groupOrderitemService) {
 		this.groupOrderitemService = groupOrderitemService;
 	}
@@ -112,25 +112,27 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		jsonObject = groupOrderitemService.validateOperates("", "", "group-orderitem",
-				"index", null, Dish.class, parameters, session);
+		// jsonObject = groupOrderitemService.validateOperates("", "",
+		// "group-orderitem",
+		// "index", null, Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
+		// verifyingOperates = jsonObject.getBoolean("validResult");
+		// if (verifyingOperates) {
 
-			if (null != this.parameters.get("style")) {
-				jsonObject = groupOrderitemService.searchJsonJqGridFilter(OrderItem.class, parameters);
-			} else {
-				// list = groupOrderitemService.searchList(OrderItem.class,
-				// parameters);
-			}
+		if (null != this.parameters.get("style")) {
+			jsonObject = groupOrderitemService.searchJsonJqGridFilter(
+					OrderItem.class, parameters);
+		} else {
+			// list = groupOrderitemService.searchList(OrderItem.class,
+			// parameters);
 		}
+		// }
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		jsonObject = groupOrderitemService.validateOperates("", "", "order-item",
-				"update", null, Dish.class, parameters, session);
+		jsonObject = groupOrderitemService.validateOperates("", "",
+				"order-item", "update", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {
@@ -174,8 +176,8 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = groupOrderitemService.validateOperates("", "", "order-item",
-				"destroy", null, Dish.class, parameters, session);
+		jsonObject = groupOrderitemService.validateOperates("", "",
+				"order-item", "destroy", null, Dish.class, parameters, session);
 
 		verifyingOperates = jsonObject.getBoolean("validResult");
 		if (verifyingOperates) {

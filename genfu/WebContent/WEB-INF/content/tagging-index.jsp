@@ -16,9 +16,9 @@
 	datatype: "json", 
 	colNames:['标签ID','标签名称','展示顺序'],
 	colModel:[
-   		{name:'id',index:'id', width:120,editable:true,editoptions:{readonly:true,size:10}},
+   		{name:'id',index:'id', width:120, sorttype:'integer',editable:true,editoptions:{readonly:true,size:10}},
    		{name:'name',index:'name', width:120,editable:true,editrules:{required:true}},
-   		{name:'tagSn',index:'tagSn', width:120,editable:true}
+   		{name:'tagSn',index:'tagSn', sorttype:'integer', width:120,editable:true,editrules:{required:true,integer:true,minValue:1,maxValue:9999}}
    	],
    	rowNum:20,
    	rowList:[20,30,50],
@@ -44,14 +44,14 @@
 	datatype: "json",
 	colNames:['商品ID','商品名称', 'isbn', 'masterId','publishedAt','状态','价格', '创建时间', '更新时间','图片信息','图片文件','标签','描述'],
 	colModel:[
-   		{name:'id',index:'id', width:55,editable:true,editoptions:{readonly:true,size:10}},
+   		{name:'id',index:'id', width:55, sorttype:'integer',editable:true,editoptions:{readonly:true,size:10}},
    		{name:'dishName',index:'dishName', width:150,editable:true,editoptions:{size:10}},
    		{name:'isbn',index:'isbn', width:90,editable:true,hidden:true,editoptions:{size:25}},
    		{name:'publishedId',index:'publishedId', width:60,editable:false, hidden:true,editoptions:{size:10}},
    		{name:'publishedAt',index:'publishedAt', width: 80, hidden:true, align: 'center', sorttype: 'date',
             formatter: 'date',editrules:{date:true,required:false}, formatoptions: {newformat: 'Y-M-d'}, datefmt: 'Y-M-d H:i:s'},
    		{name:'dishFlag',index:'dishFlag', width:80, editable: true,align:"left",edittype:"select",editoptions:{value:"OPEN:OPEN;CLOSED:CLOSED"}},
-   		{name:'price',index:'price',editable:true, align:"right",formatter:'number', width:80,editrules:{required:true,number:true,minValue:0.01}},
+   		{name:'price',index:'price',editable:true, align:"right",sorttype:'currency',formatter:'currency', width:80,editrules:{required:true,number:true,minValue:0.01}},
    		{name:'createdAt',index:'createdAt', width:100, align:"center", hidden:true, sorttype: 'date',
             formatter: 'date', formatoptions: {newformat: 'Y-M-d'}, datefmt: 'Y-M-d H:i:s'},
    		{name:'updatedAt',index:'updatedAt',width:100,align:"center", hidden:true,sorttype:'date',formatter:'date', formatoptions: {newformat: 'Y-M-d'}, datefmt: 'Y-M-d H:i:s'},	
