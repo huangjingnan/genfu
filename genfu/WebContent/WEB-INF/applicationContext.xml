@@ -19,6 +19,7 @@
 		bean="hibernateAuditLogListener" /> </list> </property> <property name="preDeleteEventListeners"> 
 		<list> <ref bean="hibernateAuditLogListener" /> </list> </property> </bean> -->
 
+	<!-- post-processors for all standard config annotations -->
 	<context:annotation-config />
 
 	<!-- (The implicitly registered post-processors include AutowiredAnnotationBeanPostProcessor, 
@@ -49,14 +50,17 @@
 		<property name="showSql" value="true" /> <property name="generateDdl" value="true" 
 		/> <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" 
 		/> </bean> </property> </bean> -->
+	<bean
+		class="com.genfu.reform.util.GenfuPropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:com/genfu/jdbc.properties" />
+	</bean>
 
 	<bean id="pg_dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url"
-			value="jdbc:postgresql://192.168.56.101:5432/postgres" />
-		<property name="username" value="postgres" />
-		<property name="password" value="123456" />
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
 	</bean>
 
 	<bean id="entityManagerFactory"
@@ -268,8 +272,8 @@
 		scope="prototype">
 		<property name="genfuCommonDAO" ref="genfuCommonDAO" />
 		<property name="genfuCommonTransaction" ref="genfuCommonTransaction" />
-	<!-- <property name="dishfabricationFilterSQL" ref="dishfabricationFilterSQL" 
-		/> -->
+		<!-- <property name="dishfabricationFilterSQL" ref="dishfabricationFilterSQL" 
+			/> -->
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
 	<bean class="com.genfu.reform.controller.DishController" scope="prototype" />

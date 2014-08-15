@@ -9,46 +9,46 @@ public class TestAny {
 
 	public static void main(String[] args) {
 
-//		try {
-//			String strAnyS = "WebContent#41155293.zip";
-//			// 5gUhZ1KF8vlr4Nn+sXgV7W04GPXziP0c
-//			// WebContent#41155265.zip
-//
-//			DES fileNameDES = new DES("www1genfucom");
-//
-//			strAnyS = fileNameDES.getEncString(strAnyS);
-//			System.out.println(strAnyS);
-//			strAnyS = fileNameDES.getDesString(strAnyS);
-//			System.out.println(strAnyS);
-//
-//			System.out.println(strAnyS.indexOf("#"));
-//			System.out.println(strAnyS.indexOf("."));
-//			System.out.println(strAnyS.substring(0, 10));
-//			System.out.println(strAnyS.substring(11, strAnyS.indexOf(".")));
-//			// size
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			System.out.println("e");
-//		}
-
-		
-		Object val = "2014-05-01 00:00:00";
-		
-		//java.util.Date tempDate = (java.util.Date) val;
-		
-		//System.out.println(tempDate.toString());
-		
-		Date today = null;
-		SimpleDateFormat formatter;
-
-		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
-			today = formatter.parse((String)val);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			String strAnyS = "WebContent#40838318.zip";
+			// 5gUhZ1KF8vlr4Nn+sXgV7W04GPXziP0c
+			// WebContent#41155265.zip
+
+			DES fileNameDES = new DES("www1genfucom");
+
+			strAnyS = fileNameDES.getEncString(strAnyS);
+			System.out.println(strAnyS);
+			strAnyS = fileNameDES.getDesString(strAnyS);
+			System.out.println(strAnyS);
+
+			System.out.println(strAnyS.indexOf("#"));
+			System.out.println(strAnyS.indexOf("."));
+			System.out.println(strAnyS.substring(0, 10));
+			System.out.println(strAnyS.substring(11, strAnyS.indexOf(".")));
+			// size
+		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("e");
 		}
-		System.out.println("Result: " + today.toString());
+
+		
+//		Object val = "2014-05-01 00:00:00";
+//		
+//		//java.util.Date tempDate = (java.util.Date) val;
+//		
+//		//System.out.println(tempDate.toString());
+//		
+//		Date today = null;
+//		SimpleDateFormat formatter;
+//
+//		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		try {
+//			today = formatter.parse((String)val);
+//		} catch (ParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("Result: " + today.toString());
 
 //		String input = "2014-05-01";
 //		try {
