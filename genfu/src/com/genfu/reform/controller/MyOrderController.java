@@ -28,7 +28,6 @@ import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
 import com.genfu.reform.model.Cart;
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Order;
 import com.genfu.reform.service.GenfuCommonService;
 import com.genfu.reform.util.DES;
@@ -68,7 +67,6 @@ public class MyOrderController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private Cart myCart = null;
 	private InputStream imageStream;
 	private MultiFormatWriter barcodeWriter = new MultiFormatWriter();
@@ -120,93 +118,66 @@ public class MyOrderController extends ValidationAwareSupport implements
 			encode = des.getEncString(model.getCreatedAt().toString());
 			if (parameters.get("encode")[0].equalsIgnoreCase(encode.replace(
 					"+", " "))) {
-				verifyingOperates = true;
-			}
+				// QR_CODE
+				if (parameters.containsKey("QR_CODE")) {
+					try {
 
-		} else {
-			verifyingOperates = false;
-		}
-		if (verifyingOperates) {
+						String checkoutURL = genfuCommonService
+								.getGenfuConfig("checkoutURL");
+						checkoutURL = checkoutURL + id + "?orderId=" + id
+								+ "&encode=";
 
-			// QR_CODE
-			if (parameters.containsKey("QR_CODE")) {
-				try {
+						checkoutURL = checkoutURL
+								+ des.getEncString(model.getCreatedAt()
+										.toString());
+						BitMatrix matrix = barcodeWriter.encode(checkoutURL,
+								BarcodeFormat.QR_CODE, 300, 300);
+						BufferedImage image = MatrixToImageWriter
+								.toBufferedImage(matrix);
 
-					String checkoutURL = genfuCommonService
-							.getGenfuConfig("checkoutURL");
-					checkoutURL = checkoutURL + id + "?orderId=" + id
-							+ "&encode=";
-					DES des = new DES(id.toString());
+						ByteArrayOutputStream os = new ByteArrayOutputStream();
+						ImageIO.write(image, "png", os);
+						imageStream = new ByteArrayInputStream(os.toByteArray());
+					} catch (WriterException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-					checkoutURL = checkoutURL
-							+ des.getEncString(model.getCreatedAt().toString());
-					BitMatrix matrix = barcodeWriter.encode(checkoutURL,
-							BarcodeFormat.QR_CODE, 300, 300);
-					BufferedImage image = MatrixToImageWriter
-							.toBufferedImage(matrix);
-
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					ImageIO.write(image, "png", os);
-					imageStream = new ByteArrayInputStream(os.toByteArray());
-				} catch (WriterException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					return "qr_code";
 				}
-
-				return "qr_code";
+				return "show";
 			}
-			return "show";
-		} else {
 
-			return "fail";
 		}
+
+		return "fail";
+
 		// return "show";
-	}
-
-	public void prepareIndex() throws Exception {
-		jsonObject = genfuCommonService.validateOperates("", "", "checkout",
-				"index", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
 	}
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-
-			list = genfuCommonService.searchList(Order.class, parameters);
-		}
+		list = genfuCommonService.searchList(Order.class, parameters);
 		jsonObject = null;
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public HttpHeaders update() {
-		jsonObject = genfuCommonService.validateOperates("",
-				parameters.get("authCode")[0], "checkout", "update", null,
-				Dish.class, parameters, session);
+		if (parameters.containsKey("multiplied")) {
 
-		verifyingOperates = jsonObject.getBoolean("validOperate")
-				&& jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (parameters.containsKey("multiplied")) {
-
-				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]), "100");
-			} else {
-
-				model.PlaceOrder(myCart, 1, "100");
-			}
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
-			addActionMessage("Thanks you! Revised your order information");
+			model.PlaceOrder(myCart,
+					Long.parseLong(parameters.get("multiplied")[0]), "100");
 		} else {
-			addActionMessage("Sorry！Auth faild");
-			return new DefaultHttpHeaders("thanks");
+
+			model.PlaceOrder(myCart, 1, "100");
 		}
+		model.setUpdatedAt(new Date());
+		genfuCommonService.update(model);
+		addActionMessage("Thanks you! Revised your order information");
 		jsonObject = null;
 		return new DefaultHttpHeaders("thanks").setLocationId(model.getId());
 	}
@@ -230,31 +201,20 @@ public class MyOrderController extends ValidationAwareSupport implements
 	}
 
 	public HttpHeaders create() {
-		jsonObject = genfuCommonService.validateOperates("",
-				parameters.get("authCode")[0], "checkout", "create", null,
-				Dish.class, parameters, session);
+		jsonObject = (JSONObject) session
+				.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
+		model.setStaffNumber(jsonObject.getString("userId"));
+		if (parameters.containsKey("multiplied")) {
 
-		verifyingOperates = jsonObject.getBoolean("validOperate")
-				&& jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			jsonObject = (JSONObject) session
-					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-			model.setStaffNumber(jsonObject.getString("userId"));
-			if (parameters.containsKey("multiplied")) {
-
-				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]), "100");
-			} else {
-
-				model.PlaceOrder(myCart, 1, "100");
-			}
-			// model.setId(myCart.getId());
-			genfuCommonService.save(model);
-			addActionMessage("Thanks you! This is your order information");
+			model.PlaceOrder(myCart,
+					Long.parseLong(parameters.get("multiplied")[0]), "100");
 		} else {
-			addActionMessage("Sorry！Auth faild");
-			return new DefaultHttpHeaders("thanks");
+
+			model.PlaceOrder(myCart, 1, "100");
 		}
+		// model.setId(myCart.getId());
+		genfuCommonService.save(model);
+		addActionMessage("Thanks you! This is your order information");
 		jsonObject = null;
 		return new DefaultHttpHeaders("thanks").setLocationId(model.getId());
 	}

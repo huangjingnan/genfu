@@ -54,7 +54,6 @@ public class TagsController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 
 	// private boolean verifyingOperates;
 	private InputStream inputStream;

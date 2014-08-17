@@ -50,7 +50,6 @@ public class RoleInfosController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private JSONObject jsonObject;
 
 	// public RoleInfosController(GenfuCommonService theService) {
@@ -95,25 +94,17 @@ public class RoleInfosController extends ValidationAwareSupport implements
 		return "json";
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		if (verifyingOperates) {
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							RoleInfo.class, parameters);
-				}
-			} else {
-				list = genfuCommonService
-						.searchList(RoleInfo.class, parameters);
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						RoleInfo.class, parameters);
 			}
+		} else {
+			list = genfuCommonService.searchList(RoleInfo.class, parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}

@@ -57,11 +57,6 @@ public class OrderDishController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
-
-	// public OrderController(GenfuCommonService theService) {
-	// genfuCommonService = theService;
-	// }
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -101,59 +96,46 @@ public class OrderDishController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-dish",
-				"index", null, Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-
-		if (verifyingOperates) {
-
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							Order.class, parameters);
-				}
-			} else {
-				// list = genfuCommonService.searchList(Order.class,
-				// parameters);
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						Order.class, parameters);
 			}
+		} else {
+			// list = genfuCommonService.searchList(Order.class,
+			// parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-dish",
-				"update", null, Dish.class, parameters, session);
+		if (!"CLOSED".equalsIgnoreCase(model.getStatus())
+				&& parameters.containsKey("dishIds[]")) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (!"CLOSED".equalsIgnoreCase(model.getStatus())
-					&& parameters.containsKey("dishIds[]")) {
+			Map<String, Object> tempPara = new HashMap<String, Object>();
 
-				Map<String, Object> tempPara = new HashMap<String, Object>();
+			String[] dishIds = parameters.get("dishIds[]");
+			List<Long> longDishIds = new ArrayList<Long>();
 
-				String[] dishIds = parameters.get("dishIds[]");
-				List<Long> longDishIds = new ArrayList<Long>();
+			for (int i = 0; i < dishIds.length; i++) {
+				longDishIds.add(Long.parseLong(dishIds[i]));
+			}
 
-				for (int i = 0; i < dishIds.length; i++) {
-					longDishIds.add(Long.parseLong(dishIds[i]));
-				}
+			tempPara.put("dishIds", longDishIds);
 
-				tempPara.put("dishIds", longDishIds);
+			List<Dish> tempDishes = genfuCommonService.searchList(
+					"SELECT x FROM Dish x WHERE x.id IN(:dishIds)", tempPara,
+					Dish.class);
 
-				List<Dish> tempDishes = genfuCommonService.searchList(
-						"SELECT x FROM Dish x WHERE x.id IN(:dishIds)",
-						tempPara, Dish.class);
-
-				if (tempDishes.size() > 0) {
-					model.PlaceOrder(tempDishes,
-							Long.parseLong(parameters.get("orderAmount")[0]));
-					model.setUpdatedAt(new Date());
-					genfuCommonService.update(model);
-					addActionMessage("Object updated successfully");
-				}
+			if (tempDishes.size() > 0) {
+				model.PlaceOrder(tempDishes,
+						Long.parseLong(parameters.get("orderAmount")[0]));
+				model.setUpdatedAt(new Date());
+				genfuCommonService.update(model);
+				addActionMessage("Object updated successfully");
 			}
 		}
 		return "json";

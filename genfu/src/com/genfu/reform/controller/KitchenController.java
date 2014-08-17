@@ -53,7 +53,6 @@ public class KitchenController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -91,19 +90,10 @@ public class KitchenController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-
-			list = genfuCommonService.searchList(OrderItem.class, parameters);
-		}
+		list = genfuCommonService.searchList(OrderItem.class, parameters);
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 

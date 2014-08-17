@@ -58,7 +58,6 @@ public class UserRoleController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public UserRoleController(GenfuCommonService theService) {
 	// this.genfuCommonService = theService;
@@ -108,27 +107,20 @@ public class UserRoleController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
-		if (verifyingOperates) {
 
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							UserInfo.class, parameters);
-				}
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						UserInfo.class, parameters);
 			}
-			// else {
-			// list = genfuCommonService
-			// .searchList(UserInfo.class, parameters);
-			// }
 		}
+		// else {
+		// list = genfuCommonService
+		// .searchList(UserInfo.class, parameters);
+		// }
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 

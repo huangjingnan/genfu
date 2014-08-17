@@ -40,7 +40,6 @@ public class GenfuCommonController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public GenfuCommonController(GenfuCommonService theService) {
 	// this.genfuCommonService = theService;
@@ -87,14 +86,8 @@ public class GenfuCommonController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	// 首先验证权限
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
-		if (verifyingOperates && this.parameters.containsKey("statusCode")) {
+		if (this.parameters.containsKey("statusCode")) {
 			list = genfuCommonService.searchList(Object.class, parameters);
 			return new DefaultHttpHeaders("result").disableCaching();
 		}

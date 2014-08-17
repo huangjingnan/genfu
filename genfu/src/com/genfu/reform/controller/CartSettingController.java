@@ -50,7 +50,6 @@ public class CartSettingController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private Dish tempDish;
 
 	// public CartController(GenfuCommonService theService) {
@@ -104,14 +103,9 @@ public class CartSettingController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
 
-		if (verifyingOperates && this.parameters.containsKey("statusCode")) {
+		if (this.parameters.containsKey("statusCode")) {
 			list = genfuCommonService.searchList(Cart.class, parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();

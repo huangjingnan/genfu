@@ -44,7 +44,6 @@ public class DepartmentController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public DepartmentController(GenfuCommonService theService) {
 	// this.departmentService = theService;
@@ -97,14 +96,9 @@ public class DepartmentController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
 
-		if (verifyingOperates && this.parameters.containsKey("statusCode")) {
+		if (this.parameters.containsKey("statusCode")) {
 			list = genfuCommonService.searchList(Department.class, parameters);
 			// return new DefaultHttpHeaders("result").disableCaching();
 		}

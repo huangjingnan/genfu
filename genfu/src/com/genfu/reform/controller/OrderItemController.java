@@ -23,7 +23,6 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Order;
 import com.genfu.reform.model.OrderItem;
 import com.genfu.reform.service.GenfuCommonService;
@@ -58,7 +57,6 @@ public class OrderItemController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public OrderItemController(GenfuCommonService theService) {
 	// genfuCommonService = theService;
@@ -103,42 +101,29 @@ public class OrderItemController extends ValidationAwareSupport implements
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
-				"index", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-
-			if (null != this.parameters.get("style")
-					&& null != this.parameters.get("orderId")) {
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(
-						"SELECT x FROM OrderItem x WHERE x.orderId="
-								+ parameters.get("orderId")[0],
-						OrderItem.class, parameters);
-			} else {
-				// list = genfuCommonService.searchList(OrderItem.class,
-				// parameters);
-			}
+		if (null != this.parameters.get("style")
+				&& null != this.parameters.get("orderId")) {
+			jsonObject = genfuCommonService.searchJsonJqGridFilter(
+					"SELECT x FROM OrderItem x WHERE x.orderId="
+							+ parameters.get("orderId")[0], OrderItem.class,
+					parameters);
+		} else {
+			// list = genfuCommonService.searchList(OrderItem.class,
+			// parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
-				"update", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			Map<String, Object> par = new HashMap<String, Object>();
-			par.put("orderId0", model.getOrderId());
-			List<Order> theOrder = genfuCommonService.searchNativeQuery(
-					"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-					Order.class);
-			if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
-				model.setUpdatedAt(new Date());
-				genfuCommonService.update(model);
-				addActionMessage("Object updated successfully");
-			}
+		Map<String, Object> par = new HashMap<String, Object>();
+		par.put("orderId0", model.getOrderId());
+		List<Order> theOrder = genfuCommonService.searchNativeQuery(
+				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
+				Order.class);
+		if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
+			model.setUpdatedAt(new Date());
+			genfuCommonService.update(model);
+			addActionMessage("Object updated successfully");
 		}
 		return "json";
 	}
@@ -169,44 +154,38 @@ public class OrderItemController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order-item",
-				"destroy", null, Dish.class, parameters, session);
+		if (null != parameters.get("id")) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != parameters.get("id")) {
+			Map<String, Object> tempPara = new HashMap<String, Object>();
 
-				Map<String, Object> tempPara = new HashMap<String, Object>();
-
-				String[] ids = parameters.get("id")[0].split(",");
-				List<Long> longOItemIds = new ArrayList<Long>();
-				for (int i = 0; i < ids.length; i++) {
-					longOItemIds.add(Long.parseLong(ids[i]));
-				}
-				tempPara.put("oItemIds", longOItemIds);
-				List<OrderItem> tempOItems = genfuCommonService.searchList(
-						"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
-						tempPara, OrderItem.class);
-				List<OrderItem> oItemDel = new ArrayList<OrderItem>();
-				Order theOrder = null;
-				for (OrderItem tempI : tempOItems) {
-
-					if (null == theOrder) {
-						theOrder = (Order) genfuCommonService.find(
-								tempI.getOrderId(), Order.class);
-					} else if (tempI.getOrderId() != theOrder.getId()) {
-						theOrder = (Order) genfuCommonService.find(
-								tempI.getOrderId(), Order.class);
-					}
-
-					if (!"CLOSED".equalsIgnoreCase(theOrder.getStatus())
-							&& "OPEN".equalsIgnoreCase(tempI.getStatus())) {
-						oItemDel.add(tempI);
-					}
-				}
-
-				genfuCommonService.remove(oItemDel);
+			String[] ids = parameters.get("id")[0].split(",");
+			List<Long> longOItemIds = new ArrayList<Long>();
+			for (int i = 0; i < ids.length; i++) {
+				longOItemIds.add(Long.parseLong(ids[i]));
 			}
+			tempPara.put("oItemIds", longOItemIds);
+			List<OrderItem> tempOItems = genfuCommonService.searchList(
+					"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
+					tempPara, OrderItem.class);
+			List<OrderItem> oItemDel = new ArrayList<OrderItem>();
+			Order theOrder = null;
+			for (OrderItem tempI : tempOItems) {
+
+				if (null == theOrder) {
+					theOrder = (Order) genfuCommonService.find(
+							tempI.getOrderId(), Order.class);
+				} else if (tempI.getOrderId() != theOrder.getId()) {
+					theOrder = (Order) genfuCommonService.find(
+							tempI.getOrderId(), Order.class);
+				}
+
+				if (!"CLOSED".equalsIgnoreCase(theOrder.getStatus())
+						&& "OPEN".equalsIgnoreCase(tempI.getStatus())) {
+					oItemDel.add(tempI);
+				}
+			}
+
+			genfuCommonService.remove(oItemDel);
 		}
 		jsonObject = new JSONObject();
 		return "json";

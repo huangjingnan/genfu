@@ -53,7 +53,6 @@ public class KitchenerController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -91,23 +90,14 @@ public class KitchenerController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (null != this.parameters.get("style")) {
-				jsonObject = genfuCommonService.searchJsonJqGrid(
-						OrderItem.class, parameters);
-			} else {
-				list = genfuCommonService.searchList(OrderItem.class,
-						parameters);
-			}
+		if (null != this.parameters.get("style")) {
+			jsonObject = genfuCommonService.searchJsonJqGrid(OrderItem.class,
+					parameters);
+		} else {
+			list = genfuCommonService.searchList(OrderItem.class, parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}

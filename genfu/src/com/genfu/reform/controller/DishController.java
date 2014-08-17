@@ -70,7 +70,6 @@ public class DishController extends ValidationAwareSupport implements
 	private HttpServletRequest request;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 	private File fileImage;
 	private String fileImageContentType;
 	private String fileImageFileName;
@@ -121,52 +120,46 @@ public class DishController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = dishService.validateAndRecord("dish", "index", request,
-				Dish.class, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = null;
+				if (null != this.parameters.get("cd_mask")) {
+					try {
+						String mask = URLDecoder.decode(
+								parameters.get("cd_mask")[0], "UTF-8");
+						Map<String, Object> paraMap = new HashMap<String, Object>();
+						paraMap.put("dishNameLike", mask + "%");
 
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = null;
-					if (null != this.parameters.get("cd_mask")) {
-						try {
-							String mask = URLDecoder.decode(
-									parameters.get("cd_mask")[0], "UTF-8");
-							Map<String, Object> paraMap = new HashMap<String, Object>();
-							paraMap.put("dishNameLike", mask + "%");
+						jsonObject = dishService
+								.searchJsonJqGridFilter(
+										"SELECT x FROM Dish x WHERE x.dishName LIKE :dishNameLike",
+										paraMap, Dish.class, parameters);
 
-							jsonObject = dishService
-									.searchJsonJqGridFilter(
-											"SELECT x FROM Dish x WHERE x.dishName LIKE :dishNameLike",
-											paraMap, Dish.class, parameters);
-
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-							jsonObject = dishService.searchJsonJqGridFilter(
-									Dish.class, parameters);
-						}
-					} else {
-						// jsonObject =
-						// dishService.searchJsonJqGridFilter(
-						// Dish.class, parameters);
-						// Map<String, Object> para = new HashMap<String,
-						// Object>();
-						// para.put("taggings",
-						// Long.parseLong(parameters.get("taggings")[0]));
-						jsonObject = dishService.searchJsonNativeQuery(
-								"SELECT * FROM DISHES X WHERE 1=1", null,
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+						jsonObject = dishService.searchJsonJqGridFilter(
 								Dish.class, parameters);
 					}
+				} else {
+					// jsonObject =
+					// dishService.searchJsonJqGridFilter(
+					// Dish.class, parameters);
+					// Map<String, Object> para = new HashMap<String,
+					// Object>();
+					// para.put("taggings",
+					// Long.parseLong(parameters.get("taggings")[0]));
+					jsonObject = dishService.searchJsonNativeQuery(
+							"SELECT * FROM DISHES X WHERE 1=1", null,
+							Dish.class, parameters);
 				}
-			} else {
-				list = dishService.searchList(Dish.class, parameters);
 			}
-
+		} else {
+			list = dishService.searchList(Dish.class, parameters);
 		}
+
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
@@ -175,33 +168,26 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String update() {
-		jsonObject = dishService.validateAndRecord("dish", "update", request,
-				Dish.class, session);
+		if (null != fileImage) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != fileImage) {
-
-				try {
-					Path file = dishService.getGenfuPath("Dish.coverImage");
-					Files.copy(fileImage.toPath(),
-							file.resolve(fileImageFileName),
-							StandardCopyOption.REPLACE_EXISTING);
-					// file =
-					// dishService.getGenfuPath("Dish.coverImage");
-					// file.resolve(fileImageFileName);
-					model.setCoverImage("/genfu/files/dishImage/"
-							+ fileImageFileName);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			try {
+				Path file = dishService.getGenfuPath("Dish.coverImage");
+				Files.copy(fileImage.toPath(), file.resolve(fileImageFileName),
+						StandardCopyOption.REPLACE_EXISTING);
+				// file =
+				// dishService.getGenfuPath("Dish.coverImage");
+				// file.resolve(fileImageFileName);
+				model.setCoverImage("/genfu/files/dishImage/"
+						+ fileImageFileName);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			model.setUpdatedAt(new Date());
-			dishService.update(model);
-			addActionMessage("Object updated successfully");
 		}
+		model.setUpdatedAt(new Date());
+		dishService.update(model);
+		addActionMessage("Object updated successfully");
 		return "json";
 	}
 
@@ -225,32 +211,25 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String create() {
-		jsonObject = dishService.validateAndRecord("dish", "create", request,
-				Dish.class, session);
+		if (null != fileImage) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != fileImage) {
+			try {
 
-				try {
-
-					Path file = dishService.getGenfuPath("Dish.coverImage");
-					Files.copy(fileImage.toPath(),
-							file.resolve(fileImageFileName),
-							StandardCopyOption.REPLACE_EXISTING);
-					// file =
-					// dishService.getGenfuPath("Dish.coverImage");
-					// file.resolve(fileImageFileName);
-					model.setCoverImage("/genfu/files/dishImage/"
-							+ fileImageFileName);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				Path file = dishService.getGenfuPath("Dish.coverImage");
+				Files.copy(fileImage.toPath(), file.resolve(fileImageFileName),
+						StandardCopyOption.REPLACE_EXISTING);
+				// file =
+				// dishService.getGenfuPath("Dish.coverImage");
+				// file.resolve(fileImageFileName);
+				model.setCoverImage("/genfu/files/dishImage/"
+						+ fileImageFileName);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			dishService.save(model);
 		}
+		dishService.save(model);
 		jsonObject = null;
 		return "json";
 	}
@@ -263,26 +242,20 @@ public class DishController extends ValidationAwareSupport implements
 	// }
 
 	public String destroy() {
-		jsonObject = dishService.validateAndRecord("dish", "destroy", request,
-				Dish.class, session);
+		if (null != parameters.get("id")) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != parameters.get("id")) {
+			// Map<String, Object> tempPara = new HashMap<String, Object>();
+			String ids = parameters.get("id")[0];
+			// tempPara.put("orderIds", ids);
 
-				// Map<String, Object> tempPara = new HashMap<String, Object>();
-				String ids = parameters.get("id")[0];
-				// tempPara.put("orderIds", ids);
+			StringBuffer execSQL = new StringBuffer();
+			execSQL.append(
+					"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE='Dish' AND TAGGABLE_ID IN (")
+					.append(ids).append(")");
+			execSQL.append("#DELETE FROM DISHES WHERE DISH_ID IN (")
+					.append(ids).append(")");
 
-				StringBuffer execSQL = new StringBuffer();
-				execSQL.append(
-						"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE='Dish' AND TAGGABLE_ID IN (")
-						.append(ids).append(")");
-				execSQL.append("#DELETE FROM DISHES WHERE DISH_ID IN (")
-						.append(ids).append(")");
-
-				dishService.batchExcuseNativeQuery(execSQL.toString());
-			}
+			dishService.batchExcuseNativeQuery(execSQL.toString());
 		}
 		jsonObject = new JSONObject();
 		return "json";

@@ -1,5 +1,7 @@
 package com.genfu.reform.controller;
 
+import java.util.Map;
+
 import net.sf.json.JSONObject;
 
 import org.apache.struts2.dispatcher.SessionMap;
@@ -36,7 +38,9 @@ public class GenfuAuthenticationInterceptor implements Interceptor {
 		SessionMap<?, ?> session = (SessionMap<?, ?>) ActionContext
 				.getContext().get(ActionContext.SESSION);
 		JSONObject user = (JSONObject) session.get(USER_SESSION_KEY);
-
+		Map<String,Object> m = invocation.getInvocationContext().getContextMap();
+		Object o = m.get("struts.actionMapping");
+		o = m.get("parameters");
 		String ret = Action.LOGIN;
 		if (user == null) {
 			// return Action.LOGIN;

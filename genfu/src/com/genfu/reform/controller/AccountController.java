@@ -28,7 +28,6 @@ import org.apache.struts2.rest.HttpHeaders;
 
 import com.genfu.reform.model.Account;
 import com.genfu.reform.model.AccountItem;
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Order;
 import com.genfu.reform.service.GenfuCommonService;
 import com.opensymphony.xwork2.ModelDriven;
@@ -63,7 +62,6 @@ public class AccountController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public AccountController(GenfuCommonService theService) {
 	// genfuCommonService = theService;
@@ -105,29 +103,26 @@ public class AccountController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		jsonObject = genfuCommonService.validateOperates("", "", "order",
-				"index", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-	}
+	// public void prepareIndex() throws Exception {
+	// jsonObject = genfuCommonService.validateOperates("", "", "order",
+	// "index", null, Dish.class, parameters, session);
+	//
+	// verifyingOperates = jsonObject.getBoolean("validResult");
+	// }
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							Account.class, parameters);
-				}
-			} else {
-				// list = genfuCommonService.searchList(Account.class,
-				// parameters);
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						Account.class, parameters);
 			}
+		} else {
+			// list = genfuCommonService.searchList(Account.class,
+			// parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
@@ -140,22 +135,20 @@ public class AccountController extends ValidationAwareSupport implements
 	// }
 
 	public String update() {
-		jsonObject = genfuCommonService.validateOperates("", "", "order",
-				"update", null, Account.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			Map<String, Object> par = new HashMap<String, Object>();
-			par.put("orderId0", model.getId());
-			List<Account> theOld = genfuCommonService.searchNativeQuery(
-					"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-					Account.class);
-			if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
-					&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
-				model.setUpdatedAt(new Date());
-				genfuCommonService.update(model);
-				addActionMessage("Object updated successfully");
-			}
+		// jsonObject = genfuCommonService.validateOperates("", "", "order",
+		// "update", null, Account.class, parameters, session);
+		//
+		// verifyingOperates = jsonObject.getBoolean("validResult");
+		Map<String, Object> par = new HashMap<String, Object>();
+		par.put("orderId0", model.getId());
+		List<Account> theOld = genfuCommonService.searchNativeQuery(
+				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
+				Account.class);
+		if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
+				&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
+			model.setUpdatedAt(new Date());
+			genfuCommonService.update(model);
+			addActionMessage("Object updated successfully");
 		}
 		jsonObject = null;
 		return "json";
@@ -273,34 +266,28 @@ public class AccountController extends ValidationAwareSupport implements
 	// }
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tagging",
-				"destroy", null, Dish.class, parameters, session);
+		if (null != parameters.get("id")) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != parameters.get("id")) {
+			Map<String, Object> tempPara = new HashMap<String, Object>();
 
-				Map<String, Object> tempPara = new HashMap<String, Object>();
-
-				String[] ids = parameters.get("id")[0].split(",");
-				List<Long> longAccountIds = new ArrayList<Long>();
-				for (int i = 0; i < ids.length; i++) {
-					longAccountIds.add(Long.parseLong(ids[i]));
-				}
-
-				tempPara.put("orderIds", longAccountIds);
-				List<Account> tempAccounts = genfuCommonService.searchList(
-						"SELECT x FROM Account x WHERE x.id IN(:orderIds)",
-						tempPara, Account.class);
-				List<Account> orderDel = new ArrayList<Account>();
-				for (Account tempO : tempAccounts) {
-					if ("OPEN".equalsIgnoreCase(tempO.getStatus())) {
-						orderDel.add(tempO);
-					}
-				}
-
-				genfuCommonService.remove(orderDel);
+			String[] ids = parameters.get("id")[0].split(",");
+			List<Long> longAccountIds = new ArrayList<Long>();
+			for (int i = 0; i < ids.length; i++) {
+				longAccountIds.add(Long.parseLong(ids[i]));
 			}
+
+			tempPara.put("orderIds", longAccountIds);
+			List<Account> tempAccounts = genfuCommonService.searchList(
+					"SELECT x FROM Account x WHERE x.id IN(:orderIds)",
+					tempPara, Account.class);
+			List<Account> orderDel = new ArrayList<Account>();
+			for (Account tempO : tempAccounts) {
+				if ("OPEN".equalsIgnoreCase(tempO.getStatus())) {
+					orderDel.add(tempO);
+				}
+			}
+
+			genfuCommonService.remove(orderDel);
 		}
 
 		// if ("FAILED".equalsIgnoreCase(model.getStatus())) {

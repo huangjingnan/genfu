@@ -57,7 +57,6 @@ public class ChartsController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -95,37 +94,29 @@ public class ChartsController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (null != this.parameters.get("style")) {
-//				Map<String, Object> par = new HashMap<String, Object>();
-//				par.put("itemStatus", "FRUITION");
-//
-//				jsonObject = genfuCommonService
-//						.searchJsonJqGridFilter(
-//								"SELECT x FROM OrderItem x WHERE x.orderId IN (SELECT y.id FROM Order y WHERE y.status='PROCESS') AND x.status=:itemStatus",
-//								par, OrderItem.class, parameters);
-			} else {
-				//genfuCommonService.searchNativeQuery("", null, null);
-				/*
-				 * list = genfuCommonService.searchList(OrderItem.class,
-				 * parameters);
-				 */
-			}
+		if (null != this.parameters.get("style")) {
+			// Map<String, Object> par = new HashMap<String, Object>();
+			// par.put("itemStatus", "FRUITION");
+			//
+			// jsonObject = genfuCommonService
+			// .searchJsonJqGridFilter(
+			// "SELECT x FROM OrderItem x WHERE x.orderId IN (SELECT y.id FROM Order y WHERE y.status='PROCESS') AND x.status=:itemStatus",
+			// par, OrderItem.class, parameters);
+		} else {
+			// genfuCommonService.searchNativeQuery("", null, null);
+			/*
+			 * list = genfuCommonService.searchList(OrderItem.class,
+			 * parameters);
+			 */
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		// 最后一个上完，如果是process直接更改订单为CLOSED，如果已经是closed，就不更新
+		// 最后一个上完，如果是process直接更改订单为CLOSED，如果已经是closed，就不更新，等待事物处理not finish
 		Order theOrder = (Order) genfuCommonService.find(model.getOrderId(),
 				Order.class);
 		if ("PROCESS".equalsIgnoreCase(theOrder.getStatus())) {

@@ -1,5 +1,6 @@
 package com.genfu.reform.util;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -60,8 +61,7 @@ public class DES {
 			// this.key = generator.generateKey();
 			// generator = null;
 		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error initializing SqlMap class. Cause: " + e);
+//			e.printStackTrace();
 		}
 	}
 
@@ -78,9 +78,7 @@ public class DES {
 			byteMi = this.getEncCode(byteMing);
 			strMi = base64en.encode(byteMi);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(
-					"Error initializing SqlMap class. Cause: " + e);
+			//e.printStackTrace();
 		} finally {
 			base64en = null;
 			byteMing = null;
@@ -95,15 +93,19 @@ public class DES {
 	 * @param strMi
 	 * @return
 	 */
-	public String getDesString(String strMi) throws Exception {
+	public String getDesString(String strMi) {
 		BASE64Decoder base64De = new BASE64Decoder();
 		byte[] byteMing = null;
 		byte[] byteMi = null;
 		String strMing = "";
-		byteMi = base64De.decodeBuffer(strMi);
-		byteMing = this.getDesCode(byteMi);
-		strMing = new String(byteMing, "UTF8");
+		try {
+			byteMi = base64De.decodeBuffer(strMi);
+			byteMing = this.getDesCode(byteMi);
+			strMing = new String(byteMing, "UTF8");
 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		// throw new RuntimeException(
 		// "Error initializing SqlMap class. Cause: " + e);
 		// base64De = null;
@@ -127,8 +129,7 @@ public class DES {
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, secureRandom);
 			byteFina = cipher.doFinal(byteS);
 		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error initializing SqlMap class. Cause: " + e);
+			//e.printStackTrace();
 		} finally {
 			cipher = null;
 		}
@@ -149,33 +150,31 @@ public class DES {
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, secureRandom);
 			byteFina = cipher.doFinal(byteD);
 		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error initializing SqlMap class. Cause: " + e);
+			//e.printStackTrace();
 		} finally {
 			cipher = null;
 		}
 		return byteFina;
 	}
 
-	public static void main(String args[]) {
-		DES des = new DES("1234567890ABCDEF");
-		// 设置密钥
-		// DES des = new DES();
-		// des.setKey("1234567890ABCDEF");
-
-		String str1 = "我的";
-		// DES加密
-		String str2 = des.getEncString(str1);
-		String deStr = "";
-		try {
-			deStr = des.getDesString(str2);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("密文:" + str2);
-		// DES解密
-		System.out.println("明文:" + deStr);
-	}
+//	public static void main(String args[]) {
+//		DES des = new DES("1234567890ABCDEF");
+//		// 设置密钥
+//		// DES des = new DES();
+//		// des.setKey("1234567890ABCDEF");
+//
+//		String str1 = "我的";
+//		// DES加密
+//		String str2 = des.getEncString(str1);
+//		String deStr = "";
+//		try {
+//			deStr = des.getDesString(str2);
+//		} catch (Exception e) {
+//			// e.printStackTrace();
+//		}
+//		System.out.println("密文:" + str2);
+//		// DES解密
+//		System.out.println("明文:" + deStr);
+//	}
 
 }

@@ -22,8 +22,6 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Tag;
@@ -63,7 +61,6 @@ public class TaggingController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 
 	// private boolean verifyingOperates;
 	private InputStream inputStream;
@@ -72,12 +69,11 @@ public class TaggingController extends ValidationAwareSupport implements
 		return inputStream;
 	}
 
-//	@Autowired
-//	public TaggingController(
-//			@Qualifier("genfuCommonService") GenfuCommonService theService) {
-//		genfuCommonService = theService;
-//	}
-	
+	// @Autowired
+	// public TaggingController(
+	// @Qualifier("genfuCommonService") GenfuCommonService theService) {
+	// genfuCommonService = theService;
+	// }
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -155,10 +151,6 @@ public class TaggingController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tagging",
-				"create", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
 		// genfuCommonService.save(model);
 		if (parameters.containsKey("dishIds[]")
 				&& parameters.containsKey("tagIds[]")) {
@@ -248,101 +240,95 @@ public class TaggingController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tagging",
-				"destroy", null, Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
+		StringBuffer strBuffJPQL;
+		// String taggable = "";
+		if (parameters.containsKey("dishIds[]")
+				&& parameters.containsKey("tagIds[]")) {
 
-		if (verifyingOperates) {
-			StringBuffer strBuffJPQL;
-			// String taggable = "";
-			if (parameters.containsKey("dishIds[]")
-					&& parameters.containsKey("tagIds[]")) {
+			String[] dishIds = parameters.get("dishIds[]");
+			String[] tagIds = parameters.get("tagIds[]");
 
-				String[] dishIds = parameters.get("dishIds[]");
-				String[] tagIds = parameters.get("tagIds[]");
+			if (dishIds.length > 0 && tagIds.length > 0) {
+				strBuffJPQL = new StringBuffer();
 
-				if (dishIds.length > 0 && tagIds.length > 0) {
-					strBuffJPQL = new StringBuffer();
-
-					for (int i = 0; i < dishIds.length; i++) {
-						strBuffJPQL.append("," + dishIds[i]);
-					}
-
-					strBuffJPQL.delete(0, 1);
-					// taggable = strBuffJPQL.toString();
-					strBuffJPQL
-							.insert(0,
-									"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAGGABLE_ID IN (");
-					strBuffJPQL.append(") AND TAG_ID IN (");
-
-					for (int i = 0; i < tagIds.length; i++) {
-						if (i > 0) {
-							strBuffJPQL.append(",");
-						}
-						strBuffJPQL.append(tagIds[i]);
-					}
-
-					strBuffJPQL.append(")");
-
-					genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
-							.toString());
-
-				}
-			} else if (parameters.containsKey("dishIds[]")
-					&& !parameters.containsKey("tagIds[]")) {
-
-				String[] dishIds = parameters.get("dishIds[]");
-
-				if (dishIds.length > 0) {
-					strBuffJPQL = new StringBuffer();
-
-					for (int i = 0; i < dishIds.length; i++) {
-						strBuffJPQL.append("," + dishIds[i]);
-					}
-
-					strBuffJPQL.delete(0, 1);
-					// taggable = strBuffJPQL.toString();
-					strBuffJPQL
-							.insert(0,
-									"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAGGABLE_ID IN (");
-					strBuffJPQL.append(")");
-					genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
-							.toString());
+				for (int i = 0; i < dishIds.length; i++) {
+					strBuffJPQL.append("," + dishIds[i]);
 				}
 
-			} else if (!parameters.containsKey("dishIds[]")
-					&& parameters.containsKey("tagIds[]")) {
+				strBuffJPQL.delete(0, 1);
+				// taggable = strBuffJPQL.toString();
+				strBuffJPQL
+						.insert(0,
+								"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAGGABLE_ID IN (");
+				strBuffJPQL.append(") AND TAG_ID IN (");
 
-				String[] tagIds = parameters.get("tagIds[]");
-
-				if (tagIds.length > 0) {
-					strBuffJPQL = new StringBuffer();
-
-					for (int i = 0; i < tagIds.length; i++) {
-						strBuffJPQL.append("," + tagIds[i]);
+				for (int i = 0; i < tagIds.length; i++) {
+					if (i > 0) {
+						strBuffJPQL.append(",");
 					}
-
-					strBuffJPQL.delete(0, 1);
-					strBuffJPQL
-							.insert(0,
-									"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAG_ID IN (");
-					strBuffJPQL.append(")");
-					genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
-							.toString());
+					strBuffJPQL.append(tagIds[i]);
 				}
+
+				strBuffJPQL.append(")");
+
+				genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
+						.toString());
 
 			}
-			// strBuffJPQL = new StringBuffer();
-			// strBuffJPQL.append("from Dish WHERE DISH_ID IN (");
-			// strBuffJPQL.append(taggable);
-			// strBuffJPQL.append(")");
-			// dishList = genfuCommonService.searchList(
-			// strBuffJPQL.toString(), null, Dish.class);
+		} else if (parameters.containsKey("dishIds[]")
+				&& !parameters.containsKey("tagIds[]")) {
 
-			// genfuCommonService.remove(model);
-			addActionMessage("Object removed successfully");
+			String[] dishIds = parameters.get("dishIds[]");
+
+			if (dishIds.length > 0) {
+				strBuffJPQL = new StringBuffer();
+
+				for (int i = 0; i < dishIds.length; i++) {
+					strBuffJPQL.append("," + dishIds[i]);
+				}
+
+				strBuffJPQL.delete(0, 1);
+				// taggable = strBuffJPQL.toString();
+				strBuffJPQL
+						.insert(0,
+								"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAGGABLE_ID IN (");
+				strBuffJPQL.append(")");
+				genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
+						.toString());
+			}
+
+		} else if (!parameters.containsKey("dishIds[]")
+				&& parameters.containsKey("tagIds[]")) {
+
+			String[] tagIds = parameters.get("tagIds[]");
+
+			if (tagIds.length > 0) {
+				strBuffJPQL = new StringBuffer();
+
+				for (int i = 0; i < tagIds.length; i++) {
+					strBuffJPQL.append("," + tagIds[i]);
+				}
+
+				strBuffJPQL.delete(0, 1);
+				strBuffJPQL
+						.insert(0,
+								"DELETE FROM TAGGINGS WHERE TAGGABLE_TYPE = 'Dish' AND TAG_ID IN (");
+				strBuffJPQL.append(")");
+				genfuCommonService.batchDeleteByNativeQuery(strBuffJPQL
+						.toString());
+			}
+
 		}
+		// strBuffJPQL = new StringBuffer();
+		// strBuffJPQL.append("from Dish WHERE DISH_ID IN (");
+		// strBuffJPQL.append(taggable);
+		// strBuffJPQL.append(")");
+		// dishList = genfuCommonService.searchList(
+		// strBuffJPQL.toString(), null, Dish.class);
+
+		// genfuCommonService.remove(model);
+		addActionMessage("Object removed successfully");
 		jsonObject = new JSONObject();
 		return "json";
 	}

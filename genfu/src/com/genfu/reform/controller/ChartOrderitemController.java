@@ -53,7 +53,6 @@ public class ChartOrderitemController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -91,34 +90,29 @@ public class ChartOrderitemController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (null != this.parameters.get("style")) {
-//				Map<String, Object> par = new HashMap<String, Object>();
-//				par.put("itemStatus", "FRUITION");
-//
-//				jsonObject = genfuCommonService
-//						.searchJsonJqGridFilter(
-//								"SELECT x FROM ChartOrderItem x WHERE x.orderId IN (SELECT y.id FROM Order y WHERE y.status='PROCESS') AND x.status=:itemStatus",
-//								par, ChartOrderItem.class, parameters);
-			} else {
-			
-				List<Object> chartChartOrderItems = genfuCommonService.searchNativeQuery("select dish_id,order_item_name,sum(amount) sum_amount,sum(price*amount) sum_total from order_items group by dish_id,order_item_name", null,0,10);
-				
-				System.out.println(chartChartOrderItems.size());
-				/*
-				 * list = genfuCommonService.searchList(ChartOrderItem.class,
-				 * parameters);
-				 */
-			}
+		if (null != this.parameters.get("style")) {
+			// Map<String, Object> par = new HashMap<String, Object>();
+			// par.put("itemStatus", "FRUITION");
+			//
+			// jsonObject = genfuCommonService
+			// .searchJsonJqGridFilter(
+			// "SELECT x FROM ChartOrderItem x WHERE x.orderId IN (SELECT y.id FROM Order y WHERE y.status='PROCESS') AND x.status=:itemStatus",
+			// par, ChartOrderItem.class, parameters);
+		} else {
+
+			List<Object> chartChartOrderItems = genfuCommonService
+					.searchNativeQuery(
+							"select dish_id,order_item_name,sum(amount) sum_amount,sum(price*amount) sum_total from order_items group by dish_id,order_item_name",
+							null, 0, 10);
+
+			System.out.println(chartChartOrderItems.size());
+			/*
+			 * list = genfuCommonService.searchList(ChartOrderItem.class,
+			 * parameters);
+			 */
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
@@ -129,7 +123,8 @@ public class ChartOrderitemController extends ValidationAwareSupport implements
 
 	public void setId(Long id) {
 		if (id != null) {
-			//model = (ChartOrderItem) genfuCommonService.find(id, ChartOrderItem.class);
+			// model = (ChartOrderItem) genfuCommonService.find(id,
+			// ChartOrderItem.class);
 		}
 		this.id = id;
 	}
@@ -145,7 +140,8 @@ public class ChartOrderitemController extends ValidationAwareSupport implements
 
 	public HttpHeaders create() {
 		genfuCommonService.save(model);
-		return new DefaultHttpHeaders("thanks").setLocationId(model.getDish_id());
+		return new DefaultHttpHeaders("thanks").setLocationId(model
+				.getDish_id());
 	}
 
 	public String deleteConfirm() {

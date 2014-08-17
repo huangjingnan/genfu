@@ -1,8 +1,6 @@
 package com.genfu.reform.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +20,7 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Tag;
 import com.genfu.reform.service.GenfuCommonService;
 import com.opensymphony.xwork2.ModelDriven;
@@ -60,7 +55,6 @@ public class TagController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 
 	// private boolean verifyingOperates;
 	private InputStream inputStream;
@@ -113,31 +107,19 @@ public class TagController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tag",
-				"index", null, Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-
-			if (this.parameters.containsKey("style")) {
-				jsonObject = genfuCommonService.searchJsonJqGrid(Tag.class,
-						parameters);
-			} else if (this.parameters.containsKey("statusCode")) {
-				list = genfuCommonService.searchList(Tag.class, parameters);
-			}
+		if (this.parameters.containsKey("style")) {
+			jsonObject = genfuCommonService.searchJsonJqGrid(Tag.class,
+					parameters);
+		} else if (this.parameters.containsKey("statusCode")) {
+			list = genfuCommonService.searchList(Tag.class, parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 		// return null;
 	}
 
 	public String update() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tag",
-				"update", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			genfuCommonService.update(model);
-		}
+		genfuCommonService.update(model);
 		return "json";
 	}
 
@@ -158,13 +140,7 @@ public class TagController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tag",
-				"update", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			genfuCommonService.save(model);
-		}
+		genfuCommonService.save(model);
 		// try {
 		// inputStream = new ByteArrayInputStream(
 		// "Hello World! This is a text string response from a Struts 2 Action."
@@ -183,29 +159,22 @@ public class TagController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = genfuCommonService.validateOperates("", "", "tag",
-				"destroy", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
 
 		jsonObject = new JSONObject();
-		if (verifyingOperates) {
-			if (null != parameters.get("id")) {
-				try {
-					// Map<String, Object> tempPara = new HashMap<String,
-					// Object>();
-					String ids = parameters.get("id")[0];
-					// tempPara.put("orderIds", ids);
+		if (null != parameters.get("id")) {
+			try {
+				// Map<String, Object> tempPara = new HashMap<String,
+				// Object>();
+				String ids = parameters.get("id")[0];
+				// tempPara.put("orderIds", ids);
 
-					StringBuffer execSQL = new StringBuffer();
-					execSQL.append("DELETE FROM TAGS WHERE TAG_ID IN (")
-							.append(ids).append(")");
+				StringBuffer execSQL = new StringBuffer();
+				execSQL.append("DELETE FROM TAGS WHERE TAG_ID IN (")
+						.append(ids).append(")");
 
-					genfuCommonService.batchExcuseNativeQuery(execSQL
-							.toString());
-				} catch (Exception ex) {
-					jsonObject.put("errorMsg", ex.toString());
-				}
+				genfuCommonService.batchExcuseNativeQuery(execSQL.toString());
+			} catch (Exception ex) {
+				jsonObject.put("errorMsg", ex.toString());
 			}
 			addActionMessage("Object removed successfully");
 		}

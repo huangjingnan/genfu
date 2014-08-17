@@ -51,7 +51,6 @@ public class NavigationNodesController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private JSONObject jsonObject;
 
 	// public NavigationNodesController(GenfuCommonService theService) {
@@ -104,45 +103,36 @@ public class NavigationNodesController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	// 首先验证权限
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("roleId")) {
-					Map<String, Object> para = new HashMap<String, Object>();
-					para.put("roleId",
-							Long.parseLong(parameters.get("roleId")[0]));
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("roleId")) {
+				Map<String, Object> para = new HashMap<String, Object>();
+				para.put("roleId", Long.parseLong(parameters.get("roleId")[0]));
 
-					jsonObject = genfuCommonService
-							.searchJsonNativeQuery(
-									"SELECT * FROM NAVIGATION_NODES X WHERE X.NAVI_ID IN (SELECT NODE_NAVI_ID FROM ROLE_INFO_NAVIGATION_NODES WHERE ROLE_ROLE_ID=:roleId)",
-									para, NavigationNode.class, parameters);
-					// jsonObject = new JSONObject();
-					// jsonObject.put("page", 1);
-					// jsonObject.put("total", 1);
-					// // jsonObject.put("records", 2000);
-					// List<NavigationNode> rows = genfuCommonService
-					// .searchNativeQuery(
-					// "SELECT * FROM NAVIGATION_NODES X WHERE X.NAVI_ID IN (SELECT NODE_NAVI_ID FROM ROLE_INFO_NAVIGATION_NODES WHERE ROLE_ROLE_ID=:roleId)",
-					// para, NavigationNode.class);
-					// jsonObject.put("records", rows.size());
-					// jsonObject.put("rows", rows);
-				} else if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							NavigationNode.class, parameters);
-				}
-			} else {
-				list = genfuCommonService.searchList(NavigationNode.class,
-						parameters);
+				jsonObject = genfuCommonService
+						.searchJsonNativeQuery(
+								"SELECT * FROM NAVIGATION_NODES X WHERE X.NAVI_ID IN (SELECT NODE_NAVI_ID FROM ROLE_INFO_NAVIGATION_NODES WHERE ROLE_ROLE_ID=:roleId)",
+								para, NavigationNode.class, parameters);
+				// jsonObject = new JSONObject();
+				// jsonObject.put("page", 1);
+				// jsonObject.put("total", 1);
+				// // jsonObject.put("records", 2000);
+				// List<NavigationNode> rows = genfuCommonService
+				// .searchNativeQuery(
+				// "SELECT * FROM NAVIGATION_NODES X WHERE X.NAVI_ID IN (SELECT NODE_NAVI_ID FROM ROLE_INFO_NAVIGATION_NODES WHERE ROLE_ROLE_ID=:roleId)",
+				// para, NavigationNode.class);
+				// jsonObject.put("records", rows.size());
+				// jsonObject.put("rows", rows);
+			} else if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						NavigationNode.class, parameters);
 			}
+		} else {
+			list = genfuCommonService.searchList(NavigationNode.class,
+					parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
@@ -183,8 +173,7 @@ public class NavigationNodesController extends ValidationAwareSupport implements
 
 	public String destroy() {
 
-		if (null != parameters.get("roleId")
-				&& null != parameters.get("id")) {
+		if (null != parameters.get("roleId") && null != parameters.get("id")) {
 
 			String roleId = parameters.get("roleId")[0];
 			String naviIds = parameters.get("id")[0];

@@ -50,8 +50,7 @@
 		<property name="showSql" value="true" /> <property name="generateDdl" value="true" 
 		/> <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" 
 		/> </bean> </property> </bean> -->
-	<bean
-		class="com.genfu.reform.util.GenfuPropertyPlaceholderConfigurer">
+	<bean class="com.genfu.reform.util.GenfuPropertyPlaceholderConfigurer">
 		<property name="locations" value="classpath:com/genfu/jdbc.properties" />
 	</bean>
 
@@ -157,7 +156,7 @@
 	<bean class="com.genfu.reform.controller.ReLoginController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean class="com.genfu.reform.controller.LoginDishesController"
+	<bean id="loginDishesController" class="com.genfu.reform.controller.LoginDishesController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -276,7 +275,8 @@
 			/> -->
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean class="com.genfu.reform.controller.DishController" scope="prototype" />
+	<bean id="dishController" class="com.genfu.reform.controller.DishController"
+		scope="prototype" />
 
 	<!-- <bean id="cartDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
 		/> <bean id="cartTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
@@ -463,7 +463,7 @@
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean class="com.genfu.reform.controller.GenfuConfigController"
+	<bean id="genfuConfigController" class="com.genfu.reform.controller.GenfuConfigController"
 		scope="prototype">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -475,6 +475,6 @@
 		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean class="com.genfu.reform.controller.GroupOrderitemController"
+	<bean id="groupOrderitemController" class="com.genfu.reform.controller.GroupOrderitemController"
 		scope="session" />
 </beans>

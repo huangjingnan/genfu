@@ -36,15 +36,12 @@ public class ActorInfoController extends ValidationAwareSupport implements
 	private Long id;
 	private List<ActorInfo> list;
 	private GenfuCommonService genfuCommonService;
-	private boolean verifyingOperates;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
 
-//	public ActorInfoController(GenfuCommonService theService) {
-//		this.genfuCommonService = theService;
-//	}
-	
-
+	// public ActorInfoController(GenfuCommonService theService) {
+	// this.genfuCommonService = theService;
+	// }
 
 	@Override
 	public void setServletResponse(HttpServletResponse arg0) {
@@ -82,13 +79,8 @@ public class ActorInfoController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
-		if (verifyingOperates && this.parameters.containsKey("statusCode")) {
+		if (this.parameters.containsKey("statusCode")) {
 			list = genfuCommonService.searchList(ActorInfo.class, parameters);
 			return new DefaultHttpHeaders("result").disableCaching();
 		}

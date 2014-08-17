@@ -154,7 +154,10 @@ public class GenfuPropertyPlaceholderConfigurer extends
 	 * @see #setSystemPropertiesMode
 	 */
 	protected String resolvePlaceholder(String placeholder, Properties props) {
+		// DES theDES = new DES(placeholder);
+		// value = theDES.getDesString(value);
 		return props.getProperty(placeholder);
+		// return theDES.getDesString(props.getProperty(placeholder));
 	}
 
 	/**
@@ -239,7 +242,8 @@ public class GenfuPropertyPlaceholderConfigurer extends
 			this.helper = new PropertyPlaceholderHelper(placeholderPrefix,
 					placeholderSuffix, valueSeparator,
 					ignoreUnresolvablePlaceholders);
-			this.resolver = new GenfuPropertyPlaceholderConfigurerResolver(props);
+			this.resolver = new GenfuPropertyPlaceholderConfigurerResolver(
+					props);
 		}
 
 		@Override

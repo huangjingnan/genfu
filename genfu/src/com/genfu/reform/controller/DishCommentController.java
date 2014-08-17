@@ -62,7 +62,6 @@ public class DishCommentController extends ValidationAwareSupport implements
 	private HttpServletRequest request;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 	private File fileImage;
 	private String fileImageContentType;
 	private String fileImageFileName;
@@ -134,11 +133,11 @@ public class DishCommentController extends ValidationAwareSupport implements
 				if (1 != oItemList.size()) {
 					result = "code400";
 				} else {
-// 社交，取消条件限制
-//					list = genfuCommonService
-//							.searchList(
-//									"SELECT x FROM DishComment x WHERE x.orderItemId = :orderItemId0 AND x.dishId = :dishId0 AND x.orderId = :orderId0",
-//									paraMap, DishComment.class);
+					// 社交，取消条件限制
+					// list = genfuCommonService
+					// .searchList(
+					// "SELECT x FROM DishComment x WHERE x.orderItemId = :orderItemId0 AND x.dishId = :dishId0 AND x.orderId = :orderId0",
+					// paraMap, DishComment.class);
 					list = genfuCommonService
 							.searchList(
 									"SELECT x FROM DishComment x WHERE x.dishId = :dishId0",

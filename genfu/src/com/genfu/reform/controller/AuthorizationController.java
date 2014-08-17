@@ -59,7 +59,6 @@ public class AuthorizationController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 
 	// private boolean verifyingOperates;
 	private InputStream inputStream;
@@ -102,22 +101,15 @@ public class AuthorizationController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		if (verifyingOperates) {
 
-			if (this.parameters.containsKey("style")) {
-				jsonObject = genfuCommonService.searchJsonJqGrid(
-						Authorization.class, parameters);
-			} else if (this.parameters.containsKey("statusCode")) {
-				list = genfuCommonService.searchList(Authorization.class,
-						parameters);
-			}
+		if (this.parameters.containsKey("style")) {
+			jsonObject = genfuCommonService.searchJsonJqGrid(
+					Authorization.class, parameters);
+		} else if (this.parameters.containsKey("statusCode")) {
+			list = genfuCommonService.searchList(Authorization.class,
+					parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 		// return null;

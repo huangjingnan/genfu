@@ -56,7 +56,6 @@ public class KitchenProcessController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -94,29 +93,21 @@ public class KitchenProcessController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (null != this.parameters.get("style")) {
-				Map<String, Object> par = new HashMap<String, Object>();
-				par.put("itemStatus", "PROCESS");
+		if (null != this.parameters.get("style")) {
+			Map<String, Object> par = new HashMap<String, Object>();
+			par.put("itemStatus", "PROCESS");
 
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(
-						"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
-						par, OrderItem.class, parameters);
-			} else {
-				/*
-				 * list = genfuCommonService.searchList(OrderItem.class,
-				 * parameters);
-				 */
-			}
+			jsonObject = genfuCommonService.searchJsonJqGridFilter(
+					"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
+					par, OrderItem.class, parameters);
+		} else {
+			/*
+			 * list = genfuCommonService.searchList(OrderItem.class,
+			 * parameters);
+			 */
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}

@@ -63,7 +63,6 @@ public class CommentMgrController extends ValidationAwareSupport implements
 	private HttpServletRequest request;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates = false;
 	private File fileImage;
 	private String fileImageContentType;
 	private String fileImageFileName;
@@ -105,30 +104,23 @@ public class CommentMgrController extends ValidationAwareSupport implements
 	}
 
 	public String index() {
-		jsonObject = genfuCommonService.validateAndRecord("dish", "index",
-				request, DishComment.class, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-
-			if (this.parameters.containsKey("style")) {
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = null;
 				if (null != this.parameters.get("style")
 						&& "jqGrid".equalsIgnoreCase(this.parameters
 								.get("style")[0])) {
-					jsonObject = null;
-					if (null != this.parameters.get("style")
-							&& "jqGrid".equalsIgnoreCase(this.parameters
-									.get("style")[0])) {
-						jsonObject = genfuCommonService.searchJsonJqGridFilter(
-								DishComment.class, parameters);
-					}
+					jsonObject = genfuCommonService.searchJsonJqGridFilter(
+							DishComment.class, parameters);
 				}
-			} else {
-				list = genfuCommonService.searchList(DishComment.class,
-						parameters);
 			}
-
+		} else {
+			list = genfuCommonService.searchList(DishComment.class, parameters);
 		}
+
 		return "index";
 	}
 
@@ -157,7 +149,7 @@ public class CommentMgrController extends ValidationAwareSupport implements
 
 	public String create() {
 
-		//genfuCommonService.save(model);
+		// genfuCommonService.save(model);
 		return "json";
 	}
 

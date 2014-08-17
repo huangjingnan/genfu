@@ -24,7 +24,6 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Order;
 import com.genfu.reform.model.OrderItem;
 import com.genfu.reform.service.GenfuCommonService;
@@ -59,7 +58,6 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	private GenfuCommonService groupOrderitemService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	// public OrderItemController(GenfuCommonService theService) {
 	// groupOrderitemService = theService;
@@ -131,21 +129,15 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
-		jsonObject = groupOrderitemService.validateOperates("", "",
-				"order-item", "update", null, Dish.class, parameters, session);
-
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			Map<String, Object> par = new HashMap<String, Object>();
-			par.put("orderId0", model.getOrderId());
-			List<Order> theOrder = groupOrderitemService.searchNativeQuery(
-					"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-					Order.class);
-			if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
-				model.setUpdatedAt(new Date());
-				groupOrderitemService.update(model);
-				addActionMessage("Object updated successfully");
-			}
+		Map<String, Object> par = new HashMap<String, Object>();
+		par.put("orderId0", model.getOrderId());
+		List<Order> theOrder = groupOrderitemService.searchNativeQuery(
+				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
+				Order.class);
+		if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
+			model.setUpdatedAt(new Date());
+			groupOrderitemService.update(model);
+			addActionMessage("Object updated successfully");
 		}
 		return "json";
 	}
@@ -176,44 +168,38 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		jsonObject = groupOrderitemService.validateOperates("", "",
-				"order-item", "destroy", null, Dish.class, parameters, session);
+		if (null != parameters.get("id")) {
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			if (null != parameters.get("id")) {
+			Map<String, Object> tempPara = new HashMap<String, Object>();
 
-				Map<String, Object> tempPara = new HashMap<String, Object>();
-
-				String[] ids = parameters.get("id")[0].split(",");
-				List<Long> longOItemIds = new ArrayList<Long>();
-				for (int i = 0; i < ids.length; i++) {
-					longOItemIds.add(Long.parseLong(ids[i]));
-				}
-				tempPara.put("oItemIds", longOItemIds);
-				List<OrderItem> tempOItems = groupOrderitemService.searchList(
-						"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
-						tempPara, OrderItem.class);
-				List<OrderItem> oItemDel = new ArrayList<OrderItem>();
-				Order theOrder = null;
-				for (OrderItem tempI : tempOItems) {
-
-					if (null == theOrder) {
-						theOrder = (Order) groupOrderitemService.find(
-								tempI.getOrderId(), Order.class);
-					} else if (tempI.getOrderId() != theOrder.getId()) {
-						theOrder = (Order) groupOrderitemService.find(
-								tempI.getOrderId(), Order.class);
-					}
-
-					if (!"CLOSED".equalsIgnoreCase(theOrder.getStatus())
-							&& "OPEN".equalsIgnoreCase(tempI.getStatus())) {
-						oItemDel.add(tempI);
-					}
-				}
-
-				groupOrderitemService.remove(oItemDel);
+			String[] ids = parameters.get("id")[0].split(",");
+			List<Long> longOItemIds = new ArrayList<Long>();
+			for (int i = 0; i < ids.length; i++) {
+				longOItemIds.add(Long.parseLong(ids[i]));
 			}
+			tempPara.put("oItemIds", longOItemIds);
+			List<OrderItem> tempOItems = groupOrderitemService.searchList(
+					"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
+					tempPara, OrderItem.class);
+			List<OrderItem> oItemDel = new ArrayList<OrderItem>();
+			Order theOrder = null;
+			for (OrderItem tempI : tempOItems) {
+
+				if (null == theOrder) {
+					theOrder = (Order) groupOrderitemService.find(
+							tempI.getOrderId(), Order.class);
+				} else if (tempI.getOrderId() != theOrder.getId()) {
+					theOrder = (Order) groupOrderitemService.find(
+							tempI.getOrderId(), Order.class);
+				}
+
+				if (!"CLOSED".equalsIgnoreCase(theOrder.getStatus())
+						&& "OPEN".equalsIgnoreCase(tempI.getStatus())) {
+					oItemDel.add(tempI);
+				}
+			}
+
+			groupOrderitemService.remove(oItemDel);
 		}
 		jsonObject = new JSONObject();
 		return "json";

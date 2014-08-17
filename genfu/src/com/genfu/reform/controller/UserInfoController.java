@@ -23,7 +23,6 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
-import com.genfu.reform.model.Order;
 import com.genfu.reform.model.UserInfo;
 import com.genfu.reform.service.GenfuCommonService;
 import com.genfu.reform.util.DES;
@@ -62,7 +61,6 @@ public class UserInfoController extends ValidationAwareSupport implements
 	private File fileImage;
 	private String fileImageContentType;
 	private String fileImageFileName;
-	private boolean verifyingOperates;
 
 	// public UserInfoController(GenfuCommonService theService) {
 	// this.genfuCommonService = theService;
@@ -112,28 +110,20 @@ public class UserInfoController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
-		if (verifyingOperates) {
 
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					// jsonObject =
-					// genfuCommonService.searchJsonNativeQuery("SELECT * FROM USER_INFO WHERE 1=1",
-					// null, UserInfo.class, parameters);
-					jsonObject = genfuCommonService.searchJsonJqGridFilter(
-							UserInfo.class, parameters);
-				}
-			} else {
-				list = genfuCommonService
-						.searchList(UserInfo.class, parameters);
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				// jsonObject =
+				// genfuCommonService.searchJsonNativeQuery("SELECT * FROM USER_INFO WHERE 1=1",
+				// null, UserInfo.class, parameters);
+				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+						UserInfo.class, parameters);
 			}
+		} else {
+			list = genfuCommonService.searchList(UserInfo.class, parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}

@@ -28,7 +28,6 @@ import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
 import com.genfu.reform.model.Cart;
-import com.genfu.reform.model.Dish;
 import com.genfu.reform.model.Order;
 import com.genfu.reform.service.GenfuCommonService;
 import com.genfu.reform.util.DES;
@@ -69,7 +68,6 @@ public class CheckoutController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private Cart myCart = null;
 	private InputStream imageStream;
 	private MultiFormatWriter barcodeWriter = new MultiFormatWriter();
@@ -148,17 +146,10 @@ public class CheckoutController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = genfuCommonService.validateOperates("", "", "checkout",
-				"index", null, Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-
-		if (verifyingOperates) {
-
-			list = genfuCommonService.searchList(
-					"from Order WHERE status IN ('OPEN','PROCESS')", null,
-					Order.class);
-		}
+		list = genfuCommonService.searchList(
+				"from Order WHERE status IN ('OPEN','PROCESS')", null,
+				Order.class);
 		jsonObject = null;
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
@@ -167,32 +158,22 @@ public class CheckoutController extends ValidationAwareSupport implements
 	// }
 
 	public HttpHeaders update() {
-		jsonObject = genfuCommonService.validateOperates("",
-				parameters.get("authCode")[0], "checkout", "update", null,
-				Dish.class, parameters, session);
 
-		verifyingOperates = jsonObject.getBoolean("validOperate")
-				&& jsonObject.getBoolean("validResult");
+		jsonObject = (JSONObject) session
+				.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
+		if (parameters.containsKey("multiplied")) {
 
-		if (verifyingOperates) {
-			jsonObject = (JSONObject) session
-					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-			if (parameters.containsKey("multiplied")) {
-
-				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]),
-						jsonObject.getString("userId"));
-			} else {
-
-				model.PlaceOrder(myCart, 1, jsonObject.getString("userId"));
-			}
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
-			addActionMessage("Thanks you! Revised your order information");
+			model.PlaceOrder(myCart,
+					Long.parseLong(parameters.get("multiplied")[0]),
+					jsonObject.getString("userId"));
 		} else {
-			addActionMessage("Sorry！Auth faild");
-			return new DefaultHttpHeaders("thanks");
+
+			model.PlaceOrder(myCart, 1, jsonObject.getString("userId"));
 		}
+		model.setUpdatedAt(new Date());
+		genfuCommonService.update(model);
+		addActionMessage("Thanks you! Revised your order information");
+
 		jsonObject = null;
 		return new DefaultHttpHeaders("thanks").setLocationId(model.getId());
 	}
@@ -209,9 +190,6 @@ public class CheckoutController extends ValidationAwareSupport implements
 	}
 
 	public String editNew() {
-		// jsonObject = (JSONObject) session
-		// .get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-		// model.setStaffNumber(jsonObject.getString("userId"));
 		return "editNew";
 	}
 
@@ -219,35 +197,24 @@ public class CheckoutController extends ValidationAwareSupport implements
 	// }
 
 	public HttpHeaders create() {
-		jsonObject = genfuCommonService.validateOperates("",
-				parameters.get("authCode")[0], "checkout", "create", null,
-				Dish.class, parameters, session);
+		jsonObject = (JSONObject) session
+				.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
+		model.setStaffNumber(jsonObject.getString("userId"));
+		// model.setOrderName(parameters.get("orderName")[0]);
+		// model.setNumberPeople(parameters.get("numberPeople")[0]);
+		// model.setAmount(Long.parseLong(parameters.get("amount")[0]));
+		if (parameters.containsKey("multiplied")) {
 
-		verifyingOperates = jsonObject.getBoolean("validOperate")
-				&& jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-			jsonObject = (JSONObject) session
-					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-			model.setStaffNumber(jsonObject.getString("userId"));
-			// model.setOrderName(parameters.get("orderName")[0]);
-			// model.setNumberPeople(parameters.get("numberPeople")[0]);
-			// model.setAmount(Long.parseLong(parameters.get("amount")[0]));
-			if (parameters.containsKey("multiplied")) {
-
-				model.PlaceOrder(myCart,
-						Long.parseLong(parameters.get("multiplied")[0]),
-						model.getStaffNumber());
-			} else {
-
-				model.PlaceOrder(myCart, 1, model.getStaffNumber());
-			}
-			// model.setId(myCart.getId());
-			genfuCommonService.save(model);
-			addActionMessage("Thanks you! This is your order information");
+			model.PlaceOrder(myCart,
+					Long.parseLong(parameters.get("multiplied")[0]),
+					model.getStaffNumber());
 		} else {
-			addActionMessage("Sorry！Auth faild");
-			return new DefaultHttpHeaders("thanks");
+
+			model.PlaceOrder(myCart, 1, model.getStaffNumber());
 		}
+		// model.setId(myCart.getId());
+		genfuCommonService.save(model);
+		addActionMessage("Thanks you! This is your order information");
 		jsonObject = null;
 		return new DefaultHttpHeaders("thanks").setLocationId(model.getId());
 	}

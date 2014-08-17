@@ -22,7 +22,6 @@ import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
-import com.genfu.reform.model.Order;
 import com.genfu.reform.model.OrderItem;
 import com.genfu.reform.service.GenfuCommonService;
 import com.opensymphony.xwork2.ModelDriven;
@@ -45,9 +44,6 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 		ModelDriven<Object>, Validateable, SessionAware, ServletRequestAware,
 		ServletResponseAware, ParameterAware, Preparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private OrderItem model = new OrderItem();
 	private Long id;
@@ -56,7 +52,6 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 
 	public GenfuCommonService getGenfuCommonService() {
 		return genfuCommonService;
@@ -94,29 +89,21 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 		return "show";
 	}
 
-	public void prepareIndex() throws Exception {
-		// verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-		// session);
-		verifyingOperates = true;
-	}
-
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-			if (null != this.parameters.get("style")) {
-				Map<String, Object> par = new HashMap<String, Object>();
-				par.put("itemStatus", "WAITING");
+		if (null != this.parameters.get("style")) {
+			Map<String, Object> par = new HashMap<String, Object>();
+			par.put("itemStatus", "WAITING");
 
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(
-						"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
-						par, OrderItem.class, parameters);
-			} else {
-				/*
-				 * list = genfuCommonService.searchList(OrderItem.class,
-				 * parameters);
-				 */
-			}
+			jsonObject = genfuCommonService.searchJsonJqGridFilter(
+					"SELECT x FROM OrderItem x WHERE x.status=:itemStatus",
+					par, OrderItem.class, parameters);
+		} else {
+			/*
+			 * list = genfuCommonService.searchList(OrderItem.class,
+			 * parameters);
+			 */
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}

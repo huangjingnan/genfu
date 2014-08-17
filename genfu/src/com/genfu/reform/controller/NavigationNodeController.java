@@ -48,12 +48,6 @@ public class NavigationNodeController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
-
-	// public NavigationNodeController(GenfuCommonService navigationNodeService)
-	// {
-	// this.genfuCommonService = navigationNodeService;
-	// }
 
 	@Override
 	public void setServletResponse(HttpServletResponse arg0) {
@@ -98,46 +92,37 @@ public class NavigationNodeController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	// 首先验证权限
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public HttpHeaders index() {
 
-		if (verifyingOperates) {
-
-			Map<String, Object> para = new Hashtable<String, Object>();
-			if (null != parameters.get("rootId_EQ")
-					&& parameters.get("rootId_EQ").length > 0) {
-				para.put("rootId_EQ",
-						Long.parseLong(parameters.get("rootId_EQ")[0]));
-			} else {
-				para.put("rootId_EQ", Long.parseLong("0"));
-			}
-			if (parameters.containsKey("rebuild_tree")) {
-				this.rebuild_tree(-1, 0, -1);
-			}
-			list = genfuCommonService.searchList(
-					"SELECT t FROM NavigationNode t WHERE t.id = :rootId_EQ",
-					para, NavigationNode.class);
-
-			if (list.size() > 0) {
-				// 说明有此节点，获得树根对应的树
-				model = list.get(0);
-				para.clear();
-				// para.put("MAX_RESULTS", 65536);
-				para.put("NAVI_LFT_GE", this.model.getLft());
-				para.put("NAVI_LFT_LE", this.model.getRgt());
-
-				list = genfuCommonService
-						.searchList(
-								"SELECT t FROM NavigationNode t WHERE t.lft BETWEEN :NAVI_LFT_GE AND :NAVI_LFT_LE ORDER BY t.lft ASC",
-								para, NavigationNode.class);
-			}
-
+		Map<String, Object> para = new Hashtable<String, Object>();
+		if (null != parameters.get("rootId_EQ")
+				&& parameters.get("rootId_EQ").length > 0) {
+			para.put("rootId_EQ",
+					Long.parseLong(parameters.get("rootId_EQ")[0]));
+		} else {
+			para.put("rootId_EQ", Long.parseLong("0"));
 		}
+		if (parameters.containsKey("rebuild_tree")) {
+			this.rebuild_tree(-1, 0, -1);
+		}
+		list = genfuCommonService.searchList(
+				"SELECT t FROM NavigationNode t WHERE t.id = :rootId_EQ", para,
+				NavigationNode.class);
+
+		if (list.size() > 0) {
+			// 说明有此节点，获得树根对应的树
+			model = list.get(0);
+			para.clear();
+			// para.put("MAX_RESULTS", 65536);
+			para.put("NAVI_LFT_GE", this.model.getLft());
+			para.put("NAVI_LFT_LE", this.model.getRgt());
+
+			list = genfuCommonService
+					.searchList(
+							"SELECT t FROM NavigationNode t WHERE t.lft BETWEEN :NAVI_LFT_GE AND :NAVI_LFT_LE ORDER BY t.lft ASC",
+							para, NavigationNode.class);
+		}
+
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 

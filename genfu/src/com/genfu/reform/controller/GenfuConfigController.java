@@ -76,7 +76,6 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session = null;
 	private HttpServletRequest request;
-	private boolean verifyingOperates = false;
 	private JSONObject jsonObject;
 	private Map<String, String[]> parameters;
 	private File upload;
@@ -132,35 +131,28 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
-		jsonObject = genfuCommonService.validateAndRecord("genfu-config",
-				"index", request, GenfuConfig.class, session);
 
-		verifyingOperates = jsonObject.getBoolean("validResult");
-		if (verifyingOperates) {
-
-			if (this.parameters.containsKey("style")) {
-				if (null != this.parameters.get("style")
-						&& "jqGrid".equalsIgnoreCase(this.parameters
-								.get("style")[0])) {
-					jsonObject = null;
-					// jsonObject =
-					// genfuCommonService.searchJsonJqGridFilter(
-					// Dish.class, parameters);
-					// Map<String, Object> para = new HashMap<String,
-					// Object>();
-					// para.put("taggings",
-					// Long.parseLong(parameters.get("taggings")[0]));
-					jsonObject = genfuCommonService
-							.searchJsonNativeQuery(
-									"SELECT * FROM GENFU_CONFIGS X WHERE CONFIG_ID IN (2,4,5) ",
-									null, GenfuConfig.class, parameters);
-				}
-			} else {
-				list = genfuCommonService.searchList(GenfuConfig.class,
-						parameters);
+		if (this.parameters.containsKey("style")) {
+			if (null != this.parameters.get("style")
+					&& "jqGrid"
+							.equalsIgnoreCase(this.parameters.get("style")[0])) {
+				jsonObject = null;
+				// jsonObject =
+				// genfuCommonService.searchJsonJqGridFilter(
+				// Dish.class, parameters);
+				// Map<String, Object> para = new HashMap<String,
+				// Object>();
+				// para.put("taggings",
+				// Long.parseLong(parameters.get("taggings")[0]));
+				jsonObject = genfuCommonService
+						.searchJsonNativeQuery(
+								"SELECT * FROM GENFU_CONFIGS X WHERE CONFIG_ID IN (2,4,5) ",
+								null, GenfuConfig.class, parameters);
 			}
-
+		} else {
+			list = genfuCommonService.searchList(GenfuConfig.class, parameters);
 		}
+
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 

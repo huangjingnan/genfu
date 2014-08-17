@@ -65,7 +65,6 @@ public class UserNavisController extends ValidationAwareSupport implements
 	private GenfuCommonService genfuCommonService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
-	private boolean verifyingOperates;
 	private InputStream inputStream;
 
 	// public UserNavisController(GenfuCommonService theService) {
@@ -116,90 +115,83 @@ public class UserNavisController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("show");
 	}
 
-	public void prepareIndex() throws Exception {
-		verifyingOperates = genfuCommonService.verifyingOperates(parameters,
-				session);
-	}
-
 	public String index() {
-		if (verifyingOperates) {
-			jsonObject = (JSONObject) session
-					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
-			this.model = (UserInfo) genfuCommonService.find(
-					jsonObject.getLong("userId"), UserInfo.class);
-			Set<NavigationNode> navis = new HashSet<NavigationNode>();
+		jsonObject = (JSONObject) session
+				.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
+		this.model = (UserInfo) genfuCommonService.find(
+				jsonObject.getLong("userId"), UserInfo.class);
+		Set<NavigationNode> navis = new HashSet<NavigationNode>();
 
-			StringBuffer naviStr = new StringBuffer();
-			if (this.model.getRoleInfos().size() > 0) {
-				Date now = new Date();
-				Iterator<RoleInfo> itRoleInfo = this.model.getRoleInfos()
-						.iterator();
-				while (itRoleInfo.hasNext()) {
-					RoleInfo tempRI = itRoleInfo.next();
-					if (now.after(tempRI.getRoleEffDate())
-							&& now.before(tempRI.getRoleExpDate())) {
-						navis.addAll(tempRI.getNavigationNodes());
+		StringBuffer naviStr = new StringBuffer();
+		if (this.model.getRoleInfos().size() > 0) {
+			Date now = new Date();
+			Iterator<RoleInfo> itRoleInfo = this.model.getRoleInfos()
+					.iterator();
+			while (itRoleInfo.hasNext()) {
+				RoleInfo tempRI = itRoleInfo.next();
+				if (now.after(tempRI.getRoleEffDate())
+						&& now.before(tempRI.getRoleExpDate())) {
+					navis.addAll(tempRI.getNavigationNodes());
+				}
+			}
+
+			Map<String, Object> tempPara = new HashMap<String, Object>();
+			List<Long> naviIds = new ArrayList<Long>();
+			for (NavigationNode tempNn : navis) {
+
+				if (now.before(tempNn.getNaviExpDate())
+						&& now.after(tempNn.getNaviEffDate())) {
+					if ("001".equalsIgnoreCase(tempNn.getNaviFlag())) {
+						naviIds.add(tempNn.getId());
 					}
 				}
+			}
+			if (naviIds.size() > 0) {
+				// tempPara.put("_naviFlag", "001");x.naviFlag = :_naviFlag
+				// AND
+				tempPara.put("naviIds", naviIds);
 
-				Map<String, Object> tempPara = new HashMap<String, Object>();
-				List<Long> naviIds = new ArrayList<Long>();
-				for (NavigationNode tempNn : navis) {
+				List<NavigationNode> tempNavis = genfuCommonService
+						.searchList(
+								"SELECT x FROM NavigationNode x WHERE x.id IN(:naviIds) ORDER BY x.naviOrder ASC",
+								tempPara, NavigationNode.class);
+
+				long level = tempNavis.get(0).getLevel();
+				naviStr.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><rows><page>1</page><total>1</total><records>1</records>");
+
+				for (NavigationNode tempNn : tempNavis) {
 
 					if (now.before(tempNn.getNaviExpDate())
 							&& now.after(tempNn.getNaviEffDate())) {
-						if ("001".equalsIgnoreCase(tempNn.getNaviFlag())) {
-							naviIds.add(tempNn.getId());
+
+						naviStr.append("<row><cell>");
+						naviStr.append(tempNn.getId());
+						naviStr.append("</cell><cell>");
+						naviStr.append(tempNn.getNaviText());
+						naviStr.append("</cell><cell>");
+						naviStr.append(tempNn.getNaviSrc());
+						naviStr.append("</cell><cell>");
+						naviStr.append(tempNn.getLevel() - level);
+						naviStr.append("</cell><cell>");
+						naviStr.append(tempNn.getNaviParentId());
+						naviStr.append("</cell><cell>");
+						// 计算机运算加法比减法快
+						if (tempNn.getRgt() > tempNn.getLft() + 1) {
+							naviStr.append("false");
+						} else {
+							naviStr.append("true");
 						}
+						naviStr.append("</cell><cell>false</cell></row>");
 					}
 				}
-				if (naviIds.size() > 0) {
-					// tempPara.put("_naviFlag", "001");x.naviFlag = :_naviFlag
-					// AND
-					tempPara.put("naviIds", naviIds);
-
-					List<NavigationNode> tempNavis = genfuCommonService
-							.searchList(
-									"SELECT x FROM NavigationNode x WHERE x.id IN(:naviIds) ORDER BY x.naviOrder ASC",
-									tempPara, NavigationNode.class);
-
-					long level = tempNavis.get(0).getLevel();
-					naviStr.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><rows><page>1</page><total>1</total><records>1</records>");
-
-					for (NavigationNode tempNn : tempNavis) {
-
-						if (now.before(tempNn.getNaviExpDate())
-								&& now.after(tempNn.getNaviEffDate())) {
-
-							naviStr.append("<row><cell>");
-							naviStr.append(tempNn.getId());
-							naviStr.append("</cell><cell>");
-							naviStr.append(tempNn.getNaviText());
-							naviStr.append("</cell><cell>");
-							naviStr.append(tempNn.getNaviSrc());
-							naviStr.append("</cell><cell>");
-							naviStr.append(tempNn.getLevel() - level);
-							naviStr.append("</cell><cell>");
-							naviStr.append(tempNn.getNaviParentId());
-							naviStr.append("</cell><cell>");
-							// 计算机运算加法比减法快
-							if (tempNn.getRgt() > tempNn.getLft() + 1) {
-								naviStr.append("false");
-							} else {
-								naviStr.append("true");
-							}
-							naviStr.append("</cell><cell>false</cell></row>");
-						}
-					}
-					naviStr.append("</rows>");
-				}
+				naviStr.append("</rows>");
 			}
-			try {
-				inputStream = new ByteArrayInputStream(naviStr.toString()
-						.getBytes("UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+		}
+		try {
+			inputStream = new ByteArrayInputStream(naviStr.toString().getBytes(
+					"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 		// return new DefaultHttpHeaders("index").disableCaching();
 		return "listNavi";
