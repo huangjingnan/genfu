@@ -1,15 +1,48 @@
 package com.genfu.reform.util;
 
+import java.security.AlgorithmParameters;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestAny {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+
+//		GenfuDES des = new GenfuDES("87654323");
+//		String passwd = "abcd1234!@#$qwer";
+//
+//		byte[] ciphertext = des.encrypt(passwd);
+//
+//		for (int i = 0; i < ciphertext.length; i++) {
+//			System.out.print(ciphertext[i] & 0x0f);
+//			// System.out.println(((ciphertext[i] & 0xf0) >> 4));
+//			// System.out.println(ciphertext[i] & 0x0f);
+//		}
+//		des = null;
+//		System.out.println("\n");
+//
+//		GenfuDES des2 = new GenfuDES("87654323");
+//		if (des2.ifCorrect(ciphertext, passwd)) {
+//			System.out.println("ok");
+//		} else {
+//			System.out.println("error");
+//		}
+
+		// byte[] arr = "1234567G".getBytes();
+		//
+		// for (int i = 0; i < arr.length; i++) {
+		// System.out.println(arr[i]);
+		// System.out.println(((arr[i] & 0xf0) >> 4));
+		// System.out.println(arr[i] & 0x0f);
+		// }
 
 		ApplicationContext ctx = new ClassPathXmlApplicationContext(
 				"applicationContext.xml");
 		ctx.getApplicationName();
+
+		// System.out.println("1234".substring(0, 3));
 
 		// DES theDES = new DES("password");
 		//
