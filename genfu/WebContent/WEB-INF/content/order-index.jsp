@@ -24,7 +24,7 @@ jQuery("#order_header").jqGrid({
    		{name:'amount',index:'amount', width:80, sorttype:'integer', align:"right"},
    		{name:'status',index:'status', width:90,defval:"PROCESS", editable: true,edittype:"select",editoptions:{value:"PROCESS:PROCESS;CLOSED:CLOSED"}},
    		{name:'payFlag',index:'payFlag', width:90},
-   		{name:'createdAt',index:'createdAt',sorttype:'date', width:100},
+   		{name:'createdAt',index:'createdAt',sorttype:'date', formatter:dishDatefmt, width:100},
    		{name:'updatedAt',index:'updatedAt', formatter:dishDatefmt, formatoptions: {newformat: 'Y-m-d H:i:s'}, width:100},
    		{name:'phoneNumber',index:'phoneNumber',editable:true, width:80},		
    		{name:'email',index:'email', width:80,editable:true,editrules:{required:false,email:true},align:"right"},		

@@ -106,7 +106,7 @@
 		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean id="genfuCommonController" class="com.genfu.reform.controller.GenfuCommonController"
+	<bean class="com.genfu.reform.controller.GenfuCommonController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -115,8 +115,7 @@
 	<bean id="eventService" class="com.genfu.reform.service.EventServiceImpl">
 		<property name="eventDAO" ref="eventDAO" />
 	</bean>
-	<bean id="eventController" class="com.genfu.reform.controller.EventController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.EventController" scope="session">
 		<constructor-arg ref="eventService" />
 	</bean>
 
@@ -131,7 +130,7 @@
 		<property name="genfuCommonDAO" ref="navigationNodeDAO" /> <property name="genfuCommonTransaction" 
 		ref="navigationNodeTransaction" /> <property name="fabricationFilterSQL" 
 		ref="navigationNodeFilterSQL" /> </bean> -->
-	<bean id="navigationNodeController" class="com.genfu.reform.controller.NavigationNodeController"
+	<bean class="com.genfu.reform.controller.NavigationNodeController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -156,7 +155,7 @@
 	<bean class="com.genfu.reform.controller.ReLoginController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean id="loginDishesController" class="com.genfu.reform.controller.LoginDishesController"
+	<bean class="com.genfu.reform.controller.LoginDishesController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -169,7 +168,7 @@
 		<property name="genfuCommonDAO" ref="departmentDAO" /> <property name="genfuCommonTransaction" 
 		ref="departmentTransaction" /> <property name="fabricationFilterSQL" ref="departmentFilterSQL" 
 		/> </bean> -->
-	<bean id="departmentController" class="com.genfu.reform.controller.DepartmentController"
+	<bean class="com.genfu.reform.controller.DepartmentController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -182,7 +181,7 @@
 		<property name="genfuCommonDAO" ref="actorInfoDAO" /> <property name="genfuCommonTransaction" 
 		ref="actorInfoTransaction" /> <property name="fabricationFilterSQL" ref="actorInfoFilterSQL" 
 		/> </bean> -->
-	<bean id="actorInfoController" class="com.genfu.reform.controller.ActorInfoController"
+	<bean class="com.genfu.reform.controller.ActorInfoController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -212,7 +211,7 @@
 		<property name="genfuCommonDAO" ref="roleInfoDAO" /> <property name="genfuCommonTransaction" 
 		ref="roleInfoTransaction" /> <property name="fabricationFilterSQL" ref="roleInfoFilterSQL" 
 		/> </bean> -->
-	<bean id="roleInfoController" class="com.genfu.reform.controller.RoleInfoController"
+	<bean class="com.genfu.reform.controller.RoleInfoController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -225,7 +224,7 @@
 		<property name="genfuCommonDAO" ref="userInfoDAO" /> <property name="genfuCommonTransaction" 
 		ref="userInfoTransaction" /> <property name="fabricationFilterSQL" ref="userInfoFilterSQL" 
 		/> </bean> -->
-	<bean id="userInfoController" class="com.genfu.reform.controller.UserInfoController"
+	<bean class="com.genfu.reform.controller.UserInfoController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -238,7 +237,7 @@
 		<property name="genfuCommonDAO" ref="roleNaviDAO" /> <property name="genfuCommonTransaction" 
 		ref="roleNaviTransaction" /> <property name="fabricationFilterSQL" ref="roleNaviFilterSQL" 
 		/> </bean> -->
-	<bean id="roleNaviController" class="com.genfu.reform.controller.RoleNaviController"
+	<bean class="com.genfu.reform.controller.RoleNaviController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -251,7 +250,7 @@
 		<property name="genfuCommonDAO" ref="navigationNodesDAO" /> <property name="genfuCommonTransaction" 
 		ref="navigationNodesTransaction" /> <property name="fabricationFilterSQL" 
 		ref="navigationNodesFilterSQL" /> </bean> -->
-	<bean id="navigationNodesController" class="com.genfu.reform.controller.NavigationNodesController"
+	<bean class="com.genfu.reform.controller.NavigationNodesController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -275,8 +274,7 @@
 			/> -->
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean id="dishController" class="com.genfu.reform.controller.DishController"
-		scope="prototype" />
+	<bean class="com.genfu.reform.controller.DishController" scope="prototype" />
 
 	<!-- <bean id="cartDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl" 
 		/> <bean id="cartTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"> 
@@ -286,8 +284,7 @@
 		<property name="genfuCommonDAO" ref="cartDAO" /> <property name="genfuCommonTransaction" 
 		ref="cartTransaction" /> <property name="fabricationFilterSQL" ref="cartFilterSQL" 
 		/> </bean> -->
-	<bean id="cartController" class="com.genfu.reform.controller.CartController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.CartController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -299,8 +296,7 @@
 		<property name="genfuCommonDAO" ref="catalogDAO" /> <property name="genfuCommonTransaction" 
 		ref="catalogTransaction" /> <property name="fabricationFilterSQL" ref="catalogFilterSQL" 
 		/> </bean> -->
-	<bean id="catalogController" class="com.genfu.reform.controller.CatalogController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.CatalogController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -312,7 +308,7 @@
 		<property name="genfuCommonDAO" ref="checkoutDAO" /> <property name="genfuCommonTransaction" 
 		ref="checkoutTransaction" /> <property name="fabricationFilterSQL" ref="checkoutFilterSQL" 
 		/> </bean> -->
-	<bean id="checkoutController" class="com.genfu.reform.controller.CheckoutController"
+	<bean class="com.genfu.reform.controller.CheckoutController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -325,8 +321,7 @@
 		<property name="genfuCommonDAO" ref="aboutDAO" /> <property name="genfuCommonTransaction" 
 		ref="aboutTransaction" /> <property name="fabricationFilterSQL" ref="aboutFilterSQL" 
 		/> </bean> -->
-	<bean id="aboutController" class="com.genfu.reform.controller.AboutController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.AboutController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -338,8 +333,7 @@
 		<property name="genfuCommonDAO" ref="fileDAO" /> <property name="genfuCommonTransaction" 
 		ref="fileTransaction" /> <property name="fabricationFilterSQL" ref="fileFilterSQL" 
 		/> </bean> -->
-	<bean id="fileController" class="com.genfu.reform.controller.FileController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.FileController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -351,7 +345,7 @@
 		<property name="genfuCommonDAO" ref="roleInfosDAO" /> <property name="genfuCommonTransaction" 
 		ref="roleInfosTransaction" /> <property name="fabricationFilterSQL" ref="roleInfosFilterSQL" 
 		/> </bean> -->
-	<bean id="roleInfosController" class="com.genfu.reform.controller.RoleInfosController"
+	<bean class="com.genfu.reform.controller.RoleInfosController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -364,8 +358,7 @@
 		<property name="genfuCommonDAO" ref="orderInfosDAO" /> <property name="genfuCommonTransaction" 
 		ref="orderInfosTransaction" /> <property name="fabricationFilterSQL" ref="orderInfosFilterSQL" 
 		/> </bean> -->
-	<bean id="orderController" class="com.genfu.reform.controller.OrderController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.OrderController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -377,7 +370,7 @@
 		<property name="genfuCommonDAO" ref="orderItemInfosDAO" /> <property name="genfuCommonTransaction" 
 		ref="orderItemInfosTransaction" /> <property name="fabricationFilterSQL" 
 		ref="orderItemInfosFilterSQL" /> </bean> -->
-	<bean id="orderItemInfosController" class="com.genfu.reform.controller.OrderItemController"
+	<bean class="com.genfu.reform.controller.OrderItemController"
 		scope="session">
 		<!-- <property name="genfuCommonService" ref="genfuCommonService" /> -->
 		<property name="genfuCommonService" ref="genfuCommonService" />
@@ -391,8 +384,7 @@
 		<property name="genfuCommonDAO" ref="tagDAO" /> <property name="genfuCommonTransaction" 
 		ref="tagTransaction" /> <property name="fabricationFilterSQL" ref="tagFilterSQL" 
 		/> </bean> -->
-	<bean id="tagController" class="com.genfu.reform.controller.TagController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.TagController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -404,8 +396,7 @@
 		<property name="genfuCommonDAO" ref="tagsDAO" /> <property name="genfuCommonTransaction" 
 		ref="tagsTransaction" /> <property name="fabricationFilterSQL" ref="tagsFilterSQL" 
 		/> </bean> -->
-	<bean id="tagsController" class="com.genfu.reform.controller.TagsController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.TagsController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -417,8 +408,7 @@
 		<property name="genfuCommonDAO" ref="taggingDAO" /> <property name="genfuCommonTransaction" 
 		ref="taggingTransaction" /> <property name="fabricationFilterSQL" ref="taggingFilterSQL" 
 		/> </bean> -->
-	<bean id="taggingController" class="com.genfu.reform.controller.TaggingController"
-		scope="session">
+	<bean class="com.genfu.reform.controller.TaggingController" scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
@@ -430,7 +420,7 @@
 		<property name="genfuCommonDAO" ref="userRoleDAO" /> <property name="genfuCommonTransaction" 
 		ref="userRoleTransaction" /> <property name="fabricationFilterSQL" ref="userRoleFilterSQL" 
 		/> </bean> -->
-	<bean id="userRoleController" class="com.genfu.reform.controller.UserRoleController"
+	<bean class="com.genfu.reform.controller.UserRoleController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -443,27 +433,26 @@
 		<property name="genfuCommonDAO" ref="userNavisDAO" /> <property name="genfuCommonTransaction" 
 		ref="userNavisTransaction" /> <property name="fabricationFilterSQL" ref="userNavisFilterSQL" 
 		/> </bean> -->
-	<bean id="userNavisController" class="com.genfu.reform.controller.UserNavisController"
+	<bean class="com.genfu.reform.controller.UserNavisController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean id="orderDishController" class="com.genfu.reform.controller.OrderDishController"
+	<bean class="com.genfu.reform.controller.OrderDishController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean id="cartSettingController" class="com.genfu.reform.controller.CartSettingController"
+	<bean class="com.genfu.reform.controller.CartSettingController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean id="myOrderController" class="com.genfu.reform.controller.MyOrderController"
+	<bean class="com.genfu.reform.controller.MyOrderController" scope="session">
+		<property name="genfuCommonService" ref="genfuCommonService" />
+	</bean>
+	<bean class="com.genfu.reform.controller.DishCommentController"
 		scope="session">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
-	<bean id="dishCommentController" class="com.genfu.reform.controller.DishCommentController"
-		scope="session">
-		<property name="genfuCommonService" ref="genfuCommonService" />
-	</bean>
-	<bean id="genfuConfigController" class="com.genfu.reform.controller.GenfuConfigController"
+	<bean class="com.genfu.reform.controller.GenfuConfigController"
 		scope="prototype">
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
@@ -475,6 +464,6 @@
 		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
 		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
-	<bean id="groupOrderitemController" class="com.genfu.reform.controller.GroupOrderitemController"
+	<bean class="com.genfu.reform.controller.GroupOrderitemController"
 		scope="session" />
 </beans>
