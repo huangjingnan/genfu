@@ -17,7 +17,7 @@
 	<s:actionmessage />
 	<s:actionerror />
 	<s:fielderror />
-	<s:form method="post" action="%{#ctx}/login">
+	<s:form method="post" action="login" namespace="/">
 		<s:textfield key="global.username" name="userInfo.userCode"></s:textfield>
 		<s:password key="global.password" name="userInfo.userPassword"></s:password>
 

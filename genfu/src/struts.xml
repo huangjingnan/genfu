@@ -68,7 +68,7 @@
 	<!-- <package name="default" namespace="/" extends="struts-default"> <action 
 		name="locale" class="com.mkyong.common.action.LocaleAction"> <result name="SUCCESS">/login.jsp</result> 
 		</action> </package> -->
-	<package name="genfu-rest" extends="rest-default" namespace="genfu">
+	<package name="genfu-rest" extends="rest-default" namespace="/">
 		<result-types>
 			<result-type name="json" class="org.apache.struts2.json.JSONResult" />
 		</result-types>
