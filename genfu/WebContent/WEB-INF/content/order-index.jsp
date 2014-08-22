@@ -9,8 +9,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>orders</title>
 <script type="text/javascript">
-
 var order_detail_url = "${ctx}/order-item.json?style=jqGrid";
+//alert(order_detail_url);
 var headerRowData;
 jQuery("#order_header").jqGrid({
    	url:'${ctx}/order.json?style=jqGrid&status_EQ=OPEN',

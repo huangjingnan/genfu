@@ -1,11 +1,11 @@
 package com.genfu.reform.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,20 +53,21 @@ public class OrderController extends ValidationAwareSupport implements
 	private Long id;
 	private List<Order> list;
 	private JSONObject jsonObject;
-	private GenfuCommonService genfuCommonService;
+	private GenfuCommonService orderService;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
 
 	// public OrderController(GenfuCommonService theService) {
-	// genfuCommonService = theService;
+	// orderService = theService;
 	// }
 
 	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
+		return orderService;
 	}
 
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	@Resource(name = "orderService")
+	public void setGenfuCommonService(GenfuCommonService orderService) {
+		this.orderService = orderService;
 	}
 
 	@Override
@@ -104,35 +105,35 @@ public class OrderController extends ValidationAwareSupport implements
 			if (null != this.parameters.get("style")
 					&& "jqGrid"
 							.equalsIgnoreCase(this.parameters.get("style")[0])) {
-				jsonObject = genfuCommonService.searchJsonJqGridFilter(
+				jsonObject = orderService.searchJsonJqGridFilter(
 						Order.class, parameters);
 			}
 		} else {
-			// list = genfuCommonService.searchList(Order.class,
+			// list = orderService.searchList(Order.class,
 			// parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		Map<String, Object> par = new HashMap<String, Object>();
-		par.put("orderId0", model.getId());
-		List<Order> theOld = genfuCommonService.searchNativeQuery(
-				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-				Order.class);
-		if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
-				&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
-			addActionMessage("Object updated successfully");
-		}
-		jsonObject = null;
+//		Map<String, Object> par = new HashMap<String, Object>();
+//		par.put("orderId0", model.getId());
+//		List<Order> theOld = orderService.searchNativeQuery(
+//				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
+//				Order.class);
+//		if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
+//				&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
+			//model.setUpdatedAt(new Date());
+			orderService.update(model);
+//			addActionMessage("Object updated successfully");
+//		}
+//		jsonObject = null;
 		return "json";
 	}
 
 	public void setId(Long id) {
 		if (id != null) {
-			model = (Order) genfuCommonService.find(id, Order.class);
+			model = (Order) orderService.find(id, Order.class);
 		}
 		this.id = id;
 	}
@@ -147,7 +148,7 @@ public class OrderController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		// genfuCommonService.save(model);
+		// orderService.save(model);
 		return "json";
 	}
 
@@ -171,7 +172,7 @@ public class OrderController extends ValidationAwareSupport implements
 			}
 
 			tempPara.put("orderIds", longOrderIds);
-			List<Order> tempOrders = genfuCommonService.searchList(
+			List<Order> tempOrders = orderService.searchList(
 					"SELECT x FROM Order x WHERE x.id IN(:orderIds)", tempPara,
 					Order.class);
 			List<Order> orderDel = new ArrayList<Order>();
@@ -182,7 +183,7 @@ public class OrderController extends ValidationAwareSupport implements
 				}
 			}
 
-			genfuCommonService.remove(orderDel);
+			orderService.remove(orderDel);
 		}
 		jsonObject = new JSONObject();
 		return "json";
