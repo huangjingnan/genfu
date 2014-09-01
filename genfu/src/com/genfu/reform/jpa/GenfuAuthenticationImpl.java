@@ -1,17 +1,14 @@
 package com.genfu.reform.jpa;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.sql.DataSource;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import com.genfu.reform.model.NavigationNode;
-
 public class GenfuAuthenticationImpl {
 
-	private JdbcTemplate jdbaTemplate;
+	// private JdbcTemplate jdbaTemplate;
 	private DataSource pg_dataSource;
 
 	public DataSource getPg_dataSource() {
@@ -25,43 +22,45 @@ public class GenfuAuthenticationImpl {
 	public boolean verify(String actionName, String nameSpace, String method,
 			String operate, long userId) {
 
-		this.jdbaTemplate = new JdbcTemplate(pg_dataSource);
+		// this.jdbaTemplate = new JdbcTemplate(pg_dataSource);
 		StringBuffer sqlString = new StringBuffer();
-		
-		jdbaTemplate.queryForList(sqlString.toString(), args, NavigationNode.class);
+
+		// jdbaTemplate.queryForList(sqlString.toString(), args,
+		// NavigationNode.class);
 
 		sqlString
 				.append("select nn.navi_id from  user_info ui,user_info_role_infos ur,");
 		sqlString.append("role_info_navigation_nodes rn,navigation_nodes nn");
+		sqlString.append(" where nn.navi_action = ? and nn.navi_operate = ?");
+		sqlString.append(" and nn.navi_exp_date > ? and nn.navi_eff_date < ?");
 		sqlString
-				.append("where nn.navi_action = :_navi_action0 and nn.navi_operate = :_navi_operate0");
+				.append(" and ui.user_id = ? and ui.user_flag = ? and ui.user_exp_date > ?");
 		sqlString
-				.append(" and nn.navi_exp_date > :_navi_exp_date0 and nn.navi_eff_date < :_navi_eff_date0");
-		sqlString
-				.append(" and ui.user_id = :_user_id0 and ui.user_flag = :_user_flag0 and ui.user_exp_date > :_user_exp_date0");
-		sqlString
-				.append(" and ui.user_eff_date < :_user_eff_date0 and ui.user_id=ur.user_user_id");
+				.append(" and ui.user_eff_date < ? and ui.user_id=ur.user_user_id");
 		sqlString
 				.append(" and ur.role_role_id=rn.role_role_id and nn.navi_id=rn.node_navi_id");
+		try {
+			PreparedStatement pStatement = pg_dataSource.getConnection()
+					.prepareStatement(sqlString.toString());
 
-		PreparedStatement pStatement = pg_dataSource.getConnection().prepareStatement(sqlString.toString());
-		
-		pStatement.
-		
-		//Query query = em.createNativeQuery(sqlString.toString(), "nn1");
-		query.setParameter("_navi_action0", actionName);
-		query.setParameter("_navi_operate0", method);
-		query.setParameter("_user_flag0", "OPEN");
-		query.setParameter("_user_flag0", "OPEN");
-		query.setParameter("_navi_exp_date0", new Date());
-		query.setParameter("_navi_eff_date0", new Date());
-		query.setParameter("_user_exp_date0", new Date());
-		query.setParameter("_user_eff_date0", new Date());
-		query.setParameter("_user_id0", userId);
+			// Query query = em.createNativeQuery(sqlString.toString(), "nn1");
+			pStatement.setString(1, actionName);
+			pStatement.setString(2, method);
+			pStatement.setDate(3, new java.sql.Date(new Date().getTime()));
+			pStatement.setDate(4, new java.sql.Date(new Date().getTime()));
+			pStatement.setLong(5, userId);
+			pStatement.setString(6, "OPEN");
+			pStatement.setDate(7, new java.sql.Date(new Date().getTime()));
+			pStatement.setDate(8, new java.sql.Date(new Date().getTime()));
 
-		// query.getParameters();
-		if (query.getResultList().size() > 0) {
-			return true;
+			// query.getParameters();
+
+			if (pStatement.executeQuery().next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return false;
