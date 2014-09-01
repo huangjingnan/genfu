@@ -3,7 +3,6 @@ package com.genfu.reform.jpa;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Id;

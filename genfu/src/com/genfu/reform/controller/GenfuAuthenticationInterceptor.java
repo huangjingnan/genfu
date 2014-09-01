@@ -2,10 +2,18 @@ package com.genfu.reform.controller;
 
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import net.sf.json.JSONObject;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.SessionMap;
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.genfu.reform.service.GenfuAuthenTicationServiceImpl;
+import com.genfu.reform.service.GenfuAuthenticationService;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -15,39 +23,57 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 public class GenfuAuthenticationInterceptor implements Interceptor {
 	private static final long serialVersionUID = 1L;
+	private GenfuAuthenticationService auth;
 	private static final Logger LOG = LoggerFactory
 			.getLogger(GenfuAuthenticationInterceptor.class);
 	public static final String USER_SESSION_KEY = "genfuUserSessionKey";
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
+		LOG.debug("Authenticating destroy");
 	}
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
+		LOG.debug("Authenticating init");
 
+		// auth = new GenfuAuthenTicationServiceImpl();
 	}
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
-		LOG.debug("Authenticating chat user");
+		LOG.debug("Authenticating user");
 
 		SessionMap<?, ?> session = (SessionMap<?, ?>) ActionContext
 				.getContext().get(ActionContext.SESSION);
 		JSONObject user = (JSONObject) session.get(USER_SESSION_KEY);
-		Map<String,Object> m = invocation.getInvocationContext().getContextMap();
-		Object o = m.get("struts.actionMapping");
-		o = m.get("parameters");
+		// invocation.getInvocationContext().getSession();
+
+		ActionContext ac = invocation.getInvocationContext();
+
+		Map<?, ?> context = ac.getContextMap();
+		ActionMapping am = (ActionMapping) context.get("struts.actionMapping");
+
+		ServletContext servletContext = ServletActionContext
+				.getServletContext();
+		ApplicationContext appContext = WebApplicationContextUtils
+				.getWebApplicationContext(servletContext);
+		auth = (GenfuAuthenTicationServiceImpl) appContext
+				.getBean("genfuAuthenTicationServiceImpl");
+
+		LOG.debug(am.getName());
+		LOG.debug(am.getNamespace());
+		LOG.debug(am.getMethod());
+		// o = (HashMap<String, String>) m.get("parameters");
+		// 判断action是否被授权 actionName,nameSpace,method,operate,userId
 		String ret = Action.LOGIN;
 		if (user == null) {
 			// return Action.LOGIN;
 		} else {
 
-			// logout if
-			ret = invocation.invoke();
+			if (auth.verify(am.getName(), am.getNamespace(), am.getMethod(),
+					"", user.getLong("userId")))
+				ret = invocation.invoke();
 		}
 		return ret;
 	}

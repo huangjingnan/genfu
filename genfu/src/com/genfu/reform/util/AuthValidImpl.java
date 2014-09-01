@@ -263,6 +263,9 @@ public class AuthValidImpl implements AuthValid {
 		StringBuffer strBuffPara = new StringBuffer();
 		while (it.hasNext()) {
 			tempKey = it.next();
+			if ("Password".endsWith(tempKey)) {
+				continue;
+			}
 			tempValue = parameters.get(tempKey)[0].toString();
 			strBuffPara.append(tempKey).append("=");
 			if (null != tempValue && !"".equalsIgnoreCase(tempValue)) {

@@ -94,8 +94,8 @@ public class LoginController extends ValidationAwareSupport implements
 		if (jsonObject.getBoolean("validResult")) {
 			session.put(GenfuAuthenticationInterceptor.USER_SESSION_KEY,
 					jsonObject.get("userInfo"));
-			session.put("userNavis", jsonObject.get("userNavis"));
-			session.put("sessionId", request.getRequestedSessionId());
+			// session.put("userNavis", jsonObject.get("userNavis"));
+			// session.put("sessionId", request.getRequestedSessionId());
 			session.put("userCode", userInfo.getUserCode());
 			result = "application";
 		} else {

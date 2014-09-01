@@ -67,10 +67,10 @@ public class NavigationNodeDAOImpl implements NavigationNodeDAO {
 //		logger.info("searchList...");
 		StringBuffer jpql = new StringBuffer();//
 		jpql.append("from NavigationNode WHERE STATEDATE<=:_STATEDATE");
-		TypedQuery<NavigationNode> TypedQuery = em.createQuery(jpql.toString(),
+		TypedQuery<NavigationNode> typedQuery = em.createQuery(jpql.toString(),
 				NavigationNode.class);
-		TypedQuery.setParameter("_STATEDATE", new Date());
-		List<NavigationNode> result = TypedQuery.getResultList();
+		typedQuery.setParameter("_STATEDATE", new Date());
+		List<NavigationNode> result = typedQuery.getResultList();
 		// em.close();
 
 		return result;

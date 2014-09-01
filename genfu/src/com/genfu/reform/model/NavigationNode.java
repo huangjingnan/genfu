@@ -6,7 +6,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityResult;
 import javax.persistence.Id;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,6 +18,7 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
+@SqlResultSetMapping(name = "nn1", entities = { @EntityResult(entityClass = NavigationNode.class) })
 @Table(name = "NAVIGATION_NODES")
 public class NavigationNode implements Serializable {
 	private static final long serialVersionUID = 1L;

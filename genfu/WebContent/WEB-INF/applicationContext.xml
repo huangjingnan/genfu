@@ -88,6 +88,14 @@
 
 	<bean id="genfuCommonDAO" class="com.genfu.reform.jpa.GenfuCommonDAOImpl"
 		scope="prototype" />
+	<bean id="genfuAuthenticationImpl" class="com.genfu.reform.jpa.GenfuAuthenticationImpl"
+		scope="prototype">
+		<!-- <property name="pg_dataSource" ref="pg_dataSource" /> -->
+	</bean>
+	<bean id="genfuAuthenTicationServiceImpl" class="com.genfu.reform.service.GenfuAuthenTicationServiceImpl"
+		scope="prototype">
+		<property name="genfuAuthenticationImpl" ref="genfuAuthenticationImpl" />
+	</bean>
 	<bean id="genfuCommonTransaction" class="com.genfu.reform.jpa.GenfuCommonTransaction"
 		scope="prototype">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
