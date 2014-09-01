@@ -56,7 +56,7 @@ public class Event {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	public Long getId() {
-		System.out.println("getId");
+		//System.out.println("getId");
 		return id;
 	}
 
