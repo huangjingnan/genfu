@@ -246,7 +246,7 @@
 	        	dishIds:dishId,
 	        	tagIds:tagId
 	        },
-	        url: '${ctx}/tagging',
+	        url: '${ctx}/tagging?style=jqGrid',
 	        dataType: 'json',
 	        success: function (data) {
 	        	//debugger;

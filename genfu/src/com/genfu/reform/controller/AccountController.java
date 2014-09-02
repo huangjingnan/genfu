@@ -135,21 +135,6 @@ public class AccountController extends ValidationAwareSupport implements
 	// }
 
 	public String update() {
-		// jsonObject = genfuCommonService.validateOperates("", "", "order",
-		// "update", null, Account.class, parameters, session);
-		//
-		// verifyingOperates = jsonObject.getBoolean("validResult");
-		Map<String, Object> par = new HashMap<String, Object>();
-		par.put("orderId0", model.getId());
-		List<Account> theOld = genfuCommonService.searchNativeQuery(
-				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-				Account.class);
-		if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
-				&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
-			addActionMessage("Object updated successfully");
-		}
 		jsonObject = null;
 		return "json";
 	}

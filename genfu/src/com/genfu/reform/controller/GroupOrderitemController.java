@@ -129,16 +129,6 @@ public class GroupOrderitemController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
-		Map<String, Object> par = new HashMap<String, Object>();
-		par.put("orderId0", model.getOrderId());
-		List<Order> theOrder = groupOrderitemService.searchNativeQuery(
-				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-				Order.class);
-		if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
-			model.setUpdatedAt(new Date());
-			groupOrderitemService.update(model);
-			addActionMessage("Object updated successfully");
-		}
 		return "json";
 	}
 

@@ -116,6 +116,7 @@ public class OrderItemController extends ValidationAwareSupport implements
 
 	public String update() {
 		Map<String, Object> par = new HashMap<String, Object>();
+		//==这里即将改造！
 		par.put("orderId0", model.getOrderId());
 		List<Order> theOrder = genfuCommonService.searchNativeQuery(
 				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,

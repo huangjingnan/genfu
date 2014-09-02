@@ -109,7 +109,7 @@ public class TagController extends ValidationAwareSupport implements
 	public HttpHeaders index() {
 
 		if (this.parameters.containsKey("style")) {
-			jsonObject = genfuCommonService.searchJsonJqGrid(Tag.class,
+			jsonObject = genfuCommonService.searchJsonJqGridFilter(Tag.class,
 					parameters);
 		} else if (this.parameters.containsKey("statusCode")) {
 			list = genfuCommonService.searchList(Tag.class, parameters);
