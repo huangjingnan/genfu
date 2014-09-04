@@ -6,7 +6,6 @@ import static javax.persistence.CascadeType.REFRESH;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -250,30 +249,30 @@ public class UserInfo implements Serializable {
 		this.roleInfos = roleInfos;
 	}
 
-	public Set<NavigationNode> getNavis() {
-
-		Set<NavigationNode> navis = new HashSet<NavigationNode>();
-		if (null != this.roleInfos && this.roleInfos.size() > 0) {
-			java.util.Date now = new java.util.Date();
-			for (RoleInfo tempRI : this.roleInfos) {
-				if (now.after(tempRI.getRoleEffDate())
-						&& now.before(tempRI.getRoleExpDate())) {
-					navis.addAll(tempRI.getNavigationNodes());
-				}
-			}
-			Set<NavigationNode> tempNs = new HashSet<NavigationNode>();
-			for (NavigationNode tempNn : navis) {
-
-				if (now.before(tempNn.getNaviEffDate())
-						|| now.after(tempNn.getNaviExpDate())) {
-					tempNs.add(tempNn);
-					//navis.remove(tempNn);
-				}
-			}
-			navis.removeAll(tempNs);
-		}
-
-		return navis;
-	}
+	// public Set<NavigationNode> getNavis() {
+	//
+	// Set<NavigationNode> navis = new HashSet<NavigationNode>();
+	// if (null != this.roleInfos && this.roleInfos.size() > 0) {
+	// java.util.Date now = new java.util.Date();
+	// for (RoleInfo tempRI : this.roleInfos) {
+	// if (now.after(tempRI.getRoleEffDate())
+	// && now.before(tempRI.getRoleExpDate())) {
+	// navis.addAll(tempRI.getNavigationNodes());
+	// }
+	// }
+	// Set<NavigationNode> tempNs = new HashSet<NavigationNode>();
+	// for (NavigationNode tempNn : navis) {
+	//
+	// if (now.before(tempNn.getNaviEffDate())
+	// || now.after(tempNn.getNaviExpDate())) {
+	// tempNs.add(tempNn);
+	// //navis.remove(tempNn);
+	// }
+	// }
+	// navis.removeAll(tempNs);
+	// }
+	//
+	// return navis;
+	// }
 
 }

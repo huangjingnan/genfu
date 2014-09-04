@@ -20,23 +20,10 @@ import com.genfu.reform.model.UserInfo;
 import com.genfu.reform.model.UserSession;
 
 public class AuthValidImpl implements AuthValid {
-	private GenfuCommonDAO genfuCommonDAO;
-	private GenfuCommonDAO genfuCommonTransaction;
+	private GenfuCommonDAO genfuCommonDao;
 
-	public GenfuCommonDAO getGenfuCommonDAO() {
-		return genfuCommonDAO;
-	}
-
-	public void setGenfuCommonDAO(GenfuCommonDAO genfuCommonDAO) {
-		this.genfuCommonDAO = genfuCommonDAO;
-	}
-
-	public GenfuCommonDAO getGenfuCommonTransaction() {
-		return genfuCommonTransaction;
-	}
-
-	public void setGenfuCommonTransaction(GenfuCommonDAO genfuCommonTransaction) {
-		this.genfuCommonTransaction = genfuCommonTransaction;
+	public void setGenfuCommonDao(GenfuCommonDAO genfuCommonDao) {
+		this.genfuCommonDao = genfuCommonDao;
 	}
 
 	@Override
@@ -78,7 +65,7 @@ public class AuthValidImpl implements AuthValid {
 				genfuLog.setLogUserId(user.getLong("userId"));
 			}
 
-			// genfuCommonDAO.getTotalRecords(
+			// genfuCommonDao.getTotalRecords(
 			// "", null, null);
 			// select * from navigation_nodes where navi_action='' and
 			// navi_operate='' and navi_id in(
@@ -109,7 +96,7 @@ public class AuthValidImpl implements AuthValid {
 
 		}
 
-		genfuCommonTransaction.save(genfuLog);
+		genfuCommonDao.save(genfuLog);
 
 		return jsonObject;
 	}
@@ -130,7 +117,7 @@ public class AuthValidImpl implements AuthValid {
 			JSONObject user = (JSONObject) session
 					.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
 			if (null != user) {
-				UserInfo tempUser = (UserInfo) genfuCommonDAO.find(
+				UserInfo tempUser = (UserInfo) genfuCommonDao.find(
 						user.getLong("userId"), UserInfo.class);
 				DES des = new DES(tempUser.getUserCode());
 				if (des.getEncString(passwd).equals(tempUser.getUserPassword())) {
@@ -168,7 +155,7 @@ public class AuthValidImpl implements AuthValid {
 				genfuLog.setLogUserId(user.getLong("userId"));
 			}
 
-			// genfuCommonDAO.getTotalRecords(
+			// genfuCommonDao.getTotalRecords(
 			// "", null, null);
 			// select * from navigation_nodes where navi_action='' and
 			// navi_operate='' and navi_id in(
@@ -199,7 +186,7 @@ public class AuthValidImpl implements AuthValid {
 
 		}
 
-		genfuCommonTransaction.save(genfuLog);
+		genfuCommonDao.save(genfuLog);
 
 		return jsonObject;
 	}
@@ -238,7 +225,7 @@ public class AuthValidImpl implements AuthValid {
 			}
 		}
 
-		genfuCommonTransaction.save(genfuLog);
+		genfuCommonDao.save(genfuLog);
 	}
 
 	@Override
@@ -286,7 +273,7 @@ public class AuthValidImpl implements AuthValid {
 				des.getEncString(userInfo.getUserPassword()));
 		// DES des2 = new DES(userInfo.getUserCode());
 
-		List<UserInfo> listUI = genfuCommonDAO
+		List<UserInfo> listUI = genfuCommonDao
 				.searchList(
 						"SELECT x FROM UserInfo x WHERE x.userCode=:userCode_EQ AND x.userPassword=:userPassword_EQ",
 						para, UserInfo.class);
@@ -303,8 +290,8 @@ public class AuthValidImpl implements AuthValid {
 			genfuLog.setLogUserId(_userInfo.getId());
 			jsonObject.put("userInfo", uS);
 			jsonObject.put("validResult", true);
-			Set<NavigationNode> navis = _userInfo.getNavis();
-			jsonObject.put("userNavis", navis);
+			//Set<NavigationNode> navis = _userInfo.getNavis();
+			//jsonObject.put("userNavis", navis);
 			// if (null != actionName && !"".equalsIgnoreCase(actionName)) {
 			// 验证操作是否合法
 
@@ -324,7 +311,7 @@ public class AuthValidImpl implements AuthValid {
 			jsonObject.put("validMsg", "验证失败");
 		}
 
-		genfuCommonTransaction.save(genfuLog);
+		genfuCommonDao.save(genfuLog);
 		return jsonObject;
 	}
 

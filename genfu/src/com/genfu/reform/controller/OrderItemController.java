@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,12 +55,12 @@ public class OrderItemController extends ValidationAwareSupport implements
 	private Long id;
 	private List<OrderItem> list;
 	private JSONObject jsonObject;
-	private GenfuCommonService genfuCommonService;
+	private GenfuCommonService orderItemServiceImpl;
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
 
 	// public OrderItemController(GenfuCommonService theService) {
-	// genfuCommonService = theService;
+	// orderItemServiceImpl = theService;
 	// }
 
 	@Override
@@ -67,12 +68,13 @@ public class OrderItemController extends ValidationAwareSupport implements
 
 	}
 
-	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
+	public GenfuCommonService getOrderItemServiceImpl() {
+		return orderItemServiceImpl;
 	}
 
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	@Resource(name = "orderItemServiceImpl")
+	public void setOrderItemServiceImpl(GenfuCommonService orderItemServiceImpl) {
+		this.orderItemServiceImpl = orderItemServiceImpl;
 	}
 
 	@Override
@@ -103,35 +105,26 @@ public class OrderItemController extends ValidationAwareSupport implements
 
 		if (null != this.parameters.get("style")
 				&& null != this.parameters.get("orderId")) {
-			jsonObject = genfuCommonService.searchJsonJqGridFilter(
+			jsonObject = orderItemServiceImpl.searchJsonJqGridFilter(
 					"SELECT x FROM OrderItem x WHERE x.orderId="
 							+ parameters.get("orderId")[0], OrderItem.class,
 					parameters);
 		} else {
-			// list = genfuCommonService.searchList(OrderItem.class,
+			// list = orderItemServiceImpl.searchList(OrderItem.class,
 			// parameters);
 		}
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
 	public String update() {
-		Map<String, Object> par = new HashMap<String, Object>();
-		//==这里即将改造！
-		par.put("orderId0", model.getOrderId());
-		List<Order> theOrder = genfuCommonService.searchNativeQuery(
-				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-				Order.class);
-		if (!"CLOSED".equalsIgnoreCase(theOrder.get(0).getStatus())) {
-			model.setUpdatedAt(new Date());
-			genfuCommonService.update(model);
-			addActionMessage("Object updated successfully");
-		}
+		orderItemServiceImpl.update(model);
+		// addActionMessage("Object updated successfully");
 		return "json";
 	}
 
 	public void setId(Long id) {
 		if (id != null) {
-			model = (OrderItem) genfuCommonService.find(id, OrderItem.class);
+			model = (OrderItem) orderItemServiceImpl.find(id, OrderItem.class);
 		}
 		this.id = id;
 	}
@@ -146,7 +139,7 @@ public class OrderItemController extends ValidationAwareSupport implements
 	}
 
 	public String create() {
-		// genfuCommonService.save(model);
+		// orderItemServiceImpl.save(model);
 		return "json";
 	}
 
@@ -165,7 +158,7 @@ public class OrderItemController extends ValidationAwareSupport implements
 				longOItemIds.add(Long.parseLong(ids[i]));
 			}
 			tempPara.put("oItemIds", longOItemIds);
-			List<OrderItem> tempOItems = genfuCommonService.searchList(
+			List<OrderItem> tempOItems = orderItemServiceImpl.searchList(
 					"SELECT x FROM OrderItem x WHERE x.id IN(:oItemIds)",
 					tempPara, OrderItem.class);
 			List<OrderItem> oItemDel = new ArrayList<OrderItem>();
@@ -173,10 +166,10 @@ public class OrderItemController extends ValidationAwareSupport implements
 			for (OrderItem tempI : tempOItems) {
 
 				if (null == theOrder) {
-					theOrder = (Order) genfuCommonService.find(
+					theOrder = (Order) orderItemServiceImpl.find(
 							tempI.getOrderId(), Order.class);
 				} else if (tempI.getOrderId() != theOrder.getId()) {
-					theOrder = (Order) genfuCommonService.find(
+					theOrder = (Order) orderItemServiceImpl.find(
 							tempI.getOrderId(), Order.class);
 				}
 
@@ -186,7 +179,7 @@ public class OrderItemController extends ValidationAwareSupport implements
 				}
 			}
 
-			genfuCommonService.remove(oItemDel);
+			orderItemServiceImpl.remove(oItemDel);
 		}
 		jsonObject = new JSONObject();
 		return "json";

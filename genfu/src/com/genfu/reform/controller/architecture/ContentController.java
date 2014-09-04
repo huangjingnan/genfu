@@ -2,7 +2,7 @@
 // Name        : FramesRender.java
 // Author      : xuzf68224
 // Version     : 1.0
-// Copyright   : www.linkage.com
+// Copyright   : www.genfu.com
 // Description : 此类用来渲染frame中的页面
 //============================================================================
 package com.genfu.reform.controller.architecture;

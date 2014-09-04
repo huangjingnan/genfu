@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,28 +22,30 @@ import com.genfu.reform.jpa.GenfuCommonDAO;
 import com.genfu.reform.model.GenfuConfig;
 import com.genfu.reform.model.GenfuResultIdCell;
 import com.genfu.reform.model.UserInfo;
-import com.genfu.reform.util.AuthValid;
 import com.genfu.reform.util.FabricationFilterSQL;
 
-public class GenfuCommonServiceImpl implements GenfuCommonService {
-	// private StringBuffer strBuffJPQL = new StringBuffer();
-	// private Map<String, Object> mapCondition = new HashMap<String, Object>();
-	// Iterator<String> it = null;
-	private GenfuCommonDAO genfuCommonDao;
+public class OrderItemServiceImpl implements GenfuCommonService {
+	private GenfuCommonDAO orderItemDAOImpl;
 	private FabricationFilterSQL fabricationFilterSQL;
-	private AuthValid authValidImpl;
 
-	public void setGenfuCommonDao(GenfuCommonDAO genfuCommonDao) {
-		this.genfuCommonDao = genfuCommonDao;
+	
+
+	public GenfuCommonDAO getOrderItemDAOImpl() {
+		return orderItemDAOImpl;
+	}
+	
+	@Resource(name = "orderItemDAOImpl")
+	public void setOrderItemDAOImpl(GenfuCommonDAO orderItemDAOImpl) {
+		this.orderItemDAOImpl = orderItemDAOImpl;
+	}
+
+	public FabricationFilterSQL getFabricationFilterSQL() {
+		return fabricationFilterSQL;
 	}
 
 	public void setFabricationFilterSQL(
 			FabricationFilterSQL fabricationFilterSQL) {
 		this.fabricationFilterSQL = fabricationFilterSQL;
-	}
-
-	public void setAuthValidImpl(AuthValid authValidImpl) {
-		this.authValidImpl = authValidImpl;
 	}
 
 	@Override
@@ -59,52 +62,56 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
 
-		return genfuCommonDao.searchList(jpql, parameters, entity);
+		return orderItemDAOImpl.searchList(jpql, parameters, entity);
 	}
 
 	@Override
 	public int save(Object object) {
-		genfuCommonDao.save(object);
+		orderItemDAOImpl.save(object);
 		return 0;
 	}
 
 	@Override
 	public int remove(long id, String tableName) {
-		genfuCommonDao.remove(id, tableName);
+		orderItemDAOImpl.remove(id, tableName);
 		return 0;
 	}
 
 	@Override
 	public int remove(Object object) {
-		genfuCommonDao.remove(object);
+		orderItemDAOImpl.remove(object);
 		return 0;
 	}
 
 	@Override
 	public <T> Object remove(List<T> list) {
-		return genfuCommonDao.remove(list);
+		return orderItemDAOImpl.remove(list);
 	}
 
 	@Override
 	public int update(Object object) {
-		genfuCommonDao.merge(object);
+		// Order order = (Order) object;
+		// if (!"CLOSED".equalsIgnoreCase(order.getStatus())
+		// && !"OPEN".equalsIgnoreCase(order.getStatus())) {
+		orderItemDAOImpl.merge(object);
+		// }
 		return 0;
 	}
 
 	@Override
 	public <T> Object update(List<T> list) {
 
-		return genfuCommonDao.merge(list);
+		return orderItemDAOImpl.merge(list);
 	}
 
 	@Override
 	public Object find(long id) {
-		return genfuCommonDao.find(id);
+		return orderItemDAOImpl.find(id);
 	}
 
 	@Override
 	public <T> Object find(Long id, Class<T> entity) {
-		return genfuCommonDao.find(id, entity);
+		return orderItemDAOImpl.find(id, entity);
 	}
 
 	@Override
@@ -168,10 +175,10 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 
 		// arg0.get
 		// arg0.setAttribute("totalRecords",
-		// genfuCommonDao.getTotalRecords(jpql, parameters, entity));
+		// orderDAOImpl.getTotalRecords(jpql, parameters, entity));
 		// System.out.println("getTotalRecords...setServletRequest..."
 		// + arg0.getParameter("totalRecords"));
-		return genfuCommonDao.getTotalRecords(jpql, parameters, entity);
+		return orderItemDAOImpl.getTotalRecords(jpql, parameters, entity);
 	}
 
 	@Override
@@ -287,13 +294,13 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return genfuCommonDao.batchDelete(sqlStringBuffer.toString());
-		// return genfuCommonDao.batchDelete(strSQL);
+		return orderItemDAOImpl.batchDelete(sqlStringBuffer.toString());
+		// return orderDAOImpl.batchDelete(strSQL);
 	}
 
 	@Override
 	public <T> Object findModel(Long id, Class<T> entity) {
-		return genfuCommonDao.findModel(id, entity);
+		return orderItemDAOImpl.findModel(id, entity);
 	}
 
 	@Override
@@ -307,8 +314,8 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return genfuCommonDao.batchDeleteJPQL(
-				sqlStringBuffer.toString(), theClass);
+		return orderItemDAOImpl.batchDeleteJPQL(sqlStringBuffer.toString(),
+				theClass);
 	}
 
 	@Override
@@ -396,8 +403,8 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		return genfuCommonDao.searchList(strBuffJPQL.toString(), mapCondition,
-				entity, (page - 1) * limit, limit);
+		return orderItemDAOImpl.searchList(strBuffJPQL.toString(),
+				mapCondition, entity, (page - 1) * limit, limit);
 	}
 
 	@Override
@@ -458,7 +465,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(strBuffJPQL.toString(),
+		int records = orderItemDAOImpl.getTotalRecords(strBuffJPQL.toString(),
 				mapCondition, entity);
 
 		int limit = 10;
@@ -491,8 +498,8 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 
 		List<GenfuResultIdCell> rows = new ArrayList<GenfuResultIdCell>();
 
-		List<T> resultList = genfuCommonDao.searchList(strBuffJPQL.toString(),
-				mapCondition, entity);
+		List<T> resultList = orderItemDAOImpl.searchList(
+				strBuffJPQL.toString(), mapCondition, entity);
 
 		if (resultList.size() > 0) {
 			GenfuResultIdCell tempResult;
@@ -587,9 +594,9 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		// jsonObject.put("records", records);
 
 		jsonObject.put("Result", "OK");
-		jsonObject.put("Records", genfuCommonDao.searchList(
+		jsonObject.put("Records", orderItemDAOImpl.searchList(
 				strBuffJPQL.toString(), mapCondition, entity));
-		jsonObject.put("TotalRecordCount", genfuCommonDao.getTotalRecords(
+		jsonObject.put("TotalRecordCount", orderItemDAOImpl.getTotalRecords(
 				strBuffJPQL.toString(), mapCondition, entity));
 
 		return jsonObject;
@@ -654,7 +661,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(strBuffJPQL.toString(),
+		int records = orderItemDAOImpl.getTotalRecords(strBuffJPQL.toString(),
 				mapCondition, entity);
 
 		int limit = 10;
@@ -687,8 +694,8 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 
 		// List<GenfuResultIdCell> rows = new ArrayList<GenfuResultIdCell>();
 
-		List<T> resultList = genfuCommonDao.searchList(strBuffJPQL.toString(),
-				mapCondition, entity);
+		List<T> resultList = orderItemDAOImpl.searchList(
+				strBuffJPQL.toString(), mapCondition, entity);
 
 		// if (resultList.size() > 0) {
 		// GenfuResultIdCell tempResult;
@@ -767,7 +774,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 		Map<String, Object> result = new HashMap<String, Object>();
 
-		int records = genfuCommonDao.getTotalRecords(strBuffJPQL.toString(),
+		int records = orderItemDAOImpl.getTotalRecords(strBuffJPQL.toString(),
 				mapCondition, entity);
 
 		int limit = 10;
@@ -817,7 +824,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		// java.lang.reflect.InvocationTargetException异常
 		cfg.setExcludes(new String[] { "handler", "hibernateLazyInitializer" });
 
-		result.put("rows", genfuCommonDao.searchList(strBuffJPQL.toString(),
+		result.put("rows", orderItemDAOImpl.searchList(strBuffJPQL.toString(),
 				mapCondition, entity));
 		JSONObject jsonObject = JSONObject.fromObject(result, cfg);
 		return jsonObject;
@@ -825,17 +832,17 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 
 	@Override
 	public <T> Object save(List<T> list) {
-		return genfuCommonDao.save(list);
+		return orderItemDAOImpl.save(list);
 	}
 
 	@Override
 	public <T> Object merge(List<T> list) {
-		return genfuCommonDao.merge(list);
+		return orderItemDAOImpl.merge(list);
 	}
 
 	@Override
 	public int batchDeleteByNativeQuery(String strSQL) {
-		return genfuCommonDao.batchDelete(strSQL);
+		return orderItemDAOImpl.batchDelete(strSQL);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -851,7 +858,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 				entity, arg0);
 
 		// JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(filterSQL.get("jpql")
+		int records = orderItemDAOImpl.getTotalRecords(filterSQL.get("jpql")
 				.toString(), (Map<String, Object>) filterSQL.get("parameters"),
 				entity);
 
@@ -887,50 +894,41 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			// if pager
 			limit = 0;
 		}
-		Map<String, Object> result = new HashMap<String, Object>();
+		// Map<String, Object> result = new HashMap<String, Object>();
+		// result.put("page", page);
+		// result.put("total", total);
+		// result.put("records", records);
 
-		result.put("page", page);
-		result.put("total", total);
-		result.put("records", records);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("page", page);
+		jsonObject.put("total", total);
+		jsonObject.put("records", records);
 
-		JsonConfig cfg = new JsonConfig();
-		// 过滤关联，避免死循环net.sf.json.JSONException:
-		// java.lang.reflect.InvocationTargetException
-		cfg.setJsonPropertyFilter(new PropertyFilter() {
-			public boolean apply(Object source, String name, Object value) {
-				if (name.equals("orderItems") || name.equals("userPassword")) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
-		/*
-		 * cfg.registerJsonValueProcessor(java.util.Date.class, new
-		 * JsonValueProcessor() { public Object processObjectValue(String key,
-		 * Object value, JsonConfig jsonConfig) { if ("createdAt".equals(key) &&
-		 * value instanceof java.util.Date) { String str = new
-		 * SimpleDateFormat("yyyy-MM-dd") .format((java.util.Date) value);
-		 * return str; } return null == value ? "" : value.toString(); }
-		 * 
-		 * @Override public Object processArrayValue(Object value, JsonConfig
-		 * arg1) { String[] obj = {}; if (value instanceof Date[]) {
-		 * SimpleDateFormat sf = new SimpleDateFormat( "yyyy-MM-dd"); Date[]
-		 * dates = (Date[]) value; obj = new String[dates.length]; for (int i =
-		 * 0; i < dates.length; i++) { obj[i] = sf.format(dates[i]); } } return
-		 * obj; }
-		 * 
-		 * });
-		 */
-		// cfg.setJavaPropertyNameProcessorMatcher(null);
-		// net.sf.json.JSONException:
-		// java.lang.reflect.InvocationTargetException异常
-		cfg.setExcludes(new String[] { "handler", "hibernateLazyInitializer" });
+		// JsonConfig cfg = new JsonConfig();
+		// // 过滤关联，避免死循环net.sf.json.JSONException:
+		// // java.lang.reflect.InvocationTargetException
+		// cfg.setJsonPropertyFilter(new PropertyFilter() {
+		// public boolean apply(Object source, String name, Object value) {
+		// if (name.equals("userPassword")) {
+		// return true;
+		// } else {
+		// return false;
+		// }
+		// }
+		// });
+		// // cfg.setJavaPropertyNameProcessorMatcher(null);
+		// // net.sf.json.JSONException:
+		// // java.lang.reflect.InvocationTargetException异常
+		// cfg.setExcludes(new String[] { "handler", "hibernateLazyInitializer"
+		// });
 
-		result.put("rows", genfuCommonDao.searchList(filterSQL.get("jpql")
-				.toString(), (Map<String, Object>) filterSQL.get("parameters"),
-				entity, (page - 1) * limit, page * limit));
-		JSONObject jsonObject = JSONObject.fromObject(result, cfg);
+		// result.put("rows", orderItemDAOImpl.searchList(filterSQL.get("jpql")
+		// .toString(), (Map<String, Object>) filterSQL.get("parameters"),
+		// entity, (page - 1) * limit, page * limit));
+		// JSONObject jsonObject = JSONObject.fromObject(result);
+		jsonObject.put("rows", orderItemDAOImpl.searchList(filterSQL
+				.get("jpql").toString(), (Map<String, Object>) filterSQL
+				.get("parameters"), entity, (page - 1) * limit, page * limit));
 
 		return jsonObject;
 	}
@@ -948,7 +946,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 				sql, entity, arg0);
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(filterSQL.get("jpql")
+		int records = orderItemDAOImpl.getTotalRecords(filterSQL.get("jpql")
 				.toString(), (Map<String, Object>) filterSQL.get("parameters"),
 				entity);
 
@@ -985,9 +983,9 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		jsonObject.put("rows", genfuCommonDao.searchList(filterSQL.get("jpql")
-				.toString(), (Map<String, Object>) filterSQL.get("parameters"),
-				entity, (page - 1) * limit, page * limit));
+		jsonObject.put("rows", orderItemDAOImpl.searchList(filterSQL
+				.get("jpql").toString(), (Map<String, Object>) filterSQL
+				.get("parameters"), entity, (page - 1) * limit, page * limit));
 
 		return jsonObject;
 	}
@@ -995,27 +993,26 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		return genfuCommonDao.searchNativeQuery(jpql, parameters,
-				entity);
+		return orderItemDAOImpl.searchNativeQuery(jpql, parameters, entity);
 	}
 
 	@Override
 	public int batchExcuseNativeQuery(String strSQL) {
-		return genfuCommonDao.batchExcuseNativeQuery(strSQL);
+		return orderItemDAOImpl.batchExcuseNativeQuery(strSQL);
 	}
 
 	@Override
 	public <T> int searchNativeQueryRecords(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		return genfuCommonDao.searchNativeQueryRecords(jpql,
-				parameters, entity);
+		return orderItemDAOImpl.searchNativeQueryRecords(jpql, parameters,
+				entity);
 	}
 
 	@Override
 	public <T> JSONObject searchJsonJqGrid(String sql, Class<T> entity,
 			Map<String, String[]> arg0) {
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(sql, null, entity);
+		int records = orderItemDAOImpl.getTotalRecords(sql, null, entity);
 
 		int limit = 20;
 		if (null != arg0.get("rows")) {
@@ -1050,8 +1047,10 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		jsonObject.put("rows", genfuCommonDao.searchList(sql, null, entity,
-				(page - 1) * limit, page * limit));
+		jsonObject.put(
+				"rows",
+				orderItemDAOImpl.searchList(sql, null, entity, (page - 1)
+						* limit, page * limit));
 
 		return jsonObject;
 	}
@@ -1063,7 +1062,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		parameters.put("configFlag", "OPEN");
 		parameters.put("configKey", arg0);
 
-		List<GenfuConfig> configlist = genfuCommonDao
+		List<GenfuConfig> configlist = orderItemDAOImpl
 				.searchList(
 						"SELECT t FROM GenfuConfig t WHERE t.configFlag = :configFlag AND t.configKey = :configKey",
 						parameters, GenfuConfig.class, 0, 0);
@@ -1083,7 +1082,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		parameters.put("configFlag", "OPEN");
 		parameters.put("configKey", arg0);
 
-		List<GenfuConfig> configlist = genfuCommonDao
+		List<GenfuConfig> configlist = orderItemDAOImpl
 				.searchList(
 						"SELECT t FROM GenfuConfig t WHERE t.configFlag = :configFlag AND t.configKey = :configKey",
 						parameters, GenfuConfig.class, 0, 0);
@@ -1114,7 +1113,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.getTotalRecords(filterSQL.get("jpql")
+		int records = orderItemDAOImpl.getTotalRecords(filterSQL.get("jpql")
 				.toString(), myPara, entity);
 
 		int limit = 20;
@@ -1150,8 +1149,9 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		jsonObject.put("rows", genfuCommonDao.searchList(filterSQL.get("jpql")
-				.toString(), myPara, entity, (page - 1) * limit, page * limit));
+		jsonObject.put("rows", orderItemDAOImpl.searchList(filterSQL
+				.get("jpql").toString(), myPara, entity, (page - 1) * limit,
+				page * limit));
 
 		return jsonObject;
 	}
@@ -1175,7 +1175,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.searchNativeQueryRecords(
+		int records = orderItemDAOImpl.searchNativeQueryRecords(
 				filterSQL.get("jpql").toString(), myPara, entity);
 
 		int limit = 20;
@@ -1211,9 +1211,9 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		jsonObject.put("rows", genfuCommonDao.searchNativeQuery(
-				filterSQL.get("jpql").toString(), myPara, entity, (page - 1)
-						* limit, page * limit));
+		jsonObject.put("rows", orderItemDAOImpl.searchNativeQuery(filterSQL
+				.get("jpql").toString(), myPara, entity, (page - 1) * limit,
+				page * limit));
 
 		return jsonObject;
 	}
@@ -1223,16 +1223,13 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			HttpServletRequest request, Class<T> entity,
 			Map<String, Object> session) {
 
-		return authValidImpl.validateAndRecord(actionName, operate, request,
-				entity, session);
+		return null;
 	}
 
 	@Override
 	public <T> void recordOperates(String actionName, String operate,
 			HttpServletRequest request, Class<T> entity,
 			Map<String, Object> session) {
-		authValidImpl.recordOperates(actionName, operate, request, entity,
-				session);
 	}
 
 	@Override
@@ -1240,8 +1237,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			HttpServletRequest request, UserInfo userInfo,
 			Map<String, Object> session) {
 
-		return authValidImpl.authentication(actionName, request, userInfo,
-				session);
+		return null;
 	}
 
 	@Override
@@ -1249,26 +1245,25 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			String actionName, String operate, Map<String, Object> agr0,
 			Class<T> entity, Map<String, String[]> parameters,
 			Map<String, Object> session) {
-		return authValidImpl.validateOperates(userCode, Passwd, actionName,
-				operate, agr0, entity, parameters, session);
+		return null;
 	}
 
 	@Override
 	public boolean verifyingOperates(Map<String, String[]> arg0,
 			Map<String, Object> session) {
 
-		return authValidImpl.verifyingOperates(arg0, session);
+		return false;
 	}
 
 	@Override
 	public <T> Object saveUpdate(Object object, List<T> list) {
-		return genfuCommonDao.saveMerge(object, list);
+		return orderItemDAOImpl.saveMerge(object, list);
 	}
 
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, int FIRST_RESULT, int MAX_RESULTS) {
-		return genfuCommonDao.searchNativeQuery(jpql, parameters,
+		return orderItemDAOImpl.searchNativeQuery(jpql, parameters,
 				FIRST_RESULT, MAX_RESULTS);
 	}
 
@@ -1290,7 +1285,7 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 		}
 
 		JSONObject jsonObject = new JSONObject();
-		int records = genfuCommonDao.searchNativeQueryRecords(
+		int records = orderItemDAOImpl.searchNativeQueryRecords(
 				filterSQL.get("jpql").toString(), myPara);
 
 		int limit = 20;
@@ -1326,15 +1321,15 @@ public class GenfuCommonServiceImpl implements GenfuCommonService {
 			limit = 0;
 		}
 
-		jsonObject.put("rows", genfuCommonDao.searchNativeQuery(
-				filterSQL.get("jpql").toString(), myPara, (page - 1) * limit,
-				page * limit));
+		jsonObject.put("rows", orderItemDAOImpl.searchNativeQuery(filterSQL
+				.get("jpql").toString(), myPara, (page - 1) * limit, page
+				* limit));
 
 		return jsonObject;
 	}
 
 	@Override
 	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
-		return genfuCommonDao.excuseNativeQuery(strSQLSplt, agr0);
+		return orderItemDAOImpl.excuseNativeQuery(strSQLSplt, agr0);
 	}
 }

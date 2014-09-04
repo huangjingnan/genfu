@@ -12,21 +12,19 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Id;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.genfu.reform.model.Order;
 
 //@Transactional
-public class OrderDAOTransaction implements GenfuCommonDAO {
-	private static Logger logger = Logger.getLogger("OrderDAOImpl");
+public class OrderDaoImpl implements GenfuCommonDAO {
+	private static Logger logger = Logger.getLogger("OrderDAOTransaction");
 
 	public EntityManagerFactory entityManagerFactory;
 
-	public EntityManagerFactory getEntityManagerFactory() {
-		return entityManagerFactory;
-	}
-
+	@PersistenceUnit
 	public void setEntityManagerFactory(
 			EntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;
@@ -36,7 +34,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
 		// logger.info("searchList...");
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -58,7 +56,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity, int FIRST_RESULT, int MAX_RESULTS) {
 		// logger.info("searchModel...");
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -78,14 +76,14 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	public <T> Object find(Long id, Class<T> entity) {
 		// logger.info("find...");
 		// em.
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		return em.find(entity, id);
 	}
 
 	@Override
 	public int save(Object model) {
 		// logger.info("save...");
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		em.persist(model);
 		return 0;
 	}
@@ -93,7 +91,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public int merge(Object model) {
 		// logger.info("merge...");
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		EntityTransaction entityTransaction = em.getTransaction();
 		entityTransaction.begin();
 		Order tempO = (Order) model;
@@ -113,7 +111,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public int remove(Object model) {
 		// logger.info("remove...");
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		em.remove(model);
 		return 0;
 	}
@@ -149,7 +147,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 		if (idxOrder > 0) {
 			jpql = jpql.substring(0, idxOrder);
 		}
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -182,7 +180,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 			}
 		}
 		strBuffJPQL.append(id);
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(strBuffJPQL.toString(), entity);
 		return query.getSingleResult();
 	}
@@ -224,7 +222,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -256,7 +254,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 		if (idxOrder > 0) {
 			jpql = jpql.substring(0, idxOrder);
 		}
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -272,7 +270,7 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity, int FIRST_RESULT,
 			int MAX_RESULTS) {
-		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityManager em = this.entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -311,31 +309,32 @@ public class OrderDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
 
-		String[] exec = strSQLSplt.split("#");
-
-		EntityManager em = entityManagerFactory.createEntityManager();
-		EntityTransaction entityTransaction = em.getTransaction();
-		entityTransaction.begin();
-		int ret = 0;
-		Query query = null;
-		for (int i = 0; i < exec.length; i++) {
-			query = em.createQuery(exec[i]);
-			for (Parameter<?> sqlParam : query.getParameters()) {
-				String paramName = sqlParam.getName();
-				query.setParameter(paramName, agr0.get(paramName));
-				paramName = null;
+		EntityManager em = this.entityManagerFactory.createEntityManager();
+		try {
+			String[] exec = strSQLSplt.split("#");
+			EntityTransaction entityTransaction = em.getTransaction();
+			entityTransaction.begin();
+			int ret = 0;
+			Query query = null;
+			for (int i = 0; i < exec.length; i++) {
+				query = em.createQuery(exec[i]);
+				for (Parameter<?> sqlParam : query.getParameters()) {
+					String paramName = sqlParam.getName();
+					query.setParameter(paramName, agr0.get(paramName));
+					paramName = null;
+				}
+				ret += query.executeUpdate();
+				logger.info("" + ret);
 			}
+			entityTransaction.commit();
 
-			ret += query.executeUpdate();
-
-			logger.info("" + ret);
+			return ret;
+		} finally {
+			if (em != null) {
+				em.close();
+			}
 		}
-		// logger.info("" + ret);
-		entityTransaction.commit();
-		em.clear();
-		em.close();
 
-		return ret;
 	}
 
 }

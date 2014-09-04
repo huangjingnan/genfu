@@ -1,29 +1,43 @@
 package com.genfu.reform.jpa;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Id;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.springframework.transaction.annotation.Transactional;
+import com.genfu.reform.model.Order;
+import com.genfu.reform.model.OrderItem;
 
-@Transactional
-public class GenfuCommonDAOImpl implements GenfuCommonDAO {
-	// private static Logger logger = Logger.getLogger("GenfuCommonDAOImpl");
-	@PersistenceContext
-	private EntityManager em;
+//@Transactional
+public class OrderItemDAOTransaction implements GenfuCommonDAO {
+	private static Logger logger = Logger.getLogger("OrderItemDAOTransaction");
+
+	public EntityManagerFactory entityManagerFactory;
+
+	public EntityManagerFactory getEntityManagerFactory() {
+		return entityManagerFactory;
+	}
+
+	public void setEntityManagerFactory(
+			EntityManagerFactory entityManagerFactory) {
+		this.entityManagerFactory = entityManagerFactory;
+	}
 
 	@Override
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
 		// logger.info("searchList...");
+		EntityManager em = entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -45,6 +59,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity, int FIRST_RESULT, int MAX_RESULTS) {
 		// logger.info("searchModel...");
+		EntityManager em = entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			query.setParameter(sqlParam.getName(),
@@ -64,12 +79,14 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	public <T> Object find(Long id, Class<T> entity) {
 		// logger.info("find...");
 		// em.
+		EntityManager em = entityManagerFactory.createEntityManager();
 		return em.find(entity, id);
 	}
 
 	@Override
 	public int save(Object model) {
 		// logger.info("save...");
+		EntityManager em = entityManagerFactory.createEntityManager();
 		em.persist(model);
 		return 0;
 	}
@@ -77,13 +94,27 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	@Override
 	public int merge(Object model) {
 		// logger.info("merge...");
-		em.merge(model);
+		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction = em.getTransaction();
+		entityTransaction.begin();
+		OrderItem tempOI = (OrderItem) model;
+		Order pO = em.find(Order.class, tempOI.getOrderId(),
+				LockModeType.PESSIMISTIC_WRITE);
+		if (!"CLOSED".equalsIgnoreCase(pO.getStatus())
+				&& "000".equalsIgnoreCase(pO.getPayFlag())) {
+			tempOI.setUpdatedAt(new Date());
+			em.merge(tempOI);
+		}
+		entityTransaction.commit();
+		em.clear();
+		em.close();
 		return 0;
 	}
 
 	@Override
 	public int remove(Object model) {
 		// logger.info("remove...");
+		EntityManager em = entityManagerFactory.createEntityManager();
 		em.remove(model);
 		return 0;
 	}
@@ -119,6 +150,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 		if (idxOrder > 0) {
 			jpql = jpql.substring(0, idxOrder);
 		}
+		EntityManager em = entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -151,6 +183,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 			}
 		}
 		strBuffJPQL.append(id);
+		EntityManager em = entityManagerFactory.createEntityManager();
 		TypedQuery<T> query = em.createQuery(strBuffJPQL.toString(), entity);
 		return query.getSingleResult();
 	}
@@ -192,6 +225,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
+		EntityManager em = entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -223,6 +257,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 		if (idxOrder > 0) {
 			jpql = jpql.substring(0, idxOrder);
 		}
+		EntityManager em = entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -238,6 +273,7 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity, int FIRST_RESULT,
 			int MAX_RESULTS) {
+		EntityManager em = entityManagerFactory.createEntityManager();
 		Query query = em.createNativeQuery(jpql, entity);
 		for (Parameter<?> sqlParam : query.getParameters()) {
 			String paramName = sqlParam.getName();
@@ -275,8 +311,32 @@ public class GenfuCommonDAOImpl implements GenfuCommonDAO {
 
 	@Override
 	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0) {
-		// TODO Auto-generated method stub
-		return 0;
+
+		String[] exec = strSQLSplt.split("#");
+
+		EntityManager em = entityManagerFactory.createEntityManager();
+		EntityTransaction entityTransaction = em.getTransaction();
+		entityTransaction.begin();
+		int ret = 0;
+		Query query = null;
+		for (int i = 0; i < exec.length; i++) {
+			query = em.createQuery(exec[i]);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				String paramName = sqlParam.getName();
+				query.setParameter(paramName, agr0.get(paramName));
+				paramName = null;
+			}
+
+			ret += query.executeUpdate();
+
+			logger.info("" + ret);
+		}
+		// logger.info("" + ret);
+		entityTransaction.commit();
+		em.clear();
+		em.close();
+
+		return ret;
 	}
 
 }
