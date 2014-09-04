@@ -375,12 +375,14 @@
 		<property name="genfuCommonDAO" ref="orderInfosDAO" /> <property name="genfuCommonTransaction" 
 		ref="orderInfosTransaction" /> <property name="fabricationFilterSQL" ref="orderInfosFilterSQL" 
 		/> </bean> -->
+	<bean id="orderDAOImpl" class="com.genfu.reform.jpa.OrderDAOTransaction"
+		scope="prototype">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
 	<bean id="orderService" class="com.genfu.reform.service.OrderServiceImpl"
 		scope="prototype">
-		<property name="genfuCommonDAO" ref="genfuCommonDAO" />
-		<property name="genfuCommonTransaction" ref="genfuCommonTransaction" />
+		<property name="orderDAOImpl" ref="orderDAOImpl" />
 		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
-		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
 	<bean class="com.genfu.reform.controller.OrderController" scope="prototype" />
 

@@ -570,12 +570,13 @@ $(function() {
 	}
 	
 	function checkEqCR( o1, o2, n ) {
+		//debugger;
 		if ( o1.val() != receivable.val()-o2.val() ) {
 			o1.addClass( "ui-state-error" );
 			updateTips( n );
 			return false;
 		} else {
-			return false;
+			return true;
 		}
 	}	
 
@@ -586,6 +587,7 @@ $(function() {
 		modal: true,
 		buttons: {
 			"确定支付": function() {
+				//debugger;
 				var bValid = true;
 				allFields.removeClass( "ui-state-error" );
 
@@ -602,6 +604,7 @@ $(function() {
 				//bValid = bValid && checkRegexp( accountRemarks, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
 
 				if ( bValid ) {
+					//debugger;
 					//验证通过-提交
 					jQuery.ajax({
 						type : 'POST',

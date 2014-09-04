@@ -1,9 +1,14 @@
 package com.genfu.reform.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.genfu.reform.service.GenfuAuthenTicationServiceImpl;
+import com.genfu.reform.jpa.GenfuCommonDAO;
 
 public class TestAny {
 
@@ -41,8 +46,13 @@ public class TestAny {
 				"applicationContext.xml");
 		ctx.getApplicationName();
 		
-		GenfuAuthenTicationServiceImpl test = (GenfuAuthenTicationServiceImpl) ctx.getBean("genfuAuthenTicationServiceImpl");
-		test.verify("dish", "/", "index", "", 1L);
+		GenfuCommonDAO test = (GenfuCommonDAO) ctx.getBean("orderDAOImpl");
+		List<Long> longOrderIds = new ArrayList<Long>();
+		longOrderIds.add(30L);
+		Map<String, Object> tempPara = new HashMap<String, Object>();
+		tempPara.put("orderIds", longOrderIds);
+		test.excuseNativeQuery("", tempPara);
+
 		// System.out.println("1234".substring(0, 3));
 
 		// DES theDES = new DES("password");

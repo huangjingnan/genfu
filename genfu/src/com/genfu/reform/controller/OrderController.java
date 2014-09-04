@@ -105,8 +105,8 @@ public class OrderController extends ValidationAwareSupport implements
 			if (null != this.parameters.get("style")
 					&& "jqGrid"
 							.equalsIgnoreCase(this.parameters.get("style")[0])) {
-				jsonObject = orderService.searchJsonJqGridFilter(
-						Order.class, parameters);
+				jsonObject = orderService.searchJsonJqGridFilter(Order.class,
+						parameters);
 			}
 		} else {
 			// list = orderService.searchList(Order.class,
@@ -116,18 +116,9 @@ public class OrderController extends ValidationAwareSupport implements
 	}
 
 	public String update() {
-//		Map<String, Object> par = new HashMap<String, Object>();
-//		par.put("orderId0", model.getId());
-//		List<Order> theOld = orderService.searchNativeQuery(
-//				"SELECT * FROM ORDERS WHERE ORDER_ID=:orderId0", par,
-//				Order.class);
-//		if (!"CLOSED".equalsIgnoreCase(theOld.get(0).getStatus())
-//				&& !"OPEN".equalsIgnoreCase(model.getStatus())) {
-			//model.setUpdatedAt(new Date());
-			orderService.update(model);
-//			addActionMessage("Object updated successfully");
-//		}
-//		jsonObject = null;
+		orderService.update(model);
+		// addActionMessage("Object updated successfully");
+		// jsonObject = null;
 		return "json";
 	}
 
@@ -172,18 +163,11 @@ public class OrderController extends ValidationAwareSupport implements
 			}
 
 			tempPara.put("orderIds", longOrderIds);
-			List<Order> tempOrders = orderService.searchList(
-					"SELECT x FROM Order x WHERE x.id IN(:orderIds)", tempPara,
-					Order.class);
-			List<Order> orderDel = new ArrayList<Order>();
-			for (Order tempO : tempOrders) {
-				if ("OPEN".equalsIgnoreCase(tempO.getStatus())
-						&& "000".equalsIgnoreCase(tempO.getPayFlag())) {
-					orderDel.add(tempO);
-				}
-			}
 
-			orderService.remove(orderDel);
+			orderService
+					.excuseNativeQuery(
+							"delete From OrderItem t WHERE t.orderId IN(:orderIds)#delete From Order t WHERE t.status='OPEN' AND t.payFlag='000' AND t.id IN(:orderIds)",
+							tempPara);
 		}
 		jsonObject = new JSONObject();
 		return "json";

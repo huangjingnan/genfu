@@ -17,7 +17,7 @@
 	<s:actionmessage />
 	<s:actionerror />
 	<s:fielderror />
-	<s:form method="post" action="%{#ctx}/login-dishes">
+	<s:form method="post" action="login-dishes" namespace="/">
 		<s:textfield label="userCode" name="userInfo.userCode"></s:textfield>
 		<s:password label="userPassword" name="userInfo.userPassword"></s:password>
 
