@@ -143,18 +143,24 @@ public class OrderDaoImpl implements GenfuCommonDAO {
 	@Override
 	public <T> int getTotalRecords(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
-		int idxOrder = jpql.indexOf("ORDER BY");
-		if (idxOrder > 0) {
-			jpql = jpql.substring(0, idxOrder);
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			int idxOrder = jpql.indexOf("ORDER BY");
+			if (idxOrder > 0) {
+				jpql = jpql.substring(0, idxOrder);
+			}
+			TypedQuery<T> query = em.createQuery(jpql, entity);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				String paramName = sqlParam.getName();
+				query.setParameter(paramName, parameters.get(paramName));
+				paramName = null;
+			}
+			return query.getResultList().size();
+		} finally {
+			if (em != null) {
+				em.close();
+			}
 		}
-		EntityManager em = this.entityManagerFactory.createEntityManager();
-		TypedQuery<T> query = em.createQuery(jpql, entity);
-		for (Parameter<?> sqlParam : query.getParameters()) {
-			String paramName = sqlParam.getName();
-			query.setParameter(paramName, parameters.get(paramName));
-			paramName = null;
-		}
-		return query.getResultList().size();
 	}
 
 	@Override
@@ -167,22 +173,29 @@ public class OrderDaoImpl implements GenfuCommonDAO {
 
 	@Override
 	public <T> T findModel(Long id, Class<T> entity) {
-		StringBuffer strBuffJPQL = new StringBuffer();
-		strBuffJPQL.append("from " + entity.getName() + " WHERE ");
-		Field[] fds = entity.getDeclaredFields();
-		for (int i = 0; i < fds.length; i++) {
-			Id myId = fds[i].getAnnotation(javax.persistence.Id.class);
-			if (myId != null) {
-				javax.persistence.Column myColumn = fds[i]
-						.getAnnotation(javax.persistence.Column.class);
-				strBuffJPQL.append(myColumn.name() + " = ");
-				break;
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			StringBuffer strBuffJPQL = new StringBuffer();
+			strBuffJPQL.append("from " + entity.getName() + " WHERE ");
+			Field[] fds = entity.getDeclaredFields();
+			for (int i = 0; i < fds.length; i++) {
+				Id myId = fds[i].getAnnotation(javax.persistence.Id.class);
+				if (myId != null) {
+					javax.persistence.Column myColumn = fds[i]
+							.getAnnotation(javax.persistence.Column.class);
+					strBuffJPQL.append(myColumn.name() + " = ");
+					break;
+				}
+			}
+			strBuffJPQL.append(id);
+			TypedQuery<T> query = em
+					.createQuery(strBuffJPQL.toString(), entity);
+			return query.getSingleResult();
+		} finally {
+			if (em != null) {
+				em.close();
 			}
 		}
-		strBuffJPQL.append(id);
-		EntityManager em = this.entityManagerFactory.createEntityManager();
-		TypedQuery<T> query = em.createQuery(strBuffJPQL.toString(), entity);
-		return query.getSingleResult();
 	}
 
 	@Override
@@ -222,23 +235,29 @@ public class OrderDaoImpl implements GenfuCommonDAO {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		EntityManager em = this.entityManagerFactory.createEntityManager();
-		Query query = em.createNativeQuery(jpql, entity);
-		for (Parameter<?> sqlParam : query.getParameters()) {
-			String paramName = sqlParam.getName();
-			query.setParameter(paramName, parameters.get(paramName));
-			paramName = null;
-		}
-		if (null != parameters && parameters.containsKey("FIRST_RESULT")) {
-			query.setFirstResult(Integer.parseInt(parameters
-					.get("FIRST_RESULT").toString()));
-		}
-		if (null != parameters && parameters.containsKey("MAX_RESULTS")) {
-			query.setMaxResults(Integer.parseInt(parameters.get("MAX_RESULTS")
-					.toString()));
-		}
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			Query query = em.createNativeQuery(jpql, entity);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				String paramName = sqlParam.getName();
+				query.setParameter(paramName, parameters.get(paramName));
+				paramName = null;
+			}
+			if (null != parameters && parameters.containsKey("FIRST_RESULT")) {
+				query.setFirstResult(Integer.parseInt(parameters.get(
+						"FIRST_RESULT").toString()));
+			}
+			if (null != parameters && parameters.containsKey("MAX_RESULTS")) {
+				query.setMaxResults(Integer.parseInt(parameters.get(
+						"MAX_RESULTS").toString()));
+			}
 
-		return query.getResultList();
+			return query.getResultList();
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
 	}
 
 	@Override

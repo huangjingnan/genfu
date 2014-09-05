@@ -1,5 +1,6 @@
 package com.genfu.reform.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Hashtable;
 import java.util.Map;
@@ -7,7 +8,11 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-public class DishFilterSQLImpl implements FabricationFilterSQL {
+public class DishFilterSQLImpl implements FabricationFilterSQL, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String OPERANDS = "{\"eq\":\"=\",\"ne\":\"<>\",\"lt\":\"<\",\"le\":\"<=\",\"gt\":\">\",\"ge\":\">=\",\"bw\":\"LIKE\",\"bn\":\"NOT LIKE\",\"in\":\"IN\",\"ni\":\"NOT IN\",\"ew\":\"LIKE\",\"en\":\"NOT LIKE\",\"cn\":\"LIKE\",\"nc\":\"NOT LIKE\",\"nu\":\"IS NULL\",\"nn\":\"IS NOT NULL\"}";
 	public static JSONObject JSON_OPERANDS = JSONObject.fromObject(OPERANDS);
 

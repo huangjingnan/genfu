@@ -1,6 +1,6 @@
 package com.genfu.reform.jmx.client;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 
 import javax.management.JMX;
 import javax.management.MBeanServerConnection;
@@ -18,7 +18,7 @@ public class Client {
 			// Environment map
 			//
 			System.out.println("\nInitialize the environment map");
-			HashMap env = new HashMap();
+			Hashtable env = new Hashtable();
 
 			// Provide the credentials required by the server to successfully
 			// perform user authentication

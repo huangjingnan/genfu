@@ -1,7 +1,7 @@
 package com.genfu.reform.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import com.genfu.reform.model.Order_test;
 
 public class Order_testsService {
 
-    private static Map<String,Order_test> orders = new HashMap<String,Order_test>();
+    private static Map<String,Order_test> orders = new Hashtable<String,Order_test>();
     private static int nextId = 6;
     static {
         orders.put("3", new Order_test("3", "Bob", 33));

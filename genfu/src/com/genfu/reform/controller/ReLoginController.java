@@ -18,6 +18,7 @@ import org.apache.struts2.rest.DefaultHttpHeaders;
 import org.apache.struts2.rest.HttpHeaders;
 
 import com.genfu.reform.model.UserInfo;
+import com.genfu.reform.service.GenfuAuthenticationService;
 import com.genfu.reform.service.GenfuCommonService;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
@@ -51,7 +52,7 @@ public class ReLoginController extends ValidationAwareSupport implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private GenfuCommonService genfuCommonService;
+	private GenfuAuthenticationService genfuAuthenticationService;
 	private UserInfo model = new UserInfo();
 	private JSONObject jsonObject;
 	private Map<String, Object> session;
@@ -76,12 +77,9 @@ public class ReLoginController extends ValidationAwareSupport implements
 		return new DefaultHttpHeaders("index").disableCaching();
 	}
 
-	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
-	}
-
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	public void setGenfuAuthenticationService(
+			GenfuAuthenticationService genfuAuthenticationService) {
+		this.genfuAuthenticationService = genfuAuthenticationService;
 	}
 
 	public String deleteConfirm() {
@@ -103,8 +101,8 @@ public class ReLoginController extends ValidationAwareSupport implements
 
 			model.setUserCode(parameters.get("userCode")[0]);
 			model.setUserPassword(parameters.get("userPassword")[0]);
-			jsonObject = genfuCommonService.authentication(nextAction, request,
-					model, session);
+			jsonObject = genfuAuthenticationService.authentication(nextAction,
+					request, model, session);
 			if (jsonObject.getBoolean("validResult")) {
 				session.put(GenfuAuthenticationInterceptor.USER_SESSION_KEY,
 						jsonObject.get("userInfo"));

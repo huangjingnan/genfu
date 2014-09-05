@@ -2,7 +2,7 @@ package com.genfu.reform.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +115,7 @@ public class OrderDishController extends ValidationAwareSupport implements
 		if (!"CLOSED".equalsIgnoreCase(model.getStatus())
 				&& parameters.containsKey("dishIds[]")) {
 
-			Map<String, Object> tempPara = new HashMap<String, Object>();
+			Map<String, Object> tempPara = new Hashtable<String, Object>();
 
 			String[] dishIds = parameters.get("dishIds[]");
 			List<Long> longDishIds = new ArrayList<Long>();

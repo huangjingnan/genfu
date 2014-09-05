@@ -1,7 +1,7 @@
 package com.genfu.reform.controller;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +96,7 @@ public class KitchenOpenController extends ValidationAwareSupport implements
 	public HttpHeaders index() {
 
 		if (null != this.parameters.get("style")) {
-			Map<String, Object> par = new HashMap<String, Object>();
+			Map<String, Object> par = new Hashtable<String, Object>();
 			par.put("itemStatus", "OPEN");
 
 			jsonObject = genfuCommonService

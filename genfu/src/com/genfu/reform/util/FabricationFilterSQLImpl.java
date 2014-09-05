@@ -1,5 +1,6 @@
 package com.genfu.reform.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,7 +10,11 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-public class FabricationFilterSQLImpl implements FabricationFilterSQL {
+public class FabricationFilterSQLImpl implements FabricationFilterSQL, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String OPERANDS = "{\"eq\":\"=\",\"ne\":\"<>\",\"lt\":\"<\",\"le\":\"<=\",\"gt\":\">\",\"ge\":\">=\",\"bw\":\"LIKE\",\"bn\":\"NOT LIKE\",\"in\":\"IN\",\"ni\":\"NOT IN\",\"ew\":\"LIKE\",\"en\":\"NOT LIKE\",\"cn\":\"LIKE\",\"nc\":\"NOT LIKE\",\"nu\":\"IS NULL\",\"nn\":\"IS NOT NULL\"}";
 	public static JSONObject JSON_OPERANDS = JSONObject.fromObject(OPERANDS);
 	public static SimpleDateFormat formatter = new SimpleDateFormat(
@@ -24,6 +29,7 @@ public class FabricationFilterSQLImpl implements FabricationFilterSQL {
 			Map<String, String[]> arg0) {
 		mapParameters.clear();
 		parametersIndex = 0;
+		strJpql = null;
 		strJpql = new StringBuffer();
 		strJpql.append(sql);
 		Map<String, Object> mapJPQL = new Hashtable<String, Object>();
@@ -78,6 +84,7 @@ public class FabricationFilterSQLImpl implements FabricationFilterSQL {
 			Map<String, String[]> arg0) {
 		mapParameters.clear();
 		parametersIndex = 0;
+		strJpql = null;
 		strJpql = new StringBuffer();
 		strJpql.append("SELECT x FROM ");
 		strJpql.append(entity.getName());
@@ -444,6 +451,7 @@ public class FabricationFilterSQLImpl implements FabricationFilterSQL {
 			Class<T> entity, Map<String, String[]> arg0) {
 		mapParameters.clear();
 		parametersIndex = 0;
+		strJpql = null;
 		strJpql = new StringBuffer();
 		strJpql.append(sql);
 		Map<String, Object> mapJPQL = new Hashtable<String, Object>();

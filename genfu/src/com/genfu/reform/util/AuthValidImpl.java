@@ -1,7 +1,7 @@
 package com.genfu.reform.util;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -265,7 +265,7 @@ public class AuthValidImpl implements AuthValid {
 		genfuLog.setLogRequestParameter(strBuffPara.toString());
 
 		DES des = new DES(userInfo.getUserCode());
-		Map<String, Object> para = new HashMap<String, Object>();
+		Map<String, Object> para = new Hashtable<String, Object>();
 		para.put("userCode_EQ", userInfo.getUserCode());
 
 		// String psss = des.getEncString(userInfo.getUserPassword());

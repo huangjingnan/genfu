@@ -4,11 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import net.sf.json.JSONObject;
-
-import com.genfu.reform.model.UserInfo;
 
 public interface GenfuCommonService {
 
@@ -75,9 +71,6 @@ public interface GenfuCommonService {
 
 	public int excuseNativeQuery(String strSQLSplt, Map<String, Object> agr0);
 
-	public boolean verifyingOperates(Map<String, String[]> arg0,
-			Map<String, Object> session);
-
 	public <T> Map<String, Object> searchJsonRows(Class<T> entity,
 			Map<String, String[]> arg0);
 
@@ -104,24 +97,8 @@ public interface GenfuCommonService {
 	public <T> JSONObject searchJsonNativeQuery(String jpql,
 			Map<String, Object> parameters, Map<String, String[]> arg0);
 
-	public <T> JSONObject validateAndRecord(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session);
-
-	public <T> void recordOperates(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session);
-
-	public <T> JSONObject validateOperates(String userCode, String Passwd,
-			String actionName, String operate, Map<String, Object> agr0,
-			Class<T> entity, Map<String, String[]> parameters,
-			Map<String, Object> session);
-
 	public Path getGenfuPath(String arg0);
 
 	public String getGenfuConfig(String arg0);
 
-	public JSONObject authentication(String actionName,
-			HttpServletRequest request, UserInfo userInfo,
-			Map<String, Object> session);
 }

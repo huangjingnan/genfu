@@ -1,7 +1,7 @@
 package com.genfu.reform.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +49,7 @@ public class TestAny {
 		GenfuCommonDAO test = (GenfuCommonDAO) ctx.getBean("orderDAOImpl");
 		List<Long> longOrderIds = new ArrayList<Long>();
 		longOrderIds.add(30L);
-		Map<String, Object> tempPara = new HashMap<String, Object>();
+		Map<String, Object> tempPara = new Hashtable<String, Object>();
 		tempPara.put("orderIds", longOrderIds);
 		test.excuseNativeQuery("", tempPara);
 

@@ -3,8 +3,8 @@ package com.genfu.reform.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,7 +152,7 @@ public class AccountController extends ValidationAwareSupport implements
 
 	public String editNew() {
 		if (this.parameters.containsKey("orderId")) {
-			Map<String, Object> par = new HashMap<String, Object>();
+			Map<String, Object> par = new Hashtable<String, Object>();
 			String[] ids = parameters.get("orderId")[0].split(",");
 			List<Long> longAccountIds = new ArrayList<Long>();
 			for (int i = 0; i < ids.length; i++) {
@@ -179,7 +179,7 @@ public class AccountController extends ValidationAwareSupport implements
 		JSONObject userInfo = (JSONObject) session
 				.get(GenfuAuthenticationInterceptor.USER_SESSION_KEY);
 		if (this.parameters.containsKey("accOrderId")) {
-			Map<String, Object> par = new HashMap<String, Object>();
+			Map<String, Object> par = new Hashtable<String, Object>();
 			String[] ids = parameters.get("accOrderId")[0].split(",");
 			if (ids.length > 0) {
 				List<Long> longAccountIds = new ArrayList<Long>();
@@ -253,7 +253,7 @@ public class AccountController extends ValidationAwareSupport implements
 	public String destroy() {
 		if (null != parameters.get("id")) {
 
-			Map<String, Object> tempPara = new HashMap<String, Object>();
+			Map<String, Object> tempPara = new Hashtable<String, Object>();
 
 			String[] ids = parameters.get("id")[0].split(",");
 			List<Long> longAccountIds = new ArrayList<Long>();

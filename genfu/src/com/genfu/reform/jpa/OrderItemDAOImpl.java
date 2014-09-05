@@ -19,7 +19,7 @@ import com.genfu.reform.model.Order;
 import com.genfu.reform.model.OrderItem;
 
 //@Transactional
-public class OrderItemDAOTransaction implements GenfuCommonDAO {
+public class OrderItemDAOImpl implements GenfuCommonDAO {
 	private static Logger logger = Logger.getLogger("OrderItemDAOTransaction");
 
 	public EntityManagerFactory entityManagerFactory;
@@ -58,21 +58,27 @@ public class OrderItemDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public <T> List<T> searchList(String jpql, Map<String, Object> parameters,
 			Class<T> entity, int FIRST_RESULT, int MAX_RESULTS) {
-		// logger.info("searchModel...");
 		EntityManager em = entityManagerFactory.createEntityManager();
-		TypedQuery<T> query = em.createQuery(jpql, entity);
-		for (Parameter<?> sqlParam : query.getParameters()) {
-			query.setParameter(sqlParam.getName(),
-					parameters.get(sqlParam.getName()));
-		}
-		if (FIRST_RESULT > -1) {
-			query.setFirstResult(FIRST_RESULT);
-		}
-		if (MAX_RESULTS > 0) {
-			query.setMaxResults(MAX_RESULTS);
-		}
+		try {
+			TypedQuery<T> query = em.createQuery(jpql, entity);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				query.setParameter(sqlParam.getName(),
+						parameters.get(sqlParam.getName()));
+			}
+			if (FIRST_RESULT > -1) {
+				query.setFirstResult(FIRST_RESULT);
+			}
+			if (MAX_RESULTS > 0) {
+				query.setMaxResults(MAX_RESULTS);
+			}
 
-		return query.getResultList();
+			return query.getResultList();
+		} finally {
+			if (em != null) {
+				em.clear();
+				em.close();
+			}
+		}
 	}
 
 	@Override
@@ -146,18 +152,26 @@ public class OrderItemDAOTransaction implements GenfuCommonDAO {
 	@Override
 	public <T> int getTotalRecords(String jpql, Map<String, Object> parameters,
 			Class<T> entity) {
-		int idxOrder = jpql.indexOf("ORDER BY");
-		if (idxOrder > 0) {
-			jpql = jpql.substring(0, idxOrder);
-		}
+
 		EntityManager em = entityManagerFactory.createEntityManager();
-		TypedQuery<T> query = em.createQuery(jpql, entity);
-		for (Parameter<?> sqlParam : query.getParameters()) {
-			String paramName = sqlParam.getName();
-			query.setParameter(paramName, parameters.get(paramName));
-			paramName = null;
+		try {
+			int idxOrder = jpql.indexOf("ORDER BY");
+			if (idxOrder > 0) {
+				jpql = jpql.substring(0, idxOrder);
+			}
+			TypedQuery<T> query = em.createQuery(jpql, entity);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				String paramName = sqlParam.getName();
+				query.setParameter(paramName, parameters.get(paramName));
+				paramName = null;
+			}
+			return query.getResultList().size();
+		} finally {
+			if (em != null) {
+				em.clear();
+				em.close();
+			}
 		}
-		return query.getResultList().size();
 	}
 
 	@Override
@@ -170,22 +184,29 @@ public class OrderItemDAOTransaction implements GenfuCommonDAO {
 
 	@Override
 	public <T> T findModel(Long id, Class<T> entity) {
-		StringBuffer strBuffJPQL = new StringBuffer();
-		strBuffJPQL.append("from " + entity.getName() + " WHERE ");
-		Field[] fds = entity.getDeclaredFields();
-		for (int i = 0; i < fds.length; i++) {
-			Id myId = fds[i].getAnnotation(javax.persistence.Id.class);
-			if (myId != null) {
-				javax.persistence.Column myColumn = fds[i]
-						.getAnnotation(javax.persistence.Column.class);
-				strBuffJPQL.append(myColumn.name() + " = ");
-				break;
+		EntityManager em = entityManagerFactory.createEntityManager();
+		try {
+			StringBuffer strBuffJPQL = new StringBuffer();
+			strBuffJPQL.append("from " + entity.getName() + " WHERE ");
+			Field[] fds = entity.getDeclaredFields();
+			for (int i = 0; i < fds.length; i++) {
+				Id myId = fds[i].getAnnotation(javax.persistence.Id.class);
+				if (myId != null) {
+					javax.persistence.Column myColumn = fds[i]
+							.getAnnotation(javax.persistence.Column.class);
+					strBuffJPQL.append(myColumn.name() + " = ");
+					break;
+				}
+			}
+			strBuffJPQL.append(id);
+			TypedQuery<T> query = em
+					.createQuery(strBuffJPQL.toString(), entity);
+			return query.getSingleResult();
+		} finally {
+			if (em != null) {
+				em.close();
 			}
 		}
-		strBuffJPQL.append(id);
-		EntityManager em = entityManagerFactory.createEntityManager();
-		TypedQuery<T> query = em.createQuery(strBuffJPQL.toString(), entity);
-		return query.getSingleResult();
 	}
 
 	@Override
@@ -226,22 +247,28 @@ public class OrderItemDAOTransaction implements GenfuCommonDAO {
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
 		EntityManager em = entityManagerFactory.createEntityManager();
-		Query query = em.createNativeQuery(jpql, entity);
-		for (Parameter<?> sqlParam : query.getParameters()) {
-			String paramName = sqlParam.getName();
-			query.setParameter(paramName, parameters.get(paramName));
-			paramName = null;
-		}
-		if (null != parameters && parameters.containsKey("FIRST_RESULT")) {
-			query.setFirstResult(Integer.parseInt(parameters
-					.get("FIRST_RESULT").toString()));
-		}
-		if (null != parameters && parameters.containsKey("MAX_RESULTS")) {
-			query.setMaxResults(Integer.parseInt(parameters.get("MAX_RESULTS")
-					.toString()));
-		}
+		try {
+			Query query = em.createNativeQuery(jpql, entity);
+			for (Parameter<?> sqlParam : query.getParameters()) {
+				String paramName = sqlParam.getName();
+				query.setParameter(paramName, parameters.get(paramName));
+				paramName = null;
+			}
+			if (null != parameters && parameters.containsKey("FIRST_RESULT")) {
+				query.setFirstResult(Integer.parseInt(parameters.get(
+						"FIRST_RESULT").toString()));
+			}
+			if (null != parameters && parameters.containsKey("MAX_RESULTS")) {
+				query.setMaxResults(Integer.parseInt(parameters.get(
+						"MAX_RESULTS").toString()));
+			}
 
-		return query.getResultList();
+			return query.getResultList();
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
 	}
 
 	@Override

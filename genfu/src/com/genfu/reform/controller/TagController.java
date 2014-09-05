@@ -163,7 +163,7 @@ public class TagController extends ValidationAwareSupport implements
 		jsonObject = new JSONObject();
 		if (null != parameters.get("id")) {
 			try {
-				// Map<String, Object> tempPara = new HashMap<String,
+				// Map<String, Object> tempPara = new Hashtable<String,
 				// Object>();
 				String ids = parameters.get("id")[0];
 				// tempPara.put("orderIds", ids);

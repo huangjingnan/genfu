@@ -2,7 +2,7 @@ package com.genfu.reform.controller;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -134,7 +134,7 @@ public class UserInfoController extends ValidationAwareSupport implements
 			DES des = new DES(model.getUserCode());
 			model.setUserPassword(des.getEncString(model.getUserPassword()));
 		} else {
-			Map<String, Object> par = new HashMap<String, Object>();
+			Map<String, Object> par = new Hashtable<String, Object>();
 			par.put("userId0", model.getId());
 			List<UserInfo> theUI = genfuCommonService.searchNativeQuery(
 					"SELECT * FROM USER_INFO WHERE USER_ID=:userId0", par,

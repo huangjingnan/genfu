@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -140,7 +140,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 				// jsonObject =
 				// genfuCommonService.searchJsonJqGridFilter(
 				// Dish.class, parameters);
-				// Map<String, Object> para = new HashMap<String,
+				// Map<String, Object> para = new Hashtable<String,
 				// Object>();
 				// para.put("taggings",
 				// Long.parseLong(parameters.get("taggings")[0]));
@@ -163,7 +163,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 		if (parameters.containsKey("jmx")) {
 			synchronized (this) {
-				Map<String, Object> paras = new HashMap<String, Object>();
+				Map<String, Object> paras = new Hashtable<String, Object>();
 				paras.put("configKeyP", parameters.get("jmx")[0]);
 				this.model = genfuCommonService.searchList(
 						"from GenfuConfig WHERE configKey = :configKeyP)",
@@ -174,7 +174,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 
 					try {
 						System.out.println("\nInitialize the environment map");
-						HashMap env = new HashMap();
+						Hashtable env = new Hashtable();
 
 						// Provide the credentials required by the server to
 						// successfully
@@ -328,7 +328,7 @@ public class GenfuConfigController extends ValidationAwareSupport implements
 						try {
 							System.out
 									.println("\nInitialize the environment map");
-							HashMap env = new HashMap();
+							Hashtable env = new Hashtable();
 
 							// Provide the credentials required by the server to
 							// successfully

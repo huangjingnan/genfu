@@ -98,7 +98,7 @@ public class ChartsController extends ValidationAwareSupport implements
 	public HttpHeaders index() {
 
 		if (null != this.parameters.get("style")) {
-			// Map<String, Object> par = new HashMap<String, Object>();
+			// Map<String, Object> par = new Hashtable<String, Object>();
 			// par.put("itemStatus", "FRUITION");
 			//
 			// jsonObject = genfuCommonService

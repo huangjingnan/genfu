@@ -1,7 +1,7 @@
 package com.genfu.reform.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -154,7 +154,7 @@ public class OrderController extends ValidationAwareSupport implements
 	public String destroy() {
 		if (null != parameters.get("id")) {
 
-			Map<String, Object> tempPara = new HashMap<String, Object>();
+			Map<String, Object> tempPara = new Hashtable<String, Object>();
 
 			String[] ids = parameters.get("id")[0].split(",");
 			List<Long> longOrderIds = new ArrayList<Long>();

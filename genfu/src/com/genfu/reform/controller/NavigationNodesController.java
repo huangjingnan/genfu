@@ -1,6 +1,6 @@
 package com.genfu.reform.controller;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +107,7 @@ public class NavigationNodesController extends ValidationAwareSupport implements
 
 		if (this.parameters.containsKey("style")) {
 			if (null != this.parameters.get("roleId")) {
-				Map<String, Object> para = new HashMap<String, Object>();
+				Map<String, Object> para = new Hashtable<String, Object>();
 				para.put("roleId", Long.parseLong(parameters.get("roleId")[0]));
 
 				jsonObject = genfuCommonService

@@ -4,45 +4,30 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.persistence.Table;
-import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
 import com.genfu.reform.jpa.GenfuCommonDAO;
 import com.genfu.reform.model.GenfuConfig;
 import com.genfu.reform.model.GenfuResultIdCell;
-import com.genfu.reform.model.UserInfo;
-import com.genfu.reform.util.AuthValid;
+import com.genfu.reform.util.DishFilterSQLImpl;
 import com.genfu.reform.util.FabricationFilterSQL;
 
 public class DishServiceImpl implements GenfuCommonService {
 	// private StringBuffer strBuffJPQL = new StringBuffer();
-	// private Map<String, Object> mapCondition = new HashMap<String, Object>();
+	// private Map<String, Object> mapCondition = new Hashtable<String, Object>();
 	// Iterator<String> it = null;
 	private GenfuCommonDAO genfuCommonDao;
-	private FabricationFilterSQL dishfabricationFilterSQL;
-	private AuthValid authValidImpl;
 
 	public void setGenfuCommonDao(GenfuCommonDAO genfuCommonDao) {
 		this.genfuCommonDao = genfuCommonDao;
-	}
-
-	@Resource(name="dishfabricationFilterSQL")
-	public void setFabricationFilterSQL(
-			FabricationFilterSQL dishfabricationFilterSQL) {
-		this.dishfabricationFilterSQL = dishfabricationFilterSQL;
-	}
-
-	public void setAuthValidImpl(AuthValid authValidImpl) {
-		this.authValidImpl = authValidImpl;
 	}
 
 	@Override
@@ -180,7 +165,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -244,7 +229,7 @@ public class DishServiceImpl implements GenfuCommonService {
 			}
 		}
 
-		Map<String, Object> returnFabricationSQL = new HashMap<String, Object>();
+		Map<String, Object> returnFabricationSQL = new Hashtable<String, Object>();
 		returnFabricationSQL.put("strBuffJPQL", strBuffJPQL);
 		returnFabricationSQL.put("mapCondition", mapCondition);
 		return returnFabricationSQL;
@@ -307,8 +292,8 @@ public class DishServiceImpl implements GenfuCommonService {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return genfuCommonDao.batchDeleteJPQL(
-				sqlStringBuffer.toString(), theClass);
+		return genfuCommonDao.batchDeleteJPQL(sqlStringBuffer.toString(),
+				theClass);
 	}
 
 	@Override
@@ -317,7 +302,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -402,7 +387,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -511,7 +496,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -598,7 +583,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -711,7 +696,7 @@ public class DishServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -825,8 +810,9 @@ public class DishServiceImpl implements GenfuCommonService {
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
 
-		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
-				entity, arg0);
+		FabricationFilterSQL dishfabricationFilterSQL = new DishFilterSQLImpl();
+		Map<String, Object> filterSQL = dishfabricationFilterSQL
+				.fabricationJPQL(entity, arg0);
 
 		JSONObject jsonObject = new JSONObject();
 		int records = genfuCommonDao.getTotalRecords(filterSQL.get("jpql")
@@ -881,9 +867,9 @@ public class DishServiceImpl implements GenfuCommonService {
 		// [{"groupOp":"OR","rules":[{"field":"dishName","op":"ne","data":"1"},{"field":"publishedAt","op":"eq","data":"3"},{"field":"createdAt","op":"eq","data":"2"},{"field":"publishedId","op":"eq","data":"3"}],"groups":[{"groupOp":"AND","rules":[{"field":"dishFlag","op":"eq","data":"5"},{"field":"price","op":"eq","data":"6"}],"groups":[]}]}]
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
-
-		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
-				sql, entity, arg0);
+		FabricationFilterSQL dishfabricationFilterSQL = new DishFilterSQLImpl();
+		Map<String, Object> filterSQL = dishfabricationFilterSQL
+				.fabricationJPQL(sql, entity, arg0);
 
 		JSONObject jsonObject = new JSONObject();
 		int records = genfuCommonDao.getTotalRecords(filterSQL.get("jpql")
@@ -1037,9 +1023,9 @@ public class DishServiceImpl implements GenfuCommonService {
 	public <T> JSONObject searchJsonJqGridFilter(String sql,
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
-
-		Map<String, Object> filterSQL = dishfabricationFilterSQL.fabricationJPQL(
-				sql, entity, arg0);
+		FabricationFilterSQL dishfabricationFilterSQL = new DishFilterSQLImpl();
+		Map<String, Object> filterSQL = dishfabricationFilterSQL
+				.fabricationJPQL(sql, entity, arg0);
 		Map<String, Object> myPara;
 		if (null != parameters) {
 			myPara = parameters;
@@ -1099,6 +1085,7 @@ public class DishServiceImpl implements GenfuCommonService {
 	public <T> JSONObject searchJsonNativeQuery(String sql,
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
+		FabricationFilterSQL dishfabricationFilterSQL = new DishFilterSQLImpl();
 		Map<String, Object> filterSQL = dishfabricationFilterSQL
 				.fabricationNativeSQL(sql, entity, arg0);
 		Map<String, Object> myPara;
@@ -1152,48 +1139,8 @@ public class DishServiceImpl implements GenfuCommonService {
 		jsonObject.put("rows", genfuCommonDao.searchNativeQuery(
 				filterSQL.get("jpql").toString(), myPara, entity, (page - 1)
 						* limit, page * limit));
-
+		dishfabricationFilterSQL = null;
 		return jsonObject;
-	}
-
-	@Override
-	public <T> JSONObject validateAndRecord(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session) {
-
-		return authValidImpl.validateAndRecord(actionName, operate, request,
-				entity, session);
-	}
-
-	@Override
-	public <T> void recordOperates(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session) {
-		authValidImpl.recordOperates(actionName, operate, request, entity,
-				session);
-	}
-
-	@Override
-	public JSONObject authentication(String actionName,
-			HttpServletRequest request, UserInfo userInfo,
-			Map<String, Object> session) {
-		return authValidImpl.authentication(actionName, request, userInfo,
-				session);
-	}
-
-	@Override
-	public <T> JSONObject validateOperates(String userCode, String Passwd,
-			String actionName, String operate, Map<String, Object> agr0,
-			Class<T> entity, Map<String, String[]> parameters,
-			Map<String, Object> session) {
-		return authValidImpl.validateOperates(userCode, Passwd, actionName,
-				operate, agr0, entity, parameters, session);
-	}
-
-	@Override
-	public boolean verifyingOperates(Map<String, String[]> arg0,
-			Map<String, Object> session) {
-		return authValidImpl.verifyingOperates(arg0, session);
 	}
 
 	@Override

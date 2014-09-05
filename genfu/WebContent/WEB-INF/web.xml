@@ -30,15 +30,16 @@
 		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
 		<filter-class>
 			org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
 		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
 	</filter-mapping>
 	<listener>
-		<listener-class>
-			org.springframework.web.context.ContextLoaderListener
-		</listener-class>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<listener>
 		<listener-class>

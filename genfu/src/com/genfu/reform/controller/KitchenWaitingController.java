@@ -1,7 +1,7 @@
 package com.genfu.reform.controller;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 	public HttpHeaders index() {
 
 		if (null != this.parameters.get("style")) {
-			Map<String, Object> par = new HashMap<String, Object>();
+			Map<String, Object> par = new Hashtable<String, Object>();
 			par.put("itemStatus", "WAITING");
 
 			jsonObject = genfuCommonService.searchJsonJqGridFilter(
@@ -114,7 +114,7 @@ public class KitchenWaitingController extends ValidationAwareSupport implements
 			String orderItemId = parameters.get("orderItemId")[0];
 			StringBuffer strBuffJPQL = new StringBuffer();
 
-			Map<String, Object> param = new HashMap<String, Object>();
+			Map<String, Object> param = new Hashtable<String, Object>();
 
 			strBuffJPQL = new StringBuffer(
 					"UPDATE ORDER_ITEMS SET STATUS = :_status, UPDATED_AT = :_now WHERE STATUS = :_status_old AND ORDER_ITEM_ID IN(");

@@ -3,6 +3,7 @@ package com.genfu.reform.model;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
@@ -90,7 +91,7 @@ public class UserInfo implements Serializable {
 	@Column(name = "USER_UPDATE_DATE")
 	private java.util.Date userUpdateDate;
 
-	@ManyToMany(cascade = { REFRESH, MERGE, PERSIST })
+	@ManyToMany(cascade = { REFRESH, MERGE, PERSIST }, fetch = EAGER)
 	@JoinTable(name = "USER_INFO_ROLE_INFOS", joinColumns = @JoinColumn(name = "USER_USER_ID", referencedColumnName = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ROLE_ID", referencedColumnName = "ROLE_ID"))
 	private Set<RoleInfo> roleInfos;
 

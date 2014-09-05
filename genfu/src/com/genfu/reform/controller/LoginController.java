@@ -19,7 +19,7 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.apache.struts2.interceptor.SessionAware;
 
 import com.genfu.reform.model.UserInfo;
-import com.genfu.reform.service.GenfuCommonService;
+import com.genfu.reform.service.GenfuAuthenticationService;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Validateable;
 import com.opensymphony.xwork2.ValidationAwareSupport;
@@ -41,22 +41,20 @@ public class LoginController extends ValidationAwareSupport implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private GenfuCommonService genfuCommonService;
+	private GenfuAuthenticationService genfuAuthenticationService;
 	private UserInfo userInfo = new UserInfo();
 	private Map<String, Object> session;
 	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
 	private JSONObject jsonObject;
 
-	public LoginController() {
+	public GenfuAuthenticationService getGenfuAuthenticationService() {
+		return genfuAuthenticationService;
 	}
 
-	public GenfuCommonService getGenfuCommonService() {
-		return genfuCommonService;
-	}
-
-	public void setGenfuCommonService(GenfuCommonService genfuCommonService) {
-		this.genfuCommonService = genfuCommonService;
+	public void setGenfuAuthenticationService(
+			GenfuAuthenticationService genfuAuthenticationService) {
+		this.genfuAuthenticationService = genfuAuthenticationService;
 	}
 
 	public String execute() {
@@ -87,11 +85,11 @@ public class LoginController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("servletConfig"))
 	public String create() {
-		jsonObject = genfuCommonService.authentication("login", request,
-				userInfo, session);
+		jsonObject = genfuAuthenticationService.authentication("login",
+				request, userInfo, session);
 
 		String result = "login";
-		if (jsonObject.getBoolean("validResult")) {
+		if (jsonObject.containsKey("userId")) {
 			session.put(GenfuAuthenticationInterceptor.USER_SESSION_KEY,
 					jsonObject.get("userInfo"));
 			// session.put("userNavis", jsonObject.get("userNavis"));
@@ -106,8 +104,6 @@ public class LoginController extends ValidationAwareSupport implements
 	}
 
 	public String destroy() {
-		genfuCommonService.recordOperates("login", "destroy", request,
-				UserInfo.class, session);
 		session.clear();
 		return "login";
 	}

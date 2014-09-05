@@ -12,7 +12,7 @@ import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.genfu.reform.service.GenfuAuthenTicationServiceImpl;
+import com.genfu.reform.service.GenfuAuthenticationServiceImpl;
 import com.genfu.reform.service.GenfuAuthenticationService;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -43,7 +43,9 @@ public class GenfuAuthenticationInterceptor implements Interceptor {
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
 		LOG.debug("Authenticating user");
-
+		String className = invocation.getAction().getClass().getName();
+		long startTime = System.currentTimeMillis();
+		LOG.debug("Before calling action: " + className);
 		SessionMap<?, ?> session = (SessionMap<?, ?>) ActionContext
 				.getContext().get(ActionContext.SESSION);
 		JSONObject user = (JSONObject) session.get(USER_SESSION_KEY);
@@ -58,13 +60,13 @@ public class GenfuAuthenticationInterceptor implements Interceptor {
 				.getServletContext();
 		ApplicationContext appContext = WebApplicationContextUtils
 				.getWebApplicationContext(servletContext);
-		auth = (GenfuAuthenTicationServiceImpl) appContext
-				.getBean("genfuAuthenTicationServiceImpl");
+		auth = (GenfuAuthenticationServiceImpl) appContext
+				.getBean("genfuAuthenticationServiceImpl");
 
 		LOG.debug(am.getName());
 		LOG.debug(am.getNamespace());
 		LOG.debug(am.getMethod());
-		// o = (HashMap<String, String>) m.get("parameters");
+		// o = (Hashtable<String, String>) m.get("parameters");
 		// 判断action是否被授权 actionName,nameSpace,method,operate,userId
 		String ret = Action.LOGIN;
 		if (user == null) {
@@ -75,6 +77,10 @@ public class GenfuAuthenticationInterceptor implements Interceptor {
 					"", user.getLong("userId")))
 				ret = invocation.invoke();
 		}
+
+		long endTime = System.currentTimeMillis();
+		LOG.debug("After calling action: " + className
+				+ " Time taken: " + (endTime - startTime) + " ms");
 		return ret;
 	}
 

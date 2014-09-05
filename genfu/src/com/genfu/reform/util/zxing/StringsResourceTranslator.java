@@ -33,7 +33,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -79,7 +79,7 @@ public final class StringsResourceTranslator {
       " limitations under the License.\n" +
       " -->\n";
 
-  private static final Map<String,String> LANGUAGE_CODE_MASSAGINGS = new HashMap<>(3);
+  private static final Map<String,String> LANGUAGE_CODE_MASSAGINGS = new Hashtable<>(3);
   static {
     LANGUAGE_CODE_MASSAGINGS.put("zh-rCN", "zh-cn");
     LANGUAGE_CODE_MASSAGINGS.put("zh-rTW", "zh-tw");

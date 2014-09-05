@@ -98,24 +98,16 @@
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="genfuCommonDao" class="com.genfu.reform.jpa.GenfuCommonDaoImpl" />
-	<bean id="genfuAuthenticationImpl" class="com.genfu.reform.jpa.GenfuAuthenticationImpl"
-		scope="prototype">
+	<bean id="genfuAuthenticationDaoImpl" class="com.genfu.reform.jpa.GenfuAuthenticationDaoImpl">
 		<!-- <property name="pg_dataSource" ref="pg_dataSource" /> -->
 	</bean>
-	<bean id="genfuAuthenTicationServiceImpl" class="com.genfu.reform.service.GenfuAuthenTicationServiceImpl"
-		scope="prototype">
-		<property name="genfuAuthenticationImpl" ref="genfuAuthenticationImpl" />
+	<bean id="genfuAuthenticationServiceImpl" class="com.genfu.reform.service.GenfuAuthenticationServiceImpl">
+		<property name="genfuAuthenticationDaoImpl" ref="genfuAuthenticationDaoImpl" />
 	</bean>
-	<bean id="fabricationFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl"
-		scope="prototype" />
-	<bean id="authValidImpl" class="com.genfu.reform.util.AuthValidImpl"
-		scope="prototype">
-		<property name="genfuCommonDao" ref="genfuCommonDao" />
-	</bean>
+	<!-- <bean id="fabricationFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
+		scope="prototype" /> -->
 	<bean id="genfuCommonService" class="com.genfu.reform.service.GenfuCommonServiceImpl">
 		<property name="genfuCommonDao" ref="genfuCommonDao" />
-		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
-		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
 	<bean class="com.genfu.reform.controller.GenfuCommonController"
 		scope="prototype">
@@ -150,7 +142,7 @@
 		/> <bean id="loginService" class="com.genfu.reform.service.LoginServiceImpl"> 
 		<property name="userInfoDAO" ref="userInfoDAOImpl" /> </bean> -->
 	<bean class="com.genfu.reform.controller.LoginController" scope="prototype">
-		<property name="genfuCommonService" ref="genfuCommonService" />
+		<property name="genfuAuthenticationService" ref="genfuAuthenticationServiceImpl" />
 	</bean>
 	<bean class="com.genfu.reform.controller.ReLoginController" scope="prototype">
 		<property name="genfuCommonService" ref="genfuCommonService" />
@@ -199,14 +191,13 @@
 		<property name="genfuCommonService" ref="genfuCommonService" />
 	</bean>
 
-	<bean id="dishfabricationFilterSQL" class="com.genfu.reform.util.DishFilterSQLImpl"
-		scope="prototype" />
+	<!-- <bean id="dishfabricationFilterSQL" class="com.genfu.reform.util.DishFilterSQLImpl"
+		scope="prototype" /> -->
 	<bean id="dishService" class="com.genfu.reform.service.DishServiceImpl"
 		scope="prototype">
 		<property name="genfuCommonDao" ref="genfuCommonDao" />
 		<!-- <property name="dishfabricationFilterSQL" ref="dishfabricationFilterSQL" 
 			/> -->
-		<property name="authValidImpl" ref="authValidImpl" />
 	</bean>
 	<bean class="com.genfu.reform.controller.DishController" scope="prototype" />
 
@@ -241,18 +232,18 @@
 	<bean id="orderService" class="com.genfu.reform.service.OrderServiceImpl"
 		scope="prototype">
 		<property name="orderDAOImpl" ref="orderDao" />
-		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
+		<!-- <property name="fabricationFilterSQL" ref="fabricationFilterSQL" /> -->
 	</bean>
 	<bean class="com.genfu.reform.controller.OrderController" scope="prototype" />
 
-	<bean id="orderItemDAOImpl" class="com.genfu.reform.jpa.OrderItemDAOTransaction"
+	<bean id="orderItemDAOImpl" class="com.genfu.reform.jpa.OrderItemDAOImpl"
 		scope="prototype">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	<bean id="orderItemServiceImpl" class="com.genfu.reform.service.OrderItemServiceImpl"
 		scope="prototype">
 		<property name="orderItemDAOImpl" ref="orderItemDAOImpl" />
-		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
+		<!-- <property name="fabricationFilterSQL" ref="fabricationFilterSQL" /> -->
 	</bean>
 	<bean class="com.genfu.reform.controller.OrderItemController"
 		scope="prototype">
@@ -303,8 +294,7 @@
 	<bean id="groupOrderitemService" class="com.genfu.reform.service.GroupOrderitemServiceImpl"
 		scope="prototype">
 		<property name="genfuCommonDao" ref="genfuCommonDao" />
-		<property name="fabricationFilterSQL" ref="fabricationFilterSQL" />
-		<property name="authValidImpl" ref="authValidImpl" />
+		<!-- <property name="fabricationFilterSQL" ref="fabricationFilterSQL" /> -->
 	</bean>
 	<bean class="com.genfu.reform.controller.GroupOrderitemController"
 		scope="session" />

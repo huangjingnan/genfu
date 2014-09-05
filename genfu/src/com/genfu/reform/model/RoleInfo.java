@@ -3,6 +3,7 @@ package com.genfu.reform.model;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
@@ -51,7 +52,7 @@ public class RoleInfo implements Serializable {
 	@Column(name = "ROLE_EXP_DATE")
 	private Date roleExpDate;
 
-	@ManyToMany(cascade = { REFRESH, MERGE, PERSIST })
+	@ManyToMany(cascade = { REFRESH, MERGE, PERSIST }, fetch = EAGER)
 	@JoinTable(name = "ROLE_INFO_NAVIGATION_NODES", joinColumns = @JoinColumn(name = "ROLE_ROLE_ID", referencedColumnName = "ROLE_ID"), inverseJoinColumns = @JoinColumn(name = "NODE_NAVI_ID", referencedColumnName = "NAVI_ID"))
 	@OrderBy("lft ASC")
 	private Set<NavigationNode> navigationNodes;

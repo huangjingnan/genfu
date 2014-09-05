@@ -87,19 +87,20 @@ public class LoginDishesController extends ValidationAwareSupport implements
 
 	// @Action(interceptorRefs = @InterceptorRef("servletConfig"))
 	public String create() {
-		jsonObject = genfuCommonService.authentication(null, request, userInfo,
-				session);
-
-		String result = "login";
-		if (jsonObject.getBoolean("validResult")) {
-			session.put(GenfuAuthenticationInterceptor.USER_SESSION_KEY,
-					jsonObject.get("userInfo"));
-			session.put("userNavis", jsonObject.get("userNavis"));
-			session.put("sessionId", request.getRequestedSessionId());
-			result = "dishes";
-		} else {
-			addActionMessage("login failure");
-		}
+		// jsonObject = genfuCommonService.authentication(null, request,
+		// userInfo,
+		// session);
+		//
+		// String result = "login";
+		// if (jsonObject.getBoolean("validResult")) {
+		session.put(GenfuAuthenticationInterceptor.USER_SESSION_KEY,
+				jsonObject.get("userInfo"));
+		session.put("userNavis", jsonObject.get("userNavis"));
+		session.put("sessionId", request.getRequestedSessionId());
+		String result = "dishes";
+		// } else {
+		// addActionMessage("login failure");
+		// }
 
 		return result;
 	}

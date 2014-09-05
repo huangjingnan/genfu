@@ -19,7 +19,7 @@ public class TestJsonObject {
 
 	public static void main(String[] args) {
 		List<Object> rows = new ArrayList<Object>();
-		// Map<Object, Object> row = new HashMap<Object, Object>();
+		// Map<Object, Object> row = new Hashtable<Object, Object>();
 		GenfuCommonResult rowTemp = new GenfuCommonResult(1, 2, 13);
 		Dish myDish = new Dish(1, "1", "1", 1, null, "1", null, null, null,
 				"1", "1");

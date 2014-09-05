@@ -1,5 +1,6 @@
 package com.genfu.reform.model;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
@@ -66,7 +67,7 @@ public class Dish implements Serializable {
 	@Column(name = "DISH_FLAG")
 	private String dishFlag;
 
-	@OneToMany(orphanRemoval = true)
+	@OneToMany(orphanRemoval = true, fetch = EAGER)
 	@JoinColumn(name = "TAGGABLE_ID")
 	private Set<Tagging> taggings;
 

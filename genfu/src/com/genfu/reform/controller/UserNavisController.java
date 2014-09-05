@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -135,7 +135,7 @@ public class UserNavisController extends ValidationAwareSupport implements
 				}
 			}
 
-			Map<String, Object> tempPara = new HashMap<String, Object>();
+			Map<String, Object> tempPara = new Hashtable<String, Object>();
 			List<Long> naviIds = new ArrayList<Long>();
 			for (NavigationNode tempNn : navis) {
 

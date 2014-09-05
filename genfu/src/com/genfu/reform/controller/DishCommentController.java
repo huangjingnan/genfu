@@ -1,7 +1,7 @@
 package com.genfu.reform.controller;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -118,7 +118,7 @@ public class DishCommentController extends ValidationAwareSupport implements
 					&& null != this.parameters.get("orderItemId")
 					&& null != this.parameters.get("orderId")) {
 
-				Map<String, Object> paraMap = new HashMap<String, Object>();
+				Map<String, Object> paraMap = new Hashtable<String, Object>();
 				paraMap.put("orderItemId0",
 						Long.parseLong(this.parameters.get("orderItemId")[0]));
 				paraMap.put("dishId0",

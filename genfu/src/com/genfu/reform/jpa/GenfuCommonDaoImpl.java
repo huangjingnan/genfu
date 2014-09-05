@@ -150,7 +150,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-			em.close();
+//			em.close();
 			return 0;
 		} finally {
 			if (em != null) {
@@ -170,7 +170,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-			em.close();
+//			em.close();
 
 			return 0;
 		} finally {
@@ -295,7 +295,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-			em.close();
+//			em.close();
 
 			return 0;
 		} finally {
@@ -424,7 +424,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-			em.close();
+//			em.close();
 
 			return 0;
 		} finally {

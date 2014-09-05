@@ -12,12 +12,8 @@ import javax.persistence.Parameter;
 import javax.persistence.Query;
 
 public class AccountDAOImpl implements GenfuCommonDAO {
-	private static Logger logger = Logger.getLogger("GenfuCommonTransaction");
+	private static Logger logger = Logger.getLogger("AccountDAOImpl");
 	public EntityManagerFactory entityManagerFactory;
-
-	public EntityManagerFactory getEntityManagerFactory() {
-		return entityManagerFactory;
-	}
 
 	public void setEntityManagerFactory(
 			EntityManagerFactory entityManagerFactory) {

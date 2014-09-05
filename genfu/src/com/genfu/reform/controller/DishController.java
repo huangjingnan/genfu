@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -130,7 +130,7 @@ public class DishController extends ValidationAwareSupport implements
 					try {
 						String mask = URLDecoder.decode(
 								parameters.get("cd_mask")[0], "UTF-8");
-						Map<String, Object> paraMap = new HashMap<String, Object>();
+						Map<String, Object> paraMap = new Hashtable<String, Object>();
 						paraMap.put("dishNameLike", mask + "%");
 
 						jsonObject = dishService
@@ -147,7 +147,7 @@ public class DishController extends ValidationAwareSupport implements
 					// jsonObject =
 					// dishService.searchJsonJqGridFilter(
 					// Dish.class, parameters);
-					// Map<String, Object> para = new HashMap<String,
+					// Map<String, Object> para = new Hashtable<String,
 					// Object>();
 					// para.put("taggings",
 					// Long.parseLong(parameters.get("taggings")[0]));
@@ -244,7 +244,7 @@ public class DishController extends ValidationAwareSupport implements
 	public String destroy() {
 		if (null != parameters.get("id")) {
 
-			// Map<String, Object> tempPara = new HashMap<String, Object>();
+			// Map<String, Object> tempPara = new Hashtable<String, Object>();
 			String ids = parameters.get("id")[0];
 			// tempPara.put("orderIds", ids);
 

@@ -1,6 +1,6 @@
 package com.genfu.reform.controller;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +96,7 @@ public class CatalogController extends ValidationAwareSupport implements
 	// @Action(interceptorRefs = @InterceptorRef("genfuAuthentication"))
 	public HttpHeaders index() {
 
-		Map<String, Object> myparameters = new HashMap<String, Object>();
+		Map<String, Object> myparameters = new Hashtable<String, Object>();
 		myparameters.put("dishFlag0", "OPEN");
 		int limit = 10;
 		if (null != parameters.get("MAX_RESULTS")) {

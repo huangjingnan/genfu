@@ -4,14 +4,13 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Table;
-import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -20,50 +19,17 @@ import net.sf.json.util.PropertyFilter;
 import com.genfu.reform.jpa.GenfuCommonDAO;
 import com.genfu.reform.model.GenfuConfig;
 import com.genfu.reform.model.GenfuResultIdCell;
-import com.genfu.reform.model.UserInfo;
-import com.genfu.reform.util.AuthValid;
 import com.genfu.reform.util.FabricationFilterSQL;
+import com.genfu.reform.util.FabricationFilterSQLImpl;
 
 public class AccountServiceImpl implements GenfuCommonService {
 	// private StringBuffer strBuffJPQL = new StringBuffer();
-	// private Map<String, Object> mapCondition = new HashMap<String, Object>();
+	// private Map<String, Object> mapCondition = new Hashtable<String, Object>();
 	// Iterator<String> it = null;
 	private GenfuCommonDAO genfuCommonDAO;
-	private GenfuCommonDAO genfuCommonTransaction;
-	private FabricationFilterSQL fabricationFilterSQL;
-	private AuthValid authValidImpl;
-
-	public GenfuCommonDAO getGenfuCommonTransaction() {
-		return genfuCommonTransaction;
-	}
-
-	public void setGenfuCommonTransaction(GenfuCommonDAO genfuCommonTransaction) {
-		this.genfuCommonTransaction = genfuCommonTransaction;
-	}
-
-	public GenfuCommonDAO getGenfuCommonDAO() {
-		return genfuCommonDAO;
-	}
 
 	public void setGenfuCommonDAO(GenfuCommonDAO genfuCommonDAO) {
 		this.genfuCommonDAO = genfuCommonDAO;
-	}
-
-	public FabricationFilterSQL getFabricationFilterSQL() {
-		return fabricationFilterSQL;
-	}
-
-	public void setFabricationFilterSQL(
-			FabricationFilterSQL fabricationFilterSQL) {
-		this.fabricationFilterSQL = fabricationFilterSQL;
-	}
-
-	public AuthValid getAuthValidImpl() {
-		return authValidImpl;
-	}
-
-	public void setAuthValidImpl(AuthValid authValidImpl) {
-		this.authValidImpl = authValidImpl;
 	}
 
 	@Override
@@ -103,7 +69,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 
 	@Override
 	public <T> Object remove(List<T> list) {
-		return genfuCommonTransaction.remove(list);
+		return genfuCommonDAO.remove(list);
 	}
 
 	@Override
@@ -115,7 +81,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 	@Override
 	public <T> Object update(List<T> list) {
 
-		return genfuCommonTransaction.merge(list);
+		return genfuCommonDAO.merge(list);
 	}
 
 	@Override
@@ -201,7 +167,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -265,7 +231,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 			}
 		}
 
-		Map<String, Object> returnFabricationSQL = new HashMap<String, Object>();
+		Map<String, Object> returnFabricationSQL = new Hashtable<String, Object>();
 		returnFabricationSQL.put("strBuffJPQL", strBuffJPQL);
 		returnFabricationSQL.put("mapCondition", mapCondition);
 		return returnFabricationSQL;
@@ -329,8 +295,8 @@ public class AccountServiceImpl implements GenfuCommonService {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return genfuCommonTransaction.batchDeleteJPQL(
-				sqlStringBuffer.toString(), theClass);
+		return genfuCommonDAO.batchDeleteJPQL(sqlStringBuffer.toString(),
+				theClass);
 	}
 
 	@Override
@@ -339,7 +305,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -427,7 +393,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -536,7 +502,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -623,7 +589,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -736,7 +702,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		Iterator<String> it = arg0.keySet().iterator();
 		String tempKey = "statusCode";
 		Object tempValue = "303";
-		Map<String, Object> mapCondition = new HashMap<String, Object>();
+		Map<String, Object> mapCondition = new Hashtable<String, Object>();
 		StringBuffer strBuffJPQL = new StringBuffer();
 		strBuffJPQL.append("from " + entity.getName() + " WHERE 1=1 ");
 		while (it.hasNext()) {
@@ -787,7 +753,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 				continue;
 			}
 		}
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new Hashtable<String, Object>();
 
 		int records = genfuCommonDAO.getTotalRecords(strBuffJPQL.toString(),
 				mapCondition, entity);
@@ -847,17 +813,17 @@ public class AccountServiceImpl implements GenfuCommonService {
 
 	@Override
 	public <T> Object save(List<T> list) {
-		return genfuCommonTransaction.save(list);
+		return genfuCommonDAO.save(list);
 	}
 
 	@Override
 	public <T> Object merge(List<T> list) {
-		return genfuCommonTransaction.merge(list);
+		return genfuCommonDAO.merge(list);
 	}
 
 	@Override
 	public int batchDeleteByNativeQuery(String strSQL) {
-		return genfuCommonTransaction.batchDelete(strSQL);
+		return genfuCommonDAO.batchDelete(strSQL);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -868,7 +834,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		// [{"groupOp":"OR","rules":[{"field":"dishName","op":"ne","data":"1"},{"field":"publishedAt","op":"eq","data":"3"},{"field":"createdAt","op":"eq","data":"2"},{"field":"publishedId","op":"eq","data":"3"}],"groups":[{"groupOp":"AND","rules":[{"field":"dishFlag","op":"eq","data":"5"},{"field":"price","op":"eq","data":"6"}],"groups":[]}]}]
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
-
+		FabricationFilterSQL fabricationFilterSQL = new FabricationFilterSQLImpl();
 		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
 				entity, arg0);
 
@@ -909,7 +875,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 			// if pager
 			limit = 0;
 		}
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new Hashtable<String, Object>();
 
 		result.put("page", page);
 		result.put("total", total);
@@ -948,6 +914,7 @@ public class AccountServiceImpl implements GenfuCommonService {
 		// ((dishFlag = "5" AND price = "6") OR dishName <> "1" OR publishedAt =
 		// "3" OR createdAt = "2" OR publishedId = "3")
 
+		FabricationFilterSQL fabricationFilterSQL = new FabricationFilterSQLImpl();
 		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
 				sql, entity, arg0);
 
@@ -999,20 +966,19 @@ public class AccountServiceImpl implements GenfuCommonService {
 	@Override
 	public <T> List<T> searchNativeQuery(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		return genfuCommonTransaction.searchNativeQuery(jpql, parameters,
-				entity);
+		return genfuCommonDAO.searchNativeQuery(jpql, parameters, entity);
 	}
 
 	@Override
 	public int batchExcuseNativeQuery(String strSQL) {
-		return genfuCommonTransaction.batchExcuseNativeQuery(strSQL);
+		return genfuCommonDAO.batchExcuseNativeQuery(strSQL);
 	}
 
 	@Override
 	public <T> int searchNativeQueryRecords(String jpql,
 			Map<String, Object> parameters, Class<T> entity) {
-		return genfuCommonTransaction.searchNativeQueryRecords(jpql,
-				parameters, entity);
+		return genfuCommonDAO
+				.searchNativeQueryRecords(jpql, parameters, entity);
 	}
 
 	@Override
@@ -1104,6 +1070,8 @@ public class AccountServiceImpl implements GenfuCommonService {
 	public <T> JSONObject searchJsonJqGridFilter(String sql,
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
+
+		FabricationFilterSQL fabricationFilterSQL = new FabricationFilterSQLImpl();
 		Map<String, Object> filterSQL = fabricationFilterSQL.fabricationJPQL(
 				sql, entity, arg0);
 		Map<String, Object> myPara;
@@ -1165,6 +1133,8 @@ public class AccountServiceImpl implements GenfuCommonService {
 	public <T> JSONObject searchJsonNativeQuery(String sql,
 			Map<String, Object> parameters, Class<T> entity,
 			Map<String, String[]> arg0) {
+
+		FabricationFilterSQL fabricationFilterSQL = new FabricationFilterSQLImpl();
 		Map<String, Object> filterSQL = fabricationFilterSQL
 				.fabricationNativeSQL(sql, entity, arg0);
 		Map<String, Object> myPara;
@@ -1220,48 +1190,6 @@ public class AccountServiceImpl implements GenfuCommonService {
 						* limit, page * limit));
 
 		return jsonObject;
-	}
-
-	@Override
-	public <T> JSONObject validateAndRecord(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session) {
-
-		return authValidImpl.validateAndRecord(actionName, operate, request,
-				entity, session);
-	}
-
-	@Override
-	public <T> void recordOperates(String actionName, String operate,
-			HttpServletRequest request, Class<T> entity,
-			Map<String, Object> session) {
-		authValidImpl.recordOperates(actionName, operate, request, entity,
-				session);
-	}
-
-	@Override
-	public JSONObject authentication(String actionName,
-			HttpServletRequest request, UserInfo userInfo,
-			Map<String, Object> session) {
-
-		return authValidImpl.authentication(actionName, request, userInfo,
-				session);
-	}
-
-	@Override
-	public <T> JSONObject validateOperates(String userCode, String Passwd,
-			String actionName, String operate, Map<String, Object> agr0,
-			Class<T> entity, Map<String, String[]> parameters,
-			Map<String, Object> session) {
-		return authValidImpl.validateOperates(userCode, Passwd, actionName,
-				operate, agr0, entity, parameters, session);
-	}
-
-	@Override
-	public boolean verifyingOperates(Map<String, String[]> arg0,
-			Map<String, Object> session) {
-
-		return authValidImpl.verifyingOperates(arg0, session);
 	}
 
 	@Override
