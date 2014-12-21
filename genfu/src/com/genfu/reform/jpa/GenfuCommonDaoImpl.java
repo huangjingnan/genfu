@@ -17,7 +17,7 @@ import javax.persistence.TypedQuery;
 
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+//@Transactional
 public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 	private static Logger logger = Logger.getLogger("GenfuCommonDaoImpl");
 
@@ -97,11 +97,16 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 	@Override
 	public int save(Object model) {
 		EntityManager em = this.emf.createEntityManager();
+
 		try {
+			EntityTransaction entityTransaction = em.getTransaction();
+			entityTransaction.begin();
 			em.persist(model);
+			entityTransaction.commit();
 			return 0;
 		} finally {
 			if (em != null) {
+				//em.clear();
 				em.close();
 			}
 		}
@@ -111,7 +116,10 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 	public int merge(Object model) {
 		EntityManager em = this.emf.createEntityManager();
 		try {
+			EntityTransaction entityTransaction = em.getTransaction();
+			entityTransaction.begin();
 			em.merge(model);
+			entityTransaction.commit();
 			return 0;
 		} finally {
 			if (em != null) {
@@ -124,7 +132,10 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 	public int remove(Object model) {
 		EntityManager em = this.emf.createEntityManager();
 		try {
+			EntityTransaction entityTransaction = em.getTransaction();
+			entityTransaction.begin();
 			em.remove(model);
+			entityTransaction.commit();
 			return 0;
 		} finally {
 			if (em != null) {
@@ -150,7 +161,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-//			em.close();
+			// em.close();
 			return 0;
 		} finally {
 			if (em != null) {
@@ -170,7 +181,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-//			em.close();
+			// em.close();
 
 			return 0;
 		} finally {
@@ -295,7 +306,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-//			em.close();
+			// em.close();
 
 			return 0;
 		} finally {
@@ -424,7 +435,7 @@ public class GenfuCommonDaoImpl implements GenfuCommonDAO {
 			}
 			entityTransaction.commit();
 			em.clear();
-//			em.close();
+			// em.close();
 
 			return 0;
 		} finally {

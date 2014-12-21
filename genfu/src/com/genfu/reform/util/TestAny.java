@@ -42,26 +42,26 @@ public class TestAny {
 		// System.out.println(arr[i] & 0x0f);
 		// }
 		//
-		ApplicationContext ctx = new ClassPathXmlApplicationContext(
-				"applicationContext.xml");
-		ctx.getApplicationName();
-		
-		GenfuCommonDAO test = (GenfuCommonDAO) ctx.getBean("orderDAOImpl");
-		List<Long> longOrderIds = new ArrayList<Long>();
-		longOrderIds.add(30L);
-		Map<String, Object> tempPara = new Hashtable<String, Object>();
-		tempPara.put("orderIds", longOrderIds);
-		test.excuseNativeQuery("", tempPara);
+		// ApplicationContext ctx = new ClassPathXmlApplicationContext(
+		// "applicationContext.xml");
+		// ctx.getApplicationName();
+		//
+		// GenfuCommonDAO test = (GenfuCommonDAO) ctx.getBean("orderDAOImpl");
+		// List<Long> longOrderIds = new ArrayList<Long>();
+		// longOrderIds.add(30L);
+		// Map<String, Object> tempPara = new Hashtable<String, Object>();
+		// tempPara.put("orderIds", longOrderIds);
+		// test.excuseNativeQuery("", tempPara);
 
 		// System.out.println("1234".substring(0, 3));
 
-		// DES theDES = new DES("password");
-		//
-		// String enc = theDES
-		// .getEncString("111111");
-		// System.out.println(enc);
-		// enc = theDES.getDesString(enc);
-		// System.out.println(enc);
+		DES theDES = new DES("url");
+
+		String enc = theDES
+				.getEncString("jdbc:postgresql://localhost:5432/postgres");
+		System.out.println(enc);
+		enc = theDES.getDesString(enc);
+		System.out.println(enc);
 		// try {
 		// String strAnyS = "WebContent#40838318.zip";
 		// // 5gUhZ1KF8vlr4Nn+sXgV7W04GPXziP0c

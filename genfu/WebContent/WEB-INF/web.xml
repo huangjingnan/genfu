@@ -26,35 +26,13 @@
 		<param-value>/WEB-INF/applicationContext*.xml,classpath*:applicationContext*.xml</param-value>
 	</context-param>
 
-	<filter>
-		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
-		<filter-class>
-			org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
-		<async-supported>true</async-supported>
-	</filter>
-	<filter-mapping>
-		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-		<dispatcher>ASYNC</dispatcher>
-	</filter-mapping>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<listener>
 		<listener-class>
-			org.springframework.web.context.request.RequestContextListener
-		</listener-class>
+			org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
-	<filter>
-		<filter-name>struts2</filter-name>
-		<filter-class>
-			org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>struts2</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
 
 	<!-- <listener> <listener-class>org.h2.server.web.DbStarter</listener-class> 
 		</listener> <context-param> <param-name>db.url</param-name> <param-value>jdbc:h2:mem:db1</param-value> 
@@ -62,7 +40,29 @@
 		</context-param> <context-param> <param-name>db.password</param-name> <param-value></param-value> 
 		</context-param> <context-param> <param-name>db.tcpServer</param-name> <param-value>-tcpAllowOthers</param-value> 
 		</context-param> -->
-
+	<filter>
+		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+		<filter-class>
+			org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter
+		</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>
+			org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
+	</filter-mapping>
 	<servlet>
 		<servlet-name>H2Console</servlet-name>
 		<servlet-class>org.h2.server.web.WebServlet</servlet-class>

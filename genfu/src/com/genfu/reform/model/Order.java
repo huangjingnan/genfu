@@ -1,7 +1,7 @@
 package com.genfu.reform.model;
 
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
@@ -96,7 +96,7 @@ public class Order implements Serializable {
 	@Column(name = "UPDATED_AT")
 	private Date updatedAt;
 
-	@OneToMany(cascade = ALL, fetch = LAZY, orphanRemoval = true)
+	@OneToMany(cascade = ALL, fetch = EAGER, orphanRemoval = true)
 	@JoinColumn(name = "ORDER_ID")
 	@OrderBy("updatedAt DESC,id DESC")
 	private Set<OrderItem> orderItems;
