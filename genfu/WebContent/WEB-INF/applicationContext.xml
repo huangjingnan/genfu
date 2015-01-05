@@ -97,7 +97,8 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<bean id="genfuCommonDao" class="com.genfu.reform.jpa.GenfuCommonDaoImpl" />
+	<!-- 单例开始模式 -->
+	<bean id="genfuCommonDao" class="com.genfu.reform.jpa.GenfuCommonDaoImpl" scope="prototype" />
 	<bean id="genfuAuthenticationDaoImpl" class="com.genfu.reform.jpa.GenfuAuthenticationDaoImpl">
 		<!-- <property name="pg_dataSource" ref="pg_dataSource" /> -->
 	</bean>
@@ -106,7 +107,7 @@
 	</bean>
 	<!-- <bean id="fabricationFilterSQL" class="com.genfu.reform.util.FabricationFilterSQLImpl" 
 		scope="prototype" /> -->
-	<bean id="genfuCommonService" class="com.genfu.reform.service.GenfuCommonServiceImpl">
+	<bean id="genfuCommonService" class="com.genfu.reform.service.GenfuCommonServiceImpl" scope="prototype">
 		<property name="genfuCommonDao" ref="genfuCommonDao" />
 	</bean>
 	<bean class="com.genfu.reform.controller.GenfuCommonController"
